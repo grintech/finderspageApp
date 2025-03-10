@@ -9,7 +9,7 @@ class ShopPage extends StatefulWidget {
 }
 
 class _ShopPageState extends State<ShopPage> {
-  // Active category state
+  
   String activeCategory = "Beauty, Health & Personal Care";
 
   @override

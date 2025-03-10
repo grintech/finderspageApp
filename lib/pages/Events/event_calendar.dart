@@ -10,9 +10,6 @@ class EventCalendar extends StatefulWidget {
 }
 
 class _EventCalendarState extends State<EventCalendar> {
-  DateTime _selectedDay = DateTime.now();
-  DateTime _focusedDay = DateTime.now();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,76 +45,6 @@ class _EventCalendarState extends State<EventCalendar> {
         child: Column(
           children: [
             // Calendar Container
-            Container(
-              width: double.infinity,
-              // height: 280,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.deepPurple,
-              ),
-              child: TableCalendar(
-                firstDay: DateTime.utc(2000, 1, 1),
-                lastDay: DateTime.utc(2100, 12, 31),
-                focusedDay: _focusedDay,
-                selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                onDaySelected: (selectedDay, focusedDay) {
-                  setState(() {
-                    _selectedDay = selectedDay;
-                    _focusedDay = focusedDay;
-                  });
-                },
-                daysOfWeekHeight:
-                    20, // Reduce space between week labels and dates
-                rowHeight: 35, // Reduce row height for dates
-                headerStyle: HeaderStyle(
-                  formatButtonVisible: false,
-                  titleCentered: true,
-                  leftChevronIcon: const Icon(
-                    Icons.chevron_left,
-                    color: Colors.white,
-                  ),
-                  rightChevronIcon: const Icon(
-                    Icons.chevron_right,
-                    color: Colors.white,
-                  ),
-                  titleTextStyle: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-                calendarStyle: CalendarStyle(
-                  defaultTextStyle: GoogleFonts.montserrat(
-                    color: Colors.white,
-                    fontSize: 14,
-                  ),
-                  weekendTextStyle: GoogleFonts.montserrat(
-                    color: Colors.white,
-                    fontSize: 14,
-                  ),
-                  outsideTextStyle: GoogleFonts.montserrat(
-                    color: Color(
-                      0xff616161,
-                    ), // Previous & next month dates in black
-                    fontSize: 14,
-                  ),
-                  selectedDecoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  selectedTextStyle: const TextStyle(color: Colors.black),
-                  todayDecoration: BoxDecoration(
-                    color: Colors.orange.shade200,
-                    shape: BoxShape.rectangle, // Use rectangle shape
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                daysOfWeekStyle: DaysOfWeekStyle(
-                  weekdayStyle: GoogleFonts.montserrat(color: Colors.white),
-                  weekendStyle: GoogleFonts.montserrat(color: Colors.white),
-                ),
-              ),
-            ),
             const SizedBox(height: 16),
 
             // Tasks Header
@@ -193,7 +120,7 @@ class _EventCalendarState extends State<EventCalendar> {
                                 index == 0 ? Colors.orange : Colors.black,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(5),
                             ),
                           ),
                           child: Text(index == 0 ? "Done" : "View"),

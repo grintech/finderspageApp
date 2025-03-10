@@ -104,15 +104,15 @@ class EditProfile extends StatelessWidget {
                             colors: [
                               Color(0xFFDC7228),
                               Color(0xFFA54DB7),
-                            ], // Gradient Colors
+                            ], 
                             stops: [0.3, 100],
                           ),
                           boxShadow: [
                             BoxShadow(
                               color: Color(
                                 0x40000000,
-                              ), // #00000040 (Opacity 25%)
-                              offset: Offset(0, 4), // Shadow position
+                              ),
+                              offset: Offset(0, 4), 
                               blurRadius: 4,
                             ),
                           ],
@@ -121,8 +121,8 @@ class EditProfile extends StatelessWidget {
                           onPressed: () {},
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
-                                Colors.transparent, // Make button transparent
-                            shadowColor: Colors.transparent, // Remove shadow
+                                Colors.transparent, 
+                            shadowColor: Colors.transparent, 
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25),
                             ),
@@ -155,7 +155,7 @@ class EditProfile extends StatelessWidget {
             top: BorderSide(
               color: Colors.grey.shade300,
               width: 1,
-            ), // Optional border
+            ),
           ),
         ),
         child: Row(
@@ -175,7 +175,7 @@ class EditProfile extends StatelessWidget {
                     height: 20,
                     width: 20,
                   ),
-                  SizedBox(height: 4), // Space between icon and text
+                  SizedBox(height: 4), 
                   Text(
                     "Home",
                     style: TextStyle(fontSize: 12, color: Colors.black),
@@ -190,7 +190,7 @@ class EditProfile extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   '/events',
-                ); // Navigate to Calendar Screen
+                ); 
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -236,7 +236,7 @@ class EditProfile extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   '/create-list',
-                ); // Navigate to Create List Screen
+                ); 
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -262,7 +262,7 @@ class EditProfile extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   '/profile',
-                ); // Navigate to Profile Screen
+                ); 
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -287,7 +287,7 @@ class EditProfile extends StatelessWidget {
     );
   }
 
-  /// Function to build **Floating Label Input Field with Bottom Border**
+  
   Widget buildInputField(String label, {int maxLines = 1}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,13 +306,13 @@ class EditProfile extends StatelessWidget {
               borderSide: BorderSide(
                 color: Color(0xFFEBEBEB),
                 width: 1,
-              ), // **Bottom Border**
+              ), 
             ),
             focusedBorder: const UnderlineInputBorder(
               borderSide: BorderSide(
                 color: Color(0xFFDC7228),
                 width: 1.5,
-              ), // **Highlighted Bottom Border**
+              ), 
             ),
           ),
         ),

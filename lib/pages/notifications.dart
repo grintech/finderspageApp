@@ -19,9 +19,9 @@ class Notifications extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        surfaceTintColor: Colors.white, // Prevents any overlay effect
+        surfaceTintColor: Colors.white, 
         scrolledUnderElevation:
-            0, // Stops the background color from changing on scroll
+            0, 
         centerTitle: true,
         leading: Padding(
           padding: const EdgeInsets.only(left: 24),
@@ -66,7 +66,7 @@ class Notifications extends StatelessWidget {
             const SizedBox(height: 12),
             Expanded(
               child: ListView.builder(
-                itemCount: 9, // Updated item count
+                itemCount: 9, 
                 itemBuilder: (context, index) {
                   return Container(
                     height: 55,
@@ -79,12 +79,12 @@ class Notifications extends StatelessWidget {
                         BoxShadow(
                           color: Color.fromRGBO(0, 0, 0, 0.25),
                           blurRadius: 4,
-                          offset: const Offset(0, 1), // Matches "0px 1px 4px"
+                          offset: const Offset(0, 1), 
                         ),
                       ],
                       border: const Border(
                         left: BorderSide(
-                          color: Color(0xFFDC7228), // Matches #DC7228
+                          color: Color(0xFFDC7228), 
                           width: 4,
                         ),
                       ),

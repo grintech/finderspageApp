@@ -60,9 +60,9 @@ class _LoginPageState extends State<LoginPage> {
 
                       final navigator = Navigator.of(
                         context,
-                      ); // Store Navigator before async gap
+                      ); 
                       await Future.delayed(Duration(seconds: 2));
-                      navigator.pushNamed("/home"); // Use stored Navigator
+                      navigator.pushNamed("/home"); 
                     },
                     child: AnimatedContainer(
                       duration: Duration(seconds: 1),

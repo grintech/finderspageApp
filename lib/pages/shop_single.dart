@@ -91,7 +91,7 @@ class _ShopSingleState extends State<ShopSingle> {
 
                   // Custom Dots Indicator (Inside Image)
                   Positioned(
-                    bottom: 10, // Position at the bottom
+                    bottom: 10, 
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children:
@@ -191,10 +191,10 @@ class _ShopSingleState extends State<ShopSingle> {
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0x14000000), // Equivalent to #00000014
-                      offset: Offset(0, 2), // Shadow position
-                      blurRadius: 6, // Blur effect
-                      spreadRadius: 0, // Spread effect
+                      color: Color(0x14000000), 
+                      offset: Offset(0, 2), 
+                      blurRadius: 6,
+                      spreadRadius: 0, 
                     ),
                   ],
                 ),
@@ -204,7 +204,7 @@ class _ShopSingleState extends State<ShopSingle> {
                     Padding(
                       padding: EdgeInsets.all(
                         15,
-                      ), // Add padding only to text elements
+                      ), 
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -224,7 +224,7 @@ class _ShopSingleState extends State<ShopSingle> {
                                 height: 1.62,
                                 color:
                                     Colors
-                                        .black, // Ensure the default text color is set
+                                        .black, 
                               ),
                               children: [
                                 TextSpan(
@@ -256,14 +256,7 @@ class _ShopSingleState extends State<ShopSingle> {
                             ),
                           ),
 
-                          // Text(
-                          //   "Make sure you are ready to illuminate the holiday festive season by purchasing our 6-ft Christmas Inflatable Polar Bear Penguin Outdoor Decoration! This cute and attractive backyard decor that blows up is designed to help make your home sparkle throughout the festive season. Your home can become the ultimate holiday spot by putting up our 6-ft Christmas Inflatable Polar Bear Penguin Outdoor Decor.",
-                          //   style: GoogleFonts.montserrat(
-                          //     fontSize: 13,
-                          //     fontWeight: FontWeight.w500,
-                          //     height: 1.62,
-                          //   ),
-                          // ),
+                       
                         ],
                       ),
                     ),

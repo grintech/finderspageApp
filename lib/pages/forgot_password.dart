@@ -22,14 +22,14 @@ class ForgotPassword extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 16),
-              // Logo
+          
               Center(
                 child: Image.asset("assets/images/new_logo.png", width: 50),
               ),
 
               const SizedBox(height: 12.79),
 
-              // Forgot Title
+             
               Container(
                 height: 43,
                 width: double.infinity,
@@ -68,7 +68,7 @@ class ForgotPassword extends StatelessWidget {
 
                     // Email Input Field
                     SizedBox(
-                      width: double.infinity, // Take full width within padding
+                      width: double.infinity, 
                       height: 43,
                       child: TextField(
                         cursorColor: Color(0xFF616161),
@@ -165,7 +165,7 @@ class ForgotPassword extends StatelessWidget {
                       boxShadow: [
                         BoxShadow(
                           color: Color(0x40000000),
-                          offset: Offset(0, 4), // 4px down
+                          offset: Offset(0, 4), 
                           blurRadius: 4,
                         ),
                       ],

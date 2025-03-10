@@ -13,10 +13,9 @@ class _WelcomeState extends State<Welcome> {
   @override
   void initState() {
     super.initState();
-    // Navigate to HomePage after 3 seconds
+   
     Future.delayed(Duration(seconds: 3), () {
       if (mounted) {
-        // Check if the widget is still mounted before using context
         Navigator.pushNamed(context, MyRoutes.homeRoute);
       }
     });

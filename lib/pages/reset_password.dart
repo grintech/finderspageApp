@@ -12,7 +12,7 @@ class ResetPassword extends StatelessWidget {
       body: Center(
         child: Container(
           width: 334,
-          // height: 322,
+          
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
@@ -22,14 +22,14 @@ class ResetPassword extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 16),
-              // Logo
+              
               Center(
                 child: Image.asset("assets/images/new_logo.png", width: 50),
               ),
 
               const SizedBox(height: 12.79),
 
-              // Forgot Title
+           
               Container(
                 height: 43,
                 width: double.infinity,
@@ -68,7 +68,7 @@ class ResetPassword extends StatelessWidget {
 
                     // Password Input Field
                     SizedBox(
-                      width: double.infinity, // Take full width within padding
+                      width: double.infinity, 
                       height: 43,
                       child: TextField(
                         cursorColor: Color(0xFF616161),
@@ -127,7 +127,7 @@ class ResetPassword extends StatelessWidget {
 
                     // Password Input Field
                     SizedBox(
-                      width: double.infinity, // Take full width within padding
+                      width: double.infinity, 
                       height: 43,
                       child: TextField(
                         cursorColor: Color(0xFF616161),
@@ -222,12 +222,12 @@ class ResetPassword extends StatelessWidget {
                         colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        stops: [0.3, 1.0], // 30% and 100%
+                        stops: [0.3, 1.0],
                       ),
                       boxShadow: [
                         BoxShadow(
                           color: Color(0x40000000),
-                          offset: Offset(0, 4), // 4px down
+                          offset: Offset(0, 4),
                           blurRadius: 4,
                         ),
                       ],

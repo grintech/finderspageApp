@@ -109,9 +109,7 @@ class Signup extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Inside the build method
-
-              // Use customTextField for all inputs with added padding
+           
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25),
                 child: customTextField(

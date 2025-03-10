@@ -30,9 +30,9 @@ class HomePage extends StatelessWidget {
                   colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  stops: [0.3, 1.0], // 30% and 100%
+                  stops: [0.3, 1.0],
                 ),
-                // color: const Color.fromARGB(255, 222, 112, 241),
+               
               ),
               child: Align(
                 alignment: Alignment.topLeft,
@@ -74,7 +74,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        automaticallyImplyLeading: false, // Prevents default back button
+        automaticallyImplyLeading: false, 
         title: Padding(
           padding: EdgeInsets.symmetric(vertical: 15),
           child: Row(
@@ -122,12 +122,12 @@ class HomePage extends StatelessWidget {
             // Search Bar with Location
             Row(
               children: [
-                // Location Container
+              
                 Container(
-                  height: 58, // Ensuring equal height
+                  height: 58, 
                   padding: EdgeInsets.symmetric(
                     horizontal: 12,
-                  ), // Adjust padding
+                  ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
@@ -152,11 +152,11 @@ class HomePage extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(width: 8), // Space between elements
+                SizedBox(width: 8), 
                 // Search Input
                 Expanded(
                   child: Container(
-                    height: 58, // Ensuring equal height
+                    height: 58, 
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(5),
@@ -166,8 +166,8 @@ class HomePage extends StatelessWidget {
                           114,
                           40,
                           0.17,
-                        ), // Border color
-                        width: 1, // Border width
+                        ), 
+                        width: 1, 
                       ),
                     ),
                     child: Row(
@@ -181,9 +181,9 @@ class HomePage extends StatelessWidget {
                               contentPadding: EdgeInsets.symmetric(
                                 vertical: 18,
                                 horizontal: 10,
-                              ), // Adjusted padding
+                              ),
                               border:
-                                  InputBorder.none, // Removed default border
+                                  InputBorder.none, 
                             ),
                             style: TextStyle(fontSize: 16),
                           ),
@@ -191,7 +191,7 @@ class HomePage extends StatelessWidget {
                         Padding(
                           padding: EdgeInsets.only(
                             right: 10,
-                          ), // Padding for search icon
+                          ), 
                           child: Icon(Icons.search, color: Color(0xAAA54DB7)),
                         ),
                       ],
@@ -299,19 +299,19 @@ class HomePage extends StatelessWidget {
 
       // Bottom Navigation Bar
       bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(vertical: 8), // Padding for spacing
+        padding: EdgeInsets.symmetric(vertical: 8), 
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border(
             top: BorderSide(
               color: Colors.grey.shade300,
               width: 1,
-            ), // Optional border
+            ),
           ),
         ),
         child: Row(
           mainAxisAlignment:
-              MainAxisAlignment.spaceEvenly, // Evenly distribute icons
+              MainAxisAlignment.spaceEvenly, 
           children: [
             // Home
             GestureDetector(
@@ -327,7 +327,7 @@ class HomePage extends StatelessWidget {
                     height: 20,
                     width: 20,
                   ),
-                  SizedBox(height: 4), // Space between icon and text
+                  SizedBox(height: 4), 
                   Text(
                     "Home",
                     style: TextStyle(fontSize: 12, color: Colors.black),
@@ -342,7 +342,7 @@ class HomePage extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   '/events',
-                ); // Navigate to Calendar Screen
+                ); 
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -388,7 +388,7 @@ class HomePage extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   '/create-list',
-                ); // Navigate to Create List Screen
+                ); 
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -414,7 +414,7 @@ class HomePage extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   '/profile',
-                ); // Navigate to Profile Screen
+                ); 
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,

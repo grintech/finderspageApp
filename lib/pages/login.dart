@@ -21,14 +21,14 @@ class Login extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 22),
-              // Logo
+             
               Center(
                 child: Image.asset("assets/images/new_logo.png", width: 50),
               ),
 
               const SizedBox(height: 16.79),
 
-              // Login Title
+             
               Container(
                 height: 43,
                 width: double.infinity,
@@ -47,7 +47,7 @@ class Login extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Email Field
+            
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
@@ -67,7 +67,7 @@ class Login extends StatelessWidget {
 
                     // Email Input Field
                     SizedBox(
-                      width: double.infinity, // Take full width within padding
+                      width: double.infinity, 
                       height: 43,
                       child: TextField(
                         cursorColor: Color(0xFF616161),
@@ -175,8 +175,6 @@ class Login extends StatelessWidget {
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
                           onTap: () {
-                            // Add your redirection logic here
-                            // For example, you could navigate to the password reset screen
                             Navigator.pushNamed(
                               context,
                               MyRoutes.forgetPasswordRoute,
@@ -215,7 +213,7 @@ class Login extends StatelessWidget {
                       boxShadow: [
                         BoxShadow(
                           color: Color(0x40000000),
-                          offset: Offset(0, 4), // 4px down
+                          offset: Offset(0, 4), 
                           blurRadius: 4,
                         ),
                       ],

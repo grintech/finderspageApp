@@ -115,9 +115,7 @@ class Profile extends StatelessWidget {
                 _buildProfileOption(
                   "assets/images/notification-icon.png",
                   "Notifications",
-                  callback: () {
-                    // Navigator.pushNamed(context, MyRoutes.notificationRoute);
-                  },
+                  callback: () { },
                 ),
                 _buildProfileOption(
                   "assets/images/active-icon.png",
@@ -167,7 +165,7 @@ class Profile extends StatelessWidget {
             top: BorderSide(
               color: Colors.grey.shade300,
               width: 1,
-            ), // Optional border
+            ), 
           ),
         ),
         child: Row(
@@ -187,7 +185,7 @@ class Profile extends StatelessWidget {
                     height: 20,
                     width: 20,
                   ),
-                  SizedBox(height: 4), // Space between icon and text
+                  SizedBox(height: 4), 
                   Text(
                     "Home",
                     style: TextStyle(fontSize: 12, color: Colors.black),
@@ -202,7 +200,7 @@ class Profile extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   '/events',
-                ); // Navigate to Calendar Screen
+                ); 
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -248,7 +246,7 @@ class Profile extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   '/create-list',
-                ); // Navigate to Create List Screen
+                ); 
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -274,7 +272,7 @@ class Profile extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   '/profile',
-                ); // Navigate to Profile Screen
+                );
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
