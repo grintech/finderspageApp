@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 // Imported this for redirection
 import 'package:flutter/gestures.dart';
+import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
 
-class ShopSingle extends StatefulWidget {
-  const ShopSingle({super.key});
-  @override
-  State<ShopSingle> createState() => _ShopSingleState();
-}
+class ShopSingle extends StatelessWidget {
+  ShopSingle({super.key});
+  final quantity = 1.obs;
+  final selectedSize = "L".obs;
 
-class _ShopSingleState extends State<ShopSingle> {
-  int quantity = 1;
-  String selectedSize = "L";
-
-  int _currentIndex = 0;
+  final _currentIndex = 0.obs;
 
   final List<String> productImages = [
     'assets/images/image1.png',
@@ -40,7 +36,7 @@ class _ShopSingleState extends State<ShopSingle> {
         elevation: 0,
         centerTitle: true,
         leading: Padding(
-          padding: EdgeInsets.only(left: 24),
+          padding: EdgeInsets.only(left: 20),
           child: GestureDetector(
             onTap: () {
               Navigator.pop(context);
@@ -69,23 +65,21 @@ class _ShopSingleState extends State<ShopSingle> {
                       enlargeCenterPage: true,
                       viewportFraction: 1.0,
                       onPageChanged: (index, reason) {
-                        setState(() {
-                          _currentIndex = index;
-                        });
+                        _currentIndex.value = index;
                       },
                     ),
                     items:
-                        productImages.map((imagePath) {
-                          return ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.asset(
-                              imagePath,
-                              width: double.infinity,
-                              height: 244,
-                              fit: BoxFit.cover,
-                            ),
-                          );
-                        }).toList(),
+                    productImages.map((imagePath) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.asset(
+                          imagePath,
+                          width: double.infinity,
+                          height: 244,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    }).toList(),
                   ),
 
                   // Custom Dots Indicator (Inside Image)
@@ -96,33 +90,24 @@ class _ShopSingleState extends State<ShopSingle> {
                       children:
                           productImages.asMap().entries.map((entry) {
                             int index = entry.key;
-                            return Container(
-                              width: _currentIndex == index ? 25 : 25,
+                            return Obx(()=>Container(
+                              width: _currentIndex.value == index ? 25 : 25,
                               height: 10.0,
                               margin: EdgeInsets.symmetric(horizontal: 3.0),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
                                 color:
-                                    _currentIndex == index
-                                        ? Color.fromARGB(255, 233, 121, 42)
-                                        : const Color.fromARGB(255, 0, 0, 0),
+                                _currentIndex.value == index
+                                    ? Color.fromARGB(255, 233, 121, 42)
+                                    : const Color.fromARGB(255, 0, 0, 0),
                               ),
-                            );
+                            ));
                           }).toList(),
                     ),
                   ),
                 ],
               ),
 
-              // ClipRRect(
-              //   borderRadius: BorderRadius.circular(10),
-              //   child: Image.asset(
-              //     'assets/images/product1.png',
-              //     width: double.infinity,
-              //     height: 244,
-              //     fit: BoxFit.cover,
-              //   ),
-              // ),
               SizedBox(height: 10),
               Text(
                 "Polar Bear Penguin Outdoor Decoration",
@@ -131,59 +116,62 @@ class _ShopSingleState extends State<ShopSingle> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Price:",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
+
+              Padding(
+                padding: const EdgeInsets.only(top: 5, bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Price:",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        "\$5.60",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xAADC7228),
+                        SizedBox(height: 5),
+                        Text(
+                          "\$5.60",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xAADC7228),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(width: 54),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Size:",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                      ],
+                    ),
+                    SizedBox(width: 54),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Size:",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 5),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildSizeOption("S"),
-                          _buildSizeOption("M"),
-                          _buildSizeOption("L"),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+                        SizedBox(height: 5),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildSizeOption("S"),
+                            _buildSizeOption("M"),
+                            _buildSizeOption("L"),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(height: 10),
+
               Container(
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
@@ -279,26 +267,24 @@ class _ShopSingleState extends State<ShopSingle> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  setState(() {
-                                    if (quantity > 1) quantity--;
-                                  });
+
+                                    if (quantity > 1) quantity.value--;
+
                                 },
                                 child: Icon(Icons.remove, color: Colors.white),
                               ),
                               SizedBox(width: 10),
-                              Text(
-                                quantity.toString(),
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                ),
-                              ),
+                             Obx(()=> Text(
+                               quantity.toString(),
+                               style: TextStyle(
+                                 fontSize: 18,
+                                 color: Colors.white,
+                               ),
+                             ),),
                               SizedBox(width: 10),
                               GestureDetector(
                                 onTap: () {
-                                  setState(() {
-                                    quantity++;
-                                  });
+                                    quantity.value++;
                                 },
                                 child: Icon(Icons.add, color: Colors.white),
                               ),
@@ -348,64 +334,14 @@ class _ShopSingleState extends State<ShopSingle> {
           ),
         ),
       ),
-
-      // bottomNavbar
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            top: BorderSide(color: Colors.grey.shade300, width: 1),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildBottomNavItem('assets/images/home-icon.png', 'Home', '/home'),
-            _buildBottomNavItem(
-              'assets/images/calendar-icon.png',
-              'Calendar',
-              '',
-            ),
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: IconButton(
-                icon: Icon(Icons.add, size: 35, color: Colors.white),
-                onPressed: () {},
-              ),
-            ),
-            _buildBottomNavItem(
-              'assets/images/newpost-icon.png',
-              'Create List',
-              '',
-            ),
-            _buildBottomNavItem(
-              'assets/images/profile-icon.png',
-              'Profile',
-              '',
-            ),
-          ],
-        ),
-      ),
     );
   }
 
   Widget _buildSizeOption(String size) {
-    bool isSelected = selectedSize == size;
+    bool isSelected = selectedSize.value == size;
     return GestureDetector(
       onTap: () {
-        setState(() {
-          selectedSize = size;
-        });
+          selectedSize.value = size;
       },
       child: Center(
         child: Container(
@@ -426,22 +362,6 @@ class _ShopSingleState extends State<ShopSingle> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNavItem(String iconPath, String label, String route) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, route);
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(iconPath, color: Colors.black, height: 20, width: 20),
-          SizedBox(height: 4),
-          Text(label, style: TextStyle(fontSize: 12, color: Colors.black)),
-        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/routeGenerator.dart';
 import 'package:projects/utils/routes.dart';
 
@@ -23,7 +24,12 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: "Montserrat"
+        appBarTheme: AppBarTheme(
+          color: Colors.white,
+          surfaceTintColor: whiteColor
+        ),
+        fontFamily: "Montserrat",
+        scaffoldBackgroundColor: whiteColor
       ),
       navigatorObservers: [ClearFocusOnPush()],
       initialRoute: Routes.welcome,

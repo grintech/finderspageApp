@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:projects/utils/routes.dart';
 
 class HomePage extends StatelessWidget {
@@ -50,21 +51,21 @@ class HomePage extends StatelessWidget {
               leading: Icon(Icons.home, color: Colors.black),
               title: Text('Home', style: TextStyle(color: Colors.black)),
               onTap: () {
-                Navigator.pushNamed(context, Routes.homeRoute);
+                Get.back();
               },
             ),
             ListTile(
               leading: Icon(Icons.settings, color: Colors.black),
               title: Text('Settings', style: TextStyle(color: Colors.black)),
               onTap: () {
-                Navigator.pop(context);
+                Get.back();
               },
             ),
             ListTile(
-              leading: Icon(Icons.person, color: Colors.black),
-              title: Text('Login', style: TextStyle(color: Colors.black)),
+              leading: Image.asset("assets/images/logout-icon.png"),
+              title: Text('Logout', style: TextStyle(color: Colors.black)),
               onTap: () {
-                Navigator.pushNamed(context, Routes.loginRoute);
+                Get.offAllNamed(Routes.loginRoute);
               },
             ),
           ],
@@ -112,16 +113,13 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
-
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Search Bar with Location
             Row(
               children: [
-              
                 Container(
                   height: 58, 
                   padding: EdgeInsets.symmetric(
@@ -217,31 +215,25 @@ class HomePage extends StatelessWidget {
                     onTap: () {
                       switch (categories[index]["label"]) {
                         case "Jobs":
-                          Navigator.pushNamed(context, '/');
                           break;
                         case "Real estate":
-                          Navigator.pushNamed(context, '/');
                           break;
                         case "Welcome to our community":
-                          Navigator.pushNamed(context, '/home');
                           break;
                         case "Shopping":
-                          Navigator.pushNamed(context, '/shop');
+                          Get.toNamed(Routes.shop);
                           break;
                         case "Services":
-                          Navigator.pushNamed(context, '/home');
                           break;
                         case "Blogs":
-                          Navigator.pushNamed(context, '/home');
                           break;
                         case "Entertainment Industry":
-                          Navigator.pushNamed(context, '/home');
                           break;
                         default:
                           // print(
                           //   "No route defined for ${categories[index]["label"]}",
                           // );
-                          Navigator.pushNamed(context, '/home');
+                          Get.toNamed(Routes.homeRoute);
                       }
                     },
                     child: Container(
@@ -290,146 +282,6 @@ class HomePage extends StatelessWidget {
                     ),
                   );
                 },
-              ),
-            ),
-          ],
-        ),
-      ),
-
-      // Bottom Navigation Bar
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(vertical: 8), 
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            top: BorderSide(
-              color: Colors.grey.shade300,
-              width: 1,
-            ),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment:
-              MainAxisAlignment.spaceEvenly, 
-          children: [
-            // Home
-            GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, Routes.homeRoute);
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(
-                    'assets/images/home-icon.png',
-                    color: Colors.black,
-                    height: 20,
-                    width: 20,
-                  ),
-                  SizedBox(height: 4), 
-                  Text(
-                    "Home",
-                    style: TextStyle(fontSize: 12, color: Colors.black),
-                  ),
-                ],
-              ),
-            ),
-
-            // Calendar
-            GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  '/events',
-                ); 
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(
-                    'assets/images/calendar-icon.png',
-                    color: Colors.black,
-                    height: 20,
-                    width: 20,
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    "Calendar",
-                    style: TextStyle(fontSize: 12, color: Colors.black),
-                  ),
-                ],
-              ),
-            ),
-
-            // Center Floating Button
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: IconButton(
-                icon: Icon(Icons.add, size: 35, color: Colors.white),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/create');
-                },
-              ),
-            ),
-
-            // Create List
-            GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  '/create-list',
-                ); 
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(
-                    'assets/images/newpost-icon.png',
-                    color: Colors.black,
-                    height: 20,
-                    width: 20,
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    "Create List",
-                    style: TextStyle(fontSize: 12, color: Colors.black),
-                  ),
-                ],
-              ),
-            ),
-
-            // Profile
-            GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  '/profile',
-                ); 
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(
-                    'assets/images/profile-icon.png',
-                    color: Colors.black,
-                    height: 20,
-                    width: 20,
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    "Profile",
-                    style: TextStyle(fontSize: 12, color: Colors.black),
-                  ),
-                ],
               ),
             ),
           ],

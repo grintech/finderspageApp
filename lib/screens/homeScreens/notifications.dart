@@ -62,10 +62,11 @@ class Notifications extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
             Expanded(
               child: ListView.builder(
-                itemCount: 9, 
+                itemCount: 9,
+                physics: ClampingScrollPhysics(),
+                padding: EdgeInsets.only(top: 12),
                 itemBuilder: (context, index) {
                   return Container(
                     height: 55,
@@ -81,11 +82,7 @@ class Notifications extends StatelessWidget {
                           offset: const Offset(0, 1), 
                         ),
                       ],
-                      border: const Border(
-                        left: BorderSide(
-                          color: Color(0xFFDC7228), 
-                          width: 4,
-                        ),
+                      border: const Border(left: BorderSide(color: Color(0xFFDC7228), width: 4,),
                       ),
                     ),
                     child: Row(

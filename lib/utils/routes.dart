@@ -11,4 +11,5 @@ class Routes {
   static const String shopSingle = "/shop/single";
   static const String profileRoute = "/profile";
   static const String editProfileRoute = "/edit-profile";
+  static const String termsPrivacy = "/termsPrivacy";
 }

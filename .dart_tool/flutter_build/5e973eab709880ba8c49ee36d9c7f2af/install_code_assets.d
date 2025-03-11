@@ -1,0 +1,1 @@
+ C:\\Users\\admin\\Documents\\GitHub\\finderspageApp\\.dart_tool\\flutter_build\\5e973eab709880ba8c49ee36d9c7f2af\\native_assets.json: 

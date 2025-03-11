@@ -4,13 +4,15 @@ class CommonButton extends StatelessWidget {
   final String? btnTxt;
   final double? radius;
   final double? height;
+  final double? txtSize;
   final double? width;
+  final FontWeight? txtWeight;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final VoidCallback? onPressed;
 
   const CommonButton({super.key, this.btnTxt, this.radius, this.height, this.width, this.padding,
-    this.margin, this.onPressed});
+    this.margin, this.onPressed, this.txtSize, this.txtWeight});
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +41,8 @@ class CommonButton extends StatelessWidget {
         ),
         child: Text(btnTxt??"",
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+            fontSize: txtSize??16,
+            fontWeight: txtWeight??FontWeight.w600,
             color: Colors.white,
           ),
         ),

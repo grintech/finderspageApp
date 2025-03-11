@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../utils/routes.dart';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -17,7 +20,7 @@ class _ShopPageState extends State<ShopPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 25),
+          padding: EdgeInsets.symmetric(horizontal: 20),
           child: Text(
             "Shop Now",
             style: TextStyle(
@@ -58,108 +61,36 @@ class _ShopPageState extends State<ShopPage> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Wrap(
+              spacing: 8.0,
+              runSpacing: 8.0,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Wrap(
-                        spacing: 8.0,
-                        runSpacing: 8.0,
-                        children: [
-                          _buildCategoryChip("Beauty, Health & Personal Care"),
-                          _buildCategoryChip("Books"),
-                          _buildCategoryChip("Clothing, Shoes, Accessories"),
-                          _buildViewAllChip(),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                _buildCategoryChip("Beauty, Health & Personal Care"),
+                _buildCategoryChip("Books, Education"),
+                _buildCategoryChip("Clothing, Shoes, Accessories"),
+                _buildViewAllChip(),
               ],
             ),
 
-            SizedBox(height: 23),
             Expanded(
-              child: ListView(
-                children: [
-                  _buildProductItem(
+              child: ListView.builder(
+                itemCount: 6,
+                padding: EdgeInsets.only(top: 12),
+                itemBuilder: (context, index){
+                  return _buildProductItem(
                     "Polar Bear Penguin Outdoor Decoration",
                     "Chicago",
-                    "Mar 03 2025",
+                    "Mar 03,2025",
                     "\$5.60",
                     "assets/images/image1.png",
-                  ),
-                  _buildProductItem(
-                    "Black Gem Square Necklace",
-                    "Chicago",
-                    "Mar 03 2025",
-                    "\$11.63",
-                    "assets/images/image2.png",
-                  ),
-                  _buildProductItem(
-                    "12pcs Gingerbread Man Ornaments",
-                    "Chicago",
-                    "Mar 03 2025",
-                    "\$9.16",
-                    "assets/images/image3.png",
-                  ),
-                ],
+                  );
+                },
               ),
-            ),
-          ],
-        ),
-      ),
-
-      // bottomNavbar
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            top: BorderSide(color: Colors.grey.shade300, width: 1),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildBottomNavItem('assets/images/home-icon.png', 'Home', '/home'),
-            _buildBottomNavItem(
-              'assets/images/calendar-icon.png',
-              'Calendar',
-              '',
-            ),
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: IconButton(
-                icon: Icon(Icons.add, size: 35, color: Colors.white),
-                onPressed: () {},
-              ),
-            ),
-            _buildBottomNavItem(
-              'assets/images/newpost-icon.png',
-              'Create List',
-              '',
-            ),
-            _buildBottomNavItem(
-              'assets/images/profile-icon.png',
-              'Profile',
-              '',
             ),
           ],
         ),
@@ -206,10 +137,11 @@ class _ShopPageState extends State<ShopPage> {
 
   Widget _buildViewAllChip() {
     return Container(
+      margin: EdgeInsets.only(left: 60),
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+       mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             "View All",
@@ -235,7 +167,7 @@ class _ShopPageState extends State<ShopPage> {
   ) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/shop/single');
+        Get.toNamed(Routes.shopSingle);
       },
       child: Container(
         decoration: BoxDecoration(
@@ -279,12 +211,9 @@ class _ShopPageState extends State<ShopPage> {
                   ),
                   SizedBox(height: 10),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.location_on_outlined,
-                        size: 14,
-                        color: Colors.black,
-                      ),
+                      Image.asset("assets/images/ic_location_black.png", scale: 4,),
                       SizedBox(width: 4),
                       Text(location, style: _textStyle()),
                     ],
@@ -292,11 +221,7 @@ class _ShopPageState extends State<ShopPage> {
                   SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(
-                        Icons.calendar_month_outlined,
-                        size: 14,
-                        color: Colors.black,
-                      ),
+                      Image.asset("assets/images/ic_calendar.png", scale: 4,),
                       SizedBox(width: 4),
                       Text(date, style: _textStyle()),
                     ],
