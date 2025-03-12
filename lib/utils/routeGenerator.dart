@@ -9,13 +9,19 @@ import 'package:projects/screens/authScreens/login.dart';
 import 'package:projects/screens/authScreens/reset_password.dart';
 import 'package:projects/screens/authScreens/signup.dart';
 import 'package:projects/screens/homeScreens/bottomNavScreen.dart';
+import 'package:projects/screens/homeScreens/communityScreens/communityDetailScreen.dart';
+import 'package:projects/screens/homeScreens/communityScreens/communityListScreen.dart';
 import 'package:projects/screens/homeScreens/home_page.dart';
+import 'package:projects/screens/homeScreens/jobScreens/jobDetailScreen.dart';
+import 'package:projects/screens/homeScreens/jobScreens/jobListScreen.dart';
 import 'package:projects/screens/homeScreens/notifications.dart';
 import 'package:projects/screens/homeScreens/shopScreens/shop.dart';
 import 'package:projects/screens/homeScreens/shopScreens/shop_single.dart';
 import 'package:projects/utils/routes.dart';
 
 import '../screens/authScreens/welcome.dart';
+import '../screens/homeScreens/estateScreens/estateDetailScreen.dart';
+import '../screens/homeScreens/estateScreens/estateListScreen.dart';
 
 class RouteGenerator{
   static Route<dynamic> generateRoute(RouteSettings settings){
@@ -58,6 +64,24 @@ class RouteGenerator{
         break;
       case Routes.eventsRoute:
         widgetScreen = EventCalendar();
+        break;
+      case Routes.jobList:
+        widgetScreen = JobListScreen();
+        break;
+      case Routes.jobDetail:
+        widgetScreen = JobDetailScreen();
+        break;
+      case Routes.estateList:
+        widgetScreen = EstateListScreen();
+        break;
+      case Routes.estateDetail:
+        widgetScreen = EstateDetailScreen();
+        break;
+      case Routes.communityList:
+        widgetScreen = CommunityListScreen();
+        break;
+      case Routes.communityDetail:
+        widgetScreen = CommunityDetailScreen();
         break;
       case Routes.termsPrivacy:
         widgetScreen = TermsPrivacyScreen();

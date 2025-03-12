@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:projects/utils/util.dart';
 
+import '../../../utils/colorConstants.dart';
 import '../../../utils/routes.dart';
 
 class ShopPage extends StatefulWidget {
@@ -65,7 +67,83 @@ class _ShopPageState extends State<ShopPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Row(
+                children: [
+                  Container(
+                    height: 58,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset("assets/images/ic_location_white.png", height: 16, width: 13,),
+                        SizedBox(width: 8),
+                        Text(
+                          "Chicago",
+                          style:TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  // Search Input
+                  Expanded(
+                    child: Container(
+                      height: 58,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
+                          color: searchBorderColor,
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              decoration: InputDecoration(
+                                hintText: "Search",
+                                filled: true,
+                                fillColor: Colors.white,
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 18,
+                                  horizontal: 10,
+                                ),
+                                border:
+                                InputBorder.none,
+                              ),
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              right: 10,
+                            ),
+                            child: Icon(Icons.search, color: Color(0xAAA54DB7)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             Wrap(
               spacing: 8.0,
               runSpacing: 8.0,
@@ -223,7 +301,9 @@ class _ShopPageState extends State<ShopPage> {
                     children: [
                       Image.asset("assets/images/ic_calendar.png", scale: 4,),
                       SizedBox(width: 4),
-                      Text(date, style: _textStyle()),
+                      Text(date, style: TextStyle(
+                        fontSize: 10, fontWeight: FontWeight.w500, color: blackColor
+                      )),
                     ],
                   ),
                   SizedBox(height: 10),
@@ -240,22 +320,6 @@ class _ShopPageState extends State<ShopPage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNavItem(String iconPath, String label, String route) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, route);
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(iconPath, color: Colors.black, height: 20, width: 20),
-          SizedBox(height: 4),
-          Text(label, style: TextStyle(fontSize: 12, color: Colors.black)),
-        ],
       ),
     );
   }
