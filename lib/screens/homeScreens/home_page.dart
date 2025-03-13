@@ -229,8 +229,10 @@ class HomePage extends StatelessWidget {
                             Get.toNamed(Routes.shop);
                             break;
                           case "Services":
+                            // Get.toNamed(Routes.shop);
                             break;
-                          case "Blogs":
+                          case "Posts & Videos":
+                            Get.toNamed(Routes.loginRoute);
                             break;
                           case "Entertainment Industry":
                             break;

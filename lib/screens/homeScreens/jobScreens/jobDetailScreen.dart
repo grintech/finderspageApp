@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/commonWidgets/CommonAppBar.dart';
 import 'package:projects/utils/commonWidgets/commonButton.dart';
+import 'package:projects/utils/routes.dart';
 import 'package:projects/utils/util.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -30,13 +31,16 @@ class JobDetailScreen extends StatelessWidget {
                   Positioned(
                     top: 10,
                     right: 10,
-                    child: Container(
-                      height: 30, width: 30,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: fieldBorderColor,
+                    child: GestureDetector(
+                      onTap: () => Get.toNamed(Routes.loginRoute),
+                      child: Container(
+                        height: 30, width: 30,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: fieldBorderColor,
+                        ),
+                        child: Icon(Icons.flag_outlined, color: whiteColor, size: 20,),
                       ),
-                      child: Icon(Icons.flag_outlined, color: whiteColor, size: 20,),
                     ),
                   )
                 ],
@@ -99,27 +103,33 @@ class JobDetailScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                              color: fieldBorderColor,
-                              borderRadius: BorderRadius.circular(30)
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.bookmark, color: whiteColor, size: 20,),
-                              SizedBox(width: 6,),
-                              MyTextWidget(data: "Save Job", size: 14, weight: FontWeight.w600, color: whiteColor,)
-                            ],
+                        GestureDetector(
+                          onTap: () => Get.toNamed(Routes.loginRoute),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                                color: fieldBorderColor,
+                                borderRadius: BorderRadius.circular(30)
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.bookmark, color: whiteColor, size: 20,),
+                                SizedBox(width: 6,),
+                                MyTextWidget(data: "Save Job", size: 14, weight: FontWeight.w600, color: whiteColor,)
+                              ],
+                            ),
                           ),
                         ),
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: fieldBorderColor,
-                            borderRadius: BorderRadius.circular(30)
+                        GestureDetector(
+                          onTap: () => Get.toNamed(Routes.loginRoute),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: fieldBorderColor,
+                              borderRadius: BorderRadius.circular(30)
+                            ),
+                            child: MyTextWidget(data: "Apply For Job", size: 14, weight: FontWeight.w600, color: whiteColor,),
                           ),
-                          child: MyTextWidget(data: "Apply For Job", size: 14, weight: FontWeight.w600, color: whiteColor,),
                         ),
                       ],
                     ),

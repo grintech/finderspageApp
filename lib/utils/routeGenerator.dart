@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:projects/postsVideoScreens/postsHomeScreens/postsNavBarScreen.dart';
 import 'package:projects/screens/Events/event_calendar.dart';
 import 'package:projects/screens/Profile/edit_profile.dart';
 import 'package:projects/screens/Profile/profile.dart';
@@ -85,6 +86,12 @@ class RouteGenerator{
         break;
       case Routes.termsPrivacy:
         widgetScreen = TermsPrivacyScreen();
+        break;
+
+
+        //Posts Screens
+      case Routes.postsHome:
+        widgetScreen = PostsNavBarScreen();
         break;
       default:
         widgetScreen = _errorRoute();

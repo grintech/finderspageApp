@@ -18,4 +18,8 @@ class Routes {
   static const String communityList = "/communityList";
   static const String communityDetail = "/communityDetail";
   static const String termsPrivacy = "/termsPrivacy";
+
+
+  //Posts Screens
+  static const String postsHome = "/postsHome";
 }
