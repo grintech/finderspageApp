@@ -5,6 +5,8 @@ import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/imageViewer.dart';
 import 'package:projects/utils/util.dart';
 
+import '../../utils/routes.dart';
+
 class Postshomescreen extends StatelessWidget {
   Postshomescreen({super.key});
 
@@ -23,12 +25,15 @@ class Postshomescreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: blackColor,
         surfaceTintColor: blackColor,
-        leading: Padding(
-          padding: const EdgeInsets.only(top: 6, left: 10, bottom: 6),
-          child: Image.asset(
-            "assets/images/new_logo.png",
-            height: 50,
-            width: 50,
+        leading: GestureDetector(
+          onTap: () => Get.offAllNamed(Routes.homeRoute),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 6, left: 10, bottom: 6),
+            child: Image.asset(
+              "assets/images/new_logo.png",
+              height: 50,
+              width: 50,
+            ),
           ),
         ),
         actions: [
@@ -40,7 +45,7 @@ class Postshomescreen extends StatelessWidget {
                   Icon(Icons.notifications_none_outlined, color: whiteColor,size: 30,),
                   Padding(
                     padding: const EdgeInsets.only(left: 15, right: 20),
-                    child: Image.asset("assets/images/ic_chat.png", height: 25, width: 25,)
+                    child: Image.asset("assets/images/ic_chat.png", height: 25, width: 25, color: fieldBorderColor,)
                   )
                 ],
               )
@@ -49,7 +54,7 @@ class Postshomescreen extends StatelessWidget {
         ],
       ),
       body: ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+        padding: EdgeInsets.only(top: 0, left: 10, right: 10, bottom: 20),
         itemCount: 4,
           itemBuilder: (context, index){
             return Column(
@@ -84,13 +89,16 @@ class Postshomescreen extends StatelessWidget {
                   ),
                   items:
                   productImages.map((imagePath) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        imagePath,
-                        width: Get.width,
-                        height: 500,
-                        fit: BoxFit.fill,
+                    return Container(
+                      color: Colors.grey.shade200,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.asset(
+                          imagePath,
+                          width: Get.width,
+                          height: 500,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     );
                   }).toList(),

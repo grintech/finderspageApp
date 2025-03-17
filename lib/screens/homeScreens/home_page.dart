@@ -129,7 +129,7 @@ class HomePage extends StatelessWidget {
                 child: Row(
                   children: [
                     Container(
-                      height: 58,
+                      height: 50,
                       padding: EdgeInsets.symmetric(
                         horizontal: 12,
                       ),
@@ -139,7 +139,7 @@ class HomePage extends StatelessWidget {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
-                        borderRadius: BorderRadius.circular(5),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -161,13 +161,13 @@ class HomePage extends StatelessWidget {
                     // Search Input
                     Expanded(
                       child: Container(
-                        height: 58,
+                        height: 50,
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(5),
+                          borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: searchBorderColor,
-                            width: 1,
+                            width: 2,
                           ),
                         ),
                         child: Row(
@@ -179,20 +179,19 @@ class HomePage extends StatelessWidget {
                                   filled: true,
                                   fillColor: Colors.white,
                                   contentPadding: EdgeInsets.symmetric(
-                                    vertical: 18,
+                                    vertical: 8,
                                     horizontal: 10,
                                   ),
-                                  border:
-                                      InputBorder.none,
+                                  border: InputBorder.none,
                                 ),
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(fontSize: 14),
                               ),
                             ),
                             Padding(
                               padding: EdgeInsets.only(
                                 right: 10,
                               ),
-                              child: Icon(Icons.search, color: Color(0xAAA54DB7)),
+                              child: Icon(Icons.search, color: fieldBorderColor),
                             ),
                           ],
                         ),

@@ -3,7 +3,10 @@ import 'package:get/get.dart';
 import 'package:projects/controllers/postsHomeController.dart';
 import 'package:projects/postsVideoScreens/postCreateScreen/postCreateScreen.dart';
 import 'package:projects/postsVideoScreens/postsHomeScreens/postsHomeScreen.dart';
+import 'package:projects/postsVideoScreens/postsProfileScreens/postProfileScreen.dart';
 import 'package:projects/utils/colorConstants.dart';
+
+import '../postSearchScreens/postSearchScreen.dart';
 
 class PostsNavBarScreen extends StatelessWidget {
   PostsNavBarScreen({super.key});
@@ -19,24 +22,15 @@ class PostsNavBarScreen extends StatelessWidget {
         children: [
           Postshomescreen(),
           PostCreateScreen(),
-          Container(
-            child: Text("Notifications"),
-          ),
-          Container(
-            child: Text("Profile"),
-          )
+          PostSearchScreen(),
+          PostProfileScreen()
         ],
       ),),
       bottomNavigationBar: Container(
-        padding: EdgeInsets.only(bottom: 25, top: 10),
+        height: 55,
+        padding: EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
           color: blackColor,
-          border: Border(
-            top: BorderSide(
-              color: Colors.grey.shade300,
-              width: 1,
-            ),
-          ),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -65,7 +59,7 @@ class PostsNavBarScreen extends StatelessWidget {
                 onTap: () {
                   controller.changeTabIndex(2);
                 },
-                child: Icon(Icons.search, color: whiteColor,)
+                child: Icon(Icons.search, color: fieldBorderColor,)
               ),
 
               GestureDetector(

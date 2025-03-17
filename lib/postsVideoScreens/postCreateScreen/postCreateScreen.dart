@@ -9,48 +9,23 @@ import 'package:projects/utils/util.dart';
 import '../../utils/colorConstants.dart';
 import '../../utils/helper/cameraHelper.dart';
 
-class PostCreateScreen extends StatelessWidget implements CameraOnCompleteListener{
+class PostCreateScreen extends StatelessWidget{
   PostCreateScreen({super.key});
 
-  late CameraHelper cameraHelper;
+  // late CameraHelper cameraHelper;
   RxnString imgUrl = RxnString();
 
   @override
   Widget build(BuildContext context) {
-    cameraHelper = CameraHelper(this);
+    // cameraHelper = CameraHelper(this);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: blackColor,
-        surfaceTintColor: blackColor,
-        leading: Padding(
-          padding: const EdgeInsets.only(top: 6, left: 10, bottom: 6),
-          child: Image.asset(
-            "assets/images/new_logo.png",
-            height: 50,
-            width: 50,
-          ),
-        ),
-        actions: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.search, color: whiteColor,),
-                  Padding(
-                      padding: const EdgeInsets.only(left: 15, right: 20),
-                      child: Image.asset("assets/images/ic_chat.png", height: 25, width: 25,)
-                  )
-                ],
-              )
-            ],
-          ),
-        ],
+        toolbarHeight: 0,
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 70, right: 20, top: 20),
+            padding: const EdgeInsets.only(left: 70, right: 20, top: 20, bottom: 40),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -66,7 +41,7 @@ class PostCreateScreen extends StatelessWidget implements CameraOnCompleteListen
           ),
           GestureDetector(
             onTap: () {
-              cameraHelper.openImageVideoPicker();
+              // cameraHelper.openImageVideoPicker();
             },
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
