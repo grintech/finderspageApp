@@ -1,9 +1,13 @@
 // import 'dart:io';
 // import 'dart:ui';
 //
+//
+// import 'package:crop_image/crop_image.dart';
 // import 'package:flutter/material.dart';
 // import 'package:path_provider/path_provider.dart';
-// import 'package:projects/utils/commonWidgets/CommonAppBar.dart';
+// import 'package:permission_handler/permission_handler.dart';
+// import 'package:projects/utils/colorConstants.dart';
+// import 'package:projects/utils/util.dart';
 //
 //
 // class CropperScreen extends StatefulWidget {
@@ -28,7 +32,7 @@
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       backgroundColor: Colors.white,
-//       appBar: CommonAppBar(),
+//       appBar: AppBar(),
 //       body: Column(
 //         children: [
 //           Container(
@@ -52,13 +56,13 @@
 //                   child: Container(
 //                     margin: const EdgeInsets.symmetric(horizontal: 20),
 //                     alignment: Alignment.centerLeft,
-//                     child: const Icon(Icons.arrow_back_ios_rounded, size: 22, color: primaryColor),
+//                     child: const Icon(Icons.arrow_back_ios_rounded, size: 22, color: blackColor),
 //                   ),
 //                 ),
 //                 const Center(
 //                   child: Text(
 //                     "",
-//                     style: TextStyle(color: primaryColor, fontSize: 18, fontWeight: FontWeight.w600),
+//                     style: TextStyle(color: blackColor, fontSize: 18, fontWeight: FontWeight.w600),
 //                   ),
 //                 ),
 //                 GestureDetector(
@@ -68,7 +72,7 @@
 //                   child: Container(
 //                     margin: const EdgeInsets.symmetric(horizontal: 20),
 //                     alignment: Alignment.centerRight,
-//                     child: const Icon(Icons.check, size: 26, color: primaryColor,),
+//                     child: const Icon(Icons.check, size: 26, color: blackColor,),
 //                   ),
 //                 ),
 //               ],

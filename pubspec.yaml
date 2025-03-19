@@ -40,10 +40,12 @@ dependencies:
   table_calendar: ^3.2.0
   cached_network_image: ^3.4.1
   dotted_border: ^2.1.0
-#  image_picker: ^1.1.2
-#  video_trimmer: any
+  image_picker: ^1.1.2
+#  video_trimmer: ^4.0.2
 #  video_compress: ^3.1.4
 #  video_thumbnail: ^0.5.3
+#  crop_image: ^1.0.16
+  permission_handler:
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.3

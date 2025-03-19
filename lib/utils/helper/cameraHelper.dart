@@ -5,6 +5,10 @@
 // import 'package:get/get.dart';
 // import 'package:image_picker/image_picker.dart';
 // import 'package:projects/utils/helper/trimmerView.dart';
+// import 'package:video_thumbnail/video_thumbnail.dart';
+//
+// import '../cropperScreen.dart';
+//
 //
 // abstract class CameraOnCompleteListener {
 //
@@ -62,11 +66,6 @@
 //         child: Container(
 //           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
 //           padding: const EdgeInsets.symmetric(vertical: 15),
-//           decoration: const BoxDecoration(
-//             color: Colors.black87,
-//             shape: BoxShape.rectangle,
-//             borderRadius: BorderRadius.all(Radius.circular(30)),
-//           ),
 //           child: Column(
 //             mainAxisSize: MainAxisSize.min,
 //             crossAxisAlignment: CrossAxisAlignment.center,
@@ -183,6 +182,11 @@
 //               )
 //             ],
 //           ),
+//           decoration: const BoxDecoration(
+//             color: Colors.black87,
+//             shape: BoxShape.rectangle,
+//             borderRadius: BorderRadius.all(Radius.circular(30)),
+//           ),
 //         ),
 //         onTap: () => FocusScope.of(context).requestFocus(FocusScopeNode()),
 //       ),
@@ -201,7 +205,7 @@
 //     }
 //     File? croppedFile;
 //     if (imageFile != null) {
-//       // croppedFile = await Get.to(() => CropperScreen(file: imageFile.path, aspectRatio: aspectRatio,));
+//       croppedFile = await Get.to(() => CropperScreen(file: imageFile.path, aspectRatio: aspectRatio,));
 //     }
 //     if (croppedFile != null) {
 //       debugPrint("Selected image => ${croppedFile.path}");
@@ -223,14 +227,14 @@
 //       }
 //       debugPrint("pickVideoGallery $result");
 //       if (result != null) {
-//         // final uint8list = await VideoThumbnail.thumbnailData(
-//         //   video: result,
-//         //   imageFormat: ImageFormat.PNG,
-//         //   maxWidth: 256, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-//         //   quality: 60,
-//         // );
-//         // debugPrint("thumbnail $uint8list");
-//         // callback.onSuccessVideo(result, uint8list);
+//         final uint8list = await VideoThumbnail.thumbnailData(
+//           video: result,
+//           imageFormat: ImageFormat.PNG,
+//           maxWidth: 256, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+//           quality: 60,
+//         );
+//         debugPrint("thumbnail $uint8list");
+//         callback.onSuccessVideo(result, uint8list);
 //       }
 //     } else {
 //       debugPrint('No video selected.');

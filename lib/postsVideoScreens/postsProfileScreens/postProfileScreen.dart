@@ -1,13 +1,22 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:projects/utils/commonWidgets/commonButton.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:projects/utils/util.dart';
 
+import '../../controllers/createPostController.dart';
+import '../../controllers/postProfileController.dart';
 import '../../utils/colorConstants.dart';
 import '../../utils/routes.dart';
 
 class PostProfileScreen extends StatelessWidget {
-  const PostProfileScreen({super.key});
+  PostProfileScreen({super.key});
+
+  final selectedIndex = 0.obs;
+  var coverImagePath = ''.obs;
+  var profileImagePath = ''.obs;
+
 
   @override
   Widget build(BuildContext context) {
@@ -41,16 +50,25 @@ class PostProfileScreen extends StatelessWidget {
               children: [
                 Stack(
                   children: [
-                    Container(
+                    Obx(()=>Container(
                       margin: EdgeInsets.only(bottom: 40),
-                      height: 200,
+                      height: 300,
                       width: Get.width,
-                      child: Image.asset("assets/images/no_image.png", fit: BoxFit.fill,),
-                    ),
+                      child: coverImagePath.isEmpty
+                          ?Image.asset("assets/images/no_image.png", fit: BoxFit.fill,):
+                      Image.file(
+                        File(coverImagePath.value),
+                        width: Get.width,
+                        height: 300,
+                        fit: BoxFit.contain,
+                      ),
+                    ),),
                     Positioned(
                       right: 12, bottom: 50,
                       child: GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          selectCoverImage();
+                        },
                         child: Container(
                           width: 25,
                           height: 25,
@@ -74,23 +92,36 @@ class PostProfileScreen extends StatelessWidget {
                 ),
                 Positioned(
                   left: 20,
-                  child: Stack(
-                    children: [
-                      Container(
-                        height: 100,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                        ),
-                        child: Image.asset("assets/images/user_img.png", height: 100, fit: BoxFit.fill,),
-                      ),
-                      Positioned(
-                        bottom: 6,
-                        right: 6,
-                        child: GestureDetector(
-                          onTap: () {},
+                  child: GestureDetector(
+                    onTap: () {
+                      selectProfileImage();
+                    },
+                    child: Stack(
+                      children: [
+                        Obx(()=>Container(
+                          height: 80, width: 70,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                          ),
+                          child: profileImagePath.isEmpty
+                              ?Image.asset("assets/images/user_img.png",
+                            height: 80, width: 70,fit: BoxFit.fill,):
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: Image.file(
+                              File(profileImagePath.value),
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),),
+                        Positioned(
+                          bottom: 2,
+                          right: 0,
                           child: Container(
-                            width: 25,
-                            height: 25,
+                            width: 20,
+                            height: 22,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               gradient: LinearGradient(
@@ -106,8 +137,8 @@ class PostProfileScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 )
               ],
@@ -139,73 +170,322 @@ class PostProfileScreen extends StatelessWidget {
               ),
             ),
 
+            Container(
+              margin: EdgeInsets.only(top: 8),
+              height: 40,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                  itemCount: 16,
+                  itemBuilder: (context, index){
+                return Container(
+                  margin: EdgeInsets.symmetric(horizontal: 3),
+                  height: 40, width: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                  ),
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.asset("assets/images/profile-pic.png")),
+                );
+              }),
+            ),
+
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  MyTextWidget(data: "Posts", size: 12, weight: FontWeight.w500,),
-                  MyTextWidget(data: "Videos",size: 12, weight: FontWeight.w400,),
-                  MyTextWidget(data: "Business",size: 12, weight: FontWeight.w400,),
-                  Row(
+                  Obx(()=>GestureDetector(
+                      onTap:() {
+                        selectedIndex.value = 0;
+                      },
+                      child: MyTextWidget(data: "Posts", size: 12,
+                        weight: selectedIndex.value == 0 ? FontWeight.w500 : FontWeight.w400)
+                  ),),
+                  Obx(()=>GestureDetector(
+                    onTap: () {
+                      selectedIndex.value = 1;
+                    },
+                    child: MyTextWidget(data: "Videos",size: 12,
+                      weight: selectedIndex.value == 1 ? FontWeight.w500 : FontWeight.w400,
+                    ),
+                  ),),
+                  Obx(()=> GestureDetector(
+                      onTap: () {
+                        selectedIndex.value = 2;
+                      },
+                      child: MyTextWidget(data: "Business",size: 12,
+                        weight: selectedIndex.value == 2? FontWeight.w500 : FontWeight.w400,)),),
+                  Obx(()=>Row(
                     children: [
-                      MyTextWidget(data: "Ads",size: 12, weight: FontWeight.w400,),
-                      SizedBox(width: 8,),
-                      Icon(Icons.keyboard_arrow_down, size: 18,)
+                      GestureDetector(
+                        onTap: () {
+                          selectedIndex.value = 3;
+                        },
+                        child: MyTextWidget(data: "Ads",size: 12,
+                          weight:selectedIndex.value==3 ? FontWeight.w500 : FontWeight.w400,),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (context){
+                                return Container(
+                                  padding: EdgeInsets.symmetric(vertical: 12),
+                                  height: 250,
+                                  child: ListView(
+                                    children: [
+                                      ListTile(title: Text("Shopping"), onTap: Get.back,),
+                                      ListTile(title: Text("Community"),onTap: Get.back,),
+                                      ListTile(title: Text("Services"),onTap: Get.back,),
+                                      ListTile(title: Text("Entertainment Industry"),onTap: Get.back,),
+                                    ],
+                                  ),
+                                );
+                              }
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            SizedBox(width: 20,),
+                            Icon(Icons.keyboard_arrow_down, size: 18,)
+                          ],
+                        ),
+                      )
                     ],
-                  ),
+                  ),),
+
                 ],
               ),
             ),
+            Obx(()=>selectedIndex.value == 0?
             ListView.builder(
                 itemCount: 8,
                 physics: NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.only(bottom: 20),
                 shrinkWrap: true,
                 itemBuilder: (context, index){
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Container(
-                                height: 40,
-                                margin: EdgeInsets.only(right: 10),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Image.asset("assets/images/user_img.png", height: 100, fit: BoxFit.fill,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    height: 30,
+                                    margin: EdgeInsets.only(right: 10),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Image.asset("assets/images/user_img.png", height: 100, fit: BoxFit.fill,),
+                                  ),
+                                  MyTextWidget(data: "John Doe", size: 12, weight: FontWeight.w500,)
+                                ],
                               ),
-                              MyTextWidget(data: "John Doe", size: 12, weight: FontWeight.w500,)
+                              Icon(Icons.more_vert, size: 20,)
                             ],
                           ),
-                          Icon(Icons.more_vert, size: 20,)
-                        ],
-                      ),
+                        ),
+                        Container(
+                            decoration:BoxDecoration(
+                                color: Colors.grey.shade200
+                            ),
+                            child: Image.asset("assets/images/image1.png", height: 150,
+                              width: Get.width, fit: BoxFit.contain,))
+                      ],
                     ),
-                    Container(
-                      decoration:BoxDecoration(
-                        color: Colors.grey.shade200
-                      ),
-                        child: Image.asset("assets/images/image1.png", height: 150,
-                          width: Get.width, fit: BoxFit.contain,))
-                  ],
-                ),
-              );
-            })
+                  );
+                }):
+            selectedIndex.value == 1? ListView.builder(
+                itemCount: 2,
+                physics: NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.only(bottom: 20),
+                shrinkWrap: true,
+                itemBuilder: (context, index){
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    height: 30,
+                                    margin: EdgeInsets.only(right: 10),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Image.asset("assets/images/user_img.png", height: 100, fit: BoxFit.fill,),
+                                  ),
+                                  MyTextWidget(data: "John Doe", size: 12, weight: FontWeight.w500,)
+                                ],
+                              ),
+                              Icon(Icons.more_vert, size: 20,)
+                            ],
+                          ),
+                        ),
+                        Container(
+                            decoration:BoxDecoration(
+                                color: Colors.grey.shade200
+                            ),
+                            child: Image.asset("assets/images/image1.png", height: 300,
+                              width: Get.width, fit: BoxFit.contain,))
+                      ],
+                    ),
+                  );
+                }) :
+            selectedIndex.value == 2? Padding(
+              padding: const EdgeInsets.only(top: 100),
+              child: MyTextWidget(data: "Coming Soon", size: 20, weight: FontWeight.w600, color: fieldBorderColor,),
+            )
+                :ListView.builder(
+                    itemCount: 1,
+                    physics: NeverScrollableScrollPhysics(),
+                    padding: EdgeInsets.only(bottom: 20),
+                    shrinkWrap: true,
+                    itemBuilder: (context, index){
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        height: 30,
+                                        margin: EdgeInsets.only(right: 10),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Image.asset("assets/images/user_img.png", height: 100, fit: BoxFit.fill,),
+                                      ),
+                                      MyTextWidget(data: "John Doe", size: 12, weight: FontWeight.w500,)
+                                    ],
+                                  ),
+                                  Icon(Icons.more_vert, size: 20,)
+                                ],
+                              ),
+                            ),
+                            Container(
+                                decoration:BoxDecoration(
+                                    color: Colors.grey.shade200
+                                ),
+                                child: Image.asset("assets/images/image1.png", height: 150,
+                                  width: Get.width, fit: BoxFit.contain,))
+                          ],
+                        ),
+                      );
+                    }))
             // MyTextWidget(data: "No content is published yet",),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> pickImage(ImageSource source) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+
+    if (image != null) {
+      coverImagePath.value = image.path;
+    }
+    // else {
+    //   Get.snackbar("Error", "No image selected",
+    //       snackPosition: SnackPosition.BOTTOM);
+    // }
+  }
+  Future<void> pickProfileImage(ImageSource source) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+
+    if (image != null) {
+      profileImagePath.value = image.path;
+    }
+    // else {
+    //   Get.snackbar("Error", "No image selected",
+    //       snackPosition: SnackPosition.BOTTOM);
+    // }
+  }
+
+  void selectCoverImage(){
+    showModalBottomSheet(
+        isDismissible: true,
+        context: Get.context!,
+        builder: (context){
+          return Container(
+            height: 100,
+            color: Colors.black,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                GestureDetector(
+                    onTap:() {
+                      pickImage(ImageSource.camera);
+                      Get.back();
+                    },
+                    child: Icon(Icons.camera, color: Colors.white,)),
+                GestureDetector(
+                    onTap:() {
+                      pickImage(ImageSource.gallery);
+                      Get.back();
+                    },
+                    child: Icon(Icons.perm_media_outlined, color: Colors.white,))
+              ],
+            ),
+          );
+        });
+  }
+
+
+  void selectProfileImage(){
+    showModalBottomSheet(
+        isDismissible: true,
+        context: Get.context!,
+        builder: (context){
+          return Container(
+            height: 100,
+            color: Colors.black,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                GestureDetector(
+                    onTap:() {
+                      pickProfileImage(ImageSource.camera);
+                      Get.back();
+                    },
+                    child: Icon(Icons.camera, color: Colors.white,)),
+                GestureDetector(
+                    onTap:() {
+                      pickProfileImage(ImageSource.gallery);
+                      Get.back();
+                    },
+                    child: Icon(Icons.perm_media_outlined, color: Colors.white,))
+              ],
+            ),
+          );
+        });
   }
 }

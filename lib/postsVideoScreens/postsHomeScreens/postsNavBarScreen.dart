@@ -5,6 +5,7 @@ import 'package:projects/postsVideoScreens/postCreateScreen/postCreateScreen.dar
 import 'package:projects/postsVideoScreens/postsHomeScreens/postsHomeScreen.dart';
 import 'package:projects/postsVideoScreens/postsProfileScreens/postProfileScreen.dart';
 import 'package:projects/utils/colorConstants.dart';
+import 'package:projects/utils/util.dart';
 
 import '../postSearchScreens/postSearchScreen.dart';
 
@@ -21,6 +22,9 @@ class PostsNavBarScreen extends StatelessWidget {
         index: controller.tabIndex.value,
         children: [
           Postshomescreen(),
+          Container(
+            child: Center(child: MyTextWidget(data: "Hello", color: whiteColor,)),
+          ),
           PostCreateScreen(),
           PostSearchScreen(),
           PostProfileScreen()
@@ -42,12 +46,17 @@ class PostsNavBarScreen extends StatelessWidget {
                 onTap: () {
                   controller.changeTabIndex(0);
                 },
-                child: Icon(Icons.home, color: whiteColor,)
+                child: Icon(Icons.home, color: whiteColor,size: 30,)
               ),
 
               GestureDetector(
+                  onTap: () => controller.changeTabIndex(1),
+                  child: Image.asset("assets/images/ic_mini.png",
+                    color: whiteColor, height: 30, width: 30,)),
+
+              GestureDetector(
                 onTap: () {
-                  controller.changeTabIndex(1);
+                  controller.changeTabIndex(2);
                 },
                 child: Container(
                     decoration: BoxDecoration(
@@ -57,16 +66,16 @@ class PostsNavBarScreen extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  controller.changeTabIndex(2);
+                  controller.changeTabIndex(3);
                 },
-                child: Icon(Icons.search, color: fieldBorderColor,)
+                child: Icon(Icons.search, color: fieldBorderColor, size: 30,)
               ),
 
               GestureDetector(
                 onTap: () {
-                  controller.changeTabIndex(3);
+                  controller.changeTabIndex(4);
                 },
-                child: Icon(Icons.person, color: whiteColor,)
+                child: Icon(Icons.person, color: whiteColor, size: 30,)
               ),
             ],
           ),
