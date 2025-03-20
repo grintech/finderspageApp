@@ -4,6 +4,7 @@ import 'package:projects/controllers/postsHomeController.dart';
 import 'package:projects/postsVideoScreens/postCreateScreen/postCreateScreen.dart';
 import 'package:projects/postsVideoScreens/postsHomeScreens/postsHomeScreen.dart';
 import 'package:projects/postsVideoScreens/postsProfileScreens/postProfileScreen.dart';
+import 'package:projects/postsVideoScreens/shortsListScreens/shortsListScreen.dart';
 import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/util.dart';
 
@@ -22,9 +23,7 @@ class PostsNavBarScreen extends StatelessWidget {
         index: controller.tabIndex.value,
         children: [
           Postshomescreen(),
-          Container(
-            child: Center(child: MyTextWidget(data: "Hello", color: whiteColor,)),
-          ),
+          Reels(),
           PostCreateScreen(),
           PostSearchScreen(),
           PostProfileScreen()

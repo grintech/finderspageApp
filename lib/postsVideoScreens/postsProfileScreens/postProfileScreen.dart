@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:projects/utils/util.dart';
-
-import '../../controllers/createPostController.dart';
-import '../../controllers/postProfileController.dart';
 import '../../utils/colorConstants.dart';
 import '../../utils/routes.dart';
 
@@ -38,7 +35,86 @@ class PostProfileScreen extends StatelessWidget {
         actions: [
          Padding(
            padding: const EdgeInsets.only(right: 20),
-           child: Icon(Icons.menu, color: whiteColor, size: 30,),
+           child: PopupMenuButton<int>(
+             color: whiteColor,
+               surfaceTintColor: whiteColor,
+               icon: Icon(Icons.menu, color: whiteColor,),
+               offset: Offset(-12, 35),
+               menuPadding: EdgeInsets.zero,
+               itemBuilder: (context){
+             return <PopupMenuEntry<int>>[
+               PopupMenuItem(value: 0,child: Row(
+                 children: [
+                   Image.asset("assets/images/ic_edit.png", scale: 22,),
+                   SizedBox(width: 10,),
+                   Text("Create Ads"),
+                 ],
+               ),),
+               PopupMenuItem(value: 1,child: Row(
+                 children: [
+                   Image.asset("assets/images/ic_fund.png", scale: 22,),
+                   SizedBox(width: 10,),
+                   Text("Create Fundraisers"),
+                 ],
+               ),),
+               PopupMenuItem(value: 2,child: Row(
+                 children: [
+                   Image.asset("assets/images/ic_bus_page.png", scale: 22,),
+                   SizedBox(width: 10,),
+                   Text("Create Business Page"),
+                 ],
+               ),),
+               PopupMenuItem(value: 3,child: Row(
+                 children: [
+                   Image.asset("assets/images/ic_resume.png", scale: 22,),
+                   SizedBox(width: 10,),
+                   Text("Create Resume"),
+                 ],
+               ),),
+               PopupMenuItem(value: 4,child: Row(
+                 children: [
+                   Image.asset("assets/images/ic_save.png", scale: 22,),
+                   SizedBox(width: 10,),
+                   Text("Saved"),
+                 ],
+               ),),
+               PopupMenuItem(value: 5,child: Row(
+                 children: [
+                   Image.asset("assets/images/ic_support.png", scale: 22,),
+                   SizedBox(width: 10,),
+                   Text("Support"),
+                 ],
+               ),),
+               PopupMenuItem(value: 6,child: Row(
+                 children: [
+                   Image.asset("assets/images/ic_subscription.png", scale: 22,),
+                   SizedBox(width: 10,),
+                   Text("Subscriptions"),
+                 ],
+               ),),
+               PopupMenuItem(value: 7,child: Row(
+                 children: [
+                   Icon(Icons.delete, size: 30, color: blackColor,),
+                   SizedBox(width: 10,),
+                   Text("Recently Deleted"),
+                 ],
+               ),),
+               PopupMenuItem(value: 8,child: Row(
+                 children: [
+                   Image.asset("assets/images/ic_blocked.png", scale: 22,),
+                   SizedBox(width: 10,),
+                   Text("Blocked User"),
+                 ],
+               ),),
+               PopupMenuItem(value: 9,child: Row(
+                 children: [
+                   Image.asset("assets/images/ic_settings.png", scale: 22,),
+                   SizedBox(width: 10,),
+                   Text("Account Settings"),
+                 ],
+               ),),
+             ];
+           })
          )
         ],
       ),
@@ -99,7 +175,7 @@ class PostProfileScreen extends StatelessWidget {
                     child: Stack(
                       children: [
                         Obx(()=>Container(
-                          height: 80, width: 70,
+                          height: 70, width: 70,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                           ),
@@ -290,7 +366,18 @@ class PostProfileScreen extends StatelessWidget {
                                   MyTextWidget(data: "John Doe", size: 12, weight: FontWeight.w500,)
                                 ],
                               ),
-                              Icon(Icons.more_vert, size: 20,)
+                              PopupMenuButton<int>(
+                                  color: whiteColor,
+                                  surfaceTintColor: whiteColor,
+                                  icon: Icon(Icons.more_vert, color: blackColor, size: 20,),
+                                  offset: Offset(-12, 35),
+                                  menuPadding: EdgeInsets.zero,
+                                  itemBuilder: (context){
+                                    return <PopupMenuEntry<int>>[
+                                      PopupMenuItem(value: 0,child: Text("Edit"),),
+                                      PopupMenuItem(value: 1,child: Text("Delete"),),
+                                    ];
+                                  })
                             ],
                           ),
                         ),
@@ -335,7 +422,18 @@ class PostProfileScreen extends StatelessWidget {
                                   MyTextWidget(data: "John Doe", size: 12, weight: FontWeight.w500,)
                                 ],
                               ),
-                              Icon(Icons.more_vert, size: 20,)
+                              PopupMenuButton<int>(
+                                  color: whiteColor,
+                                  surfaceTintColor: whiteColor,
+                                  icon: Icon(Icons.more_vert, color: blackColor, size: 20,),
+                                  offset: Offset(-12, 35),
+                                  menuPadding: EdgeInsets.zero,
+                                  itemBuilder: (context){
+                                    return <PopupMenuEntry<int>>[
+                                      PopupMenuItem(value: 0,child: Text("Edit"),),
+                                      PopupMenuItem(value: 1,child: Text("Delete"),),
+                                    ];
+                                  })
                             ],
                           ),
                         ),
@@ -384,7 +482,18 @@ class PostProfileScreen extends StatelessWidget {
                                       MyTextWidget(data: "John Doe", size: 12, weight: FontWeight.w500,)
                                     ],
                                   ),
-                                  Icon(Icons.more_vert, size: 20,)
+                                  PopupMenuButton<int>(
+                                      color: whiteColor,
+                                      surfaceTintColor: whiteColor,
+                                      icon: Icon(Icons.more_vert, color: blackColor, size: 20,),
+                                      offset: Offset(-12, 35),
+                                      menuPadding: EdgeInsets.zero,
+                                      itemBuilder: (context){
+                                        return <PopupMenuEntry<int>>[
+                                          PopupMenuItem(value: 0,child: Text("Edit"),),
+                                          PopupMenuItem(value: 1,child: Text("Delete"),),
+                                        ];
+                                      })
                                 ],
                               ),
                             ),
