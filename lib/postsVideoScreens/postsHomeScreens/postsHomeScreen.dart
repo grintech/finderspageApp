@@ -132,9 +132,9 @@ class Postshomescreen extends StatelessWidget {
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(right: 5),
-                              child: Image.asset("assets/images/ic_like.png", height: 22, width: 22,)
+                              child: Image.asset("assets/images/ic_like.png", height: 22, width: 22, color: fieldBorderColor,)
                             ),
-                            MyTextWidget(data: "2", size: 18, weight: FontWeight.w500, color: whiteColor,)
+                            MyTextWidget(data: "2", size: 18, weight: FontWeight.w500, color: fieldBorderColor,)
                           ],
                         ),
                         Padding(
@@ -143,13 +143,13 @@ class Postshomescreen extends StatelessWidget {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(right: 5),
-                                child: Image.asset("assets/images/ic_message.png", height: 20, width: 20,),
+                                child: Image.asset("assets/images/ic_message.png", height: 20, width: 20, color: fieldBorderColor),
                               ),
-                              MyTextWidget(data: "2", size: 18, weight: FontWeight.w500, color: whiteColor,)
+                              MyTextWidget(data: "2", size: 18, weight: FontWeight.w500, color: fieldBorderColor,)
                             ],
                           ),
                         ),
-                        Icon(Icons.share, color: whiteColor,),
+                        Icon(Icons.share, color: fieldBorderColor,),
                         ],
                       ),
                       Row(
