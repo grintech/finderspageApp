@@ -1,5 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:projects/controllers/homeController.dart';
+import 'package:projects/utils/helper/dateHelper.dart';
+import 'package:projects/utils/imageViewer.dart';
 import 'package:projects/utils/util.dart';
 
 import '../../../utils/colorConstants.dart';
@@ -16,8 +22,13 @@ class _ShopPageState extends State<ShopPage> {
   
   String activeCategory = "Beauty, Health & Personal Care";
 
+  final controller = Get.put(HomeController());
+
+
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -39,7 +50,7 @@ class _ShopPageState extends State<ShopPage> {
           padding: EdgeInsets.only(left: 24),
           child: GestureDetector(
             onTap: () {
-              Navigator.pop(context);
+              Get.back();
             },
             child: Image.asset(
               'assets/images/arrow.png',
@@ -155,21 +166,25 @@ class _ShopPageState extends State<ShopPage> {
               ],
             ),
 
-            Expanded(
+            Obx(()=>Expanded(
               child: ListView.builder(
-                itemCount: 6,
+                itemCount: controller.shopList.length,
                 padding: EdgeInsets.only(top: 12),
                 itemBuilder: (context, index){
+                  DateTime localDateTime = DateTime.parse("${controller.shopList[index].created}");
+                  DateTime utcDateTime = localDateTime.toUtc();
+                  String formattedDate = DateFormat("MMM dd, yyyy").format(utcDateTime);
+                  List<dynamic> imageList = jsonDecode("${controller.shopList[index].image1}");
                   return _buildProductItem(
-                    "Polar Bear Penguin Outdoor Decoration",
-                    "Chicago",
-                    "Mar 03,2025",
-                    "\$5.60",
-                    "assets/images/image1.png",
+                    "${controller.shopList[index].title}",
+                    "${controller.shopList[index].location}",
+                    formattedDate,
+                    "\$${controller.shopList[index].productPrice}",
+                    "${imageList[0]}",
                   );
                 },
               ),
-            ),
+            ),)
           ],
         ),
       ),
@@ -268,11 +283,9 @@ class _ShopPageState extends State<ShopPage> {
                 left: Radius.circular(5),
                 right: Radius.circular(5),
               ),
-              child: Image.asset(
-                imagePath,
-                width: 146,
-                height: 117,
-                fit: BoxFit.cover,
+              child: Image.network(
+                height: 140, width: 150,
+              "https://www.finderspage.com/public/images_blog_img/$imagePath",
               ),
             ),
             SizedBox(width: 10),
@@ -293,7 +306,7 @@ class _ShopPageState extends State<ShopPage> {
                     children: [
                       Image.asset("assets/images/ic_location_black.png", scale: 4,),
                       SizedBox(width: 4),
-                      Text(location, style: _textStyle()),
+                      Flexible(child: Text(location, style: _textStyle())),
                     ],
                   ),
                   SizedBox(height: 10),

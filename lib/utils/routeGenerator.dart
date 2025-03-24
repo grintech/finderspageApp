@@ -18,6 +18,7 @@ import 'package:projects/screens/homeScreens/jobScreens/jobListScreen.dart';
 import 'package:projects/screens/homeScreens/notifications.dart';
 import 'package:projects/screens/homeScreens/shopScreens/shop.dart';
 import 'package:projects/screens/homeScreens/shopScreens/shop_single.dart';
+import 'package:projects/utils/commonWidgets/defaultScreen.dart';
 import 'package:projects/utils/routes.dart';
 
 import '../screens/authScreens/welcome.dart';
@@ -86,6 +87,9 @@ class RouteGenerator{
         break;
       case Routes.termsPrivacy:
         widgetScreen = TermsPrivacyScreen();
+        break;
+      case Routes.defaultScreen:
+        widgetScreen = DefaultScreen();
         break;
 
 

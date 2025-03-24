@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -95,4 +96,90 @@ class Utils{
         });
   }
 
+  static showLog(String? log) {
+    print("findersPage-log $log");
+  }
+
+  static Future<bool> hasNetwork() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      // Utils.showErrorAlert("Check Your Internet Connection");
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  static bool isValidEmail(String email) {
+    String p =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regExp = RegExp(p);
+    return regExp.hasMatch(email);
+  }
+
+  // static showErrorAlert(String? error) {
+  //   CoolAlert.show(
+  //     context: Get.context!,
+  //     type: CoolAlertType.error,
+  //     title: 'Error',
+  //     text: _extractText(error),
+  //     confirmBtnColor: fieldBorderColor,
+  //     loopAnimation: false,
+  //     backgroundColor: fieldBorderColor,
+  //   );
+  // }
+  //
+  // static showErrorMsgAlert(String title,String error) {
+  //   CoolAlert.show(
+  //     context: Get.context!,
+  //     type: CoolAlertType.error,
+  //     title: title,
+  //     text: _extractText(error),
+  //     confirmBtnColor: fieldBorderColor,
+  //     loopAnimation: false,
+  //     backgroundColor: fieldBorderColor,
+  //   );
+  // }
+  //
+  // static showSuccessAlert(String message) {
+  //   CoolAlert.show(
+  //     context: Get.context!,
+  //     title: "Success",
+  //     type: CoolAlertType.success,
+  //     text: _extractText(message),
+  //     backgroundColor: fieldBorderColor,
+  //   );
+  // }
+  //
+  // static showInfoAlert(String message,String? title) {
+  //   CoolAlert.show(
+  //     context: Get.context!,
+  //     type: CoolAlertType.warning,
+  //     title: title??"Info",
+  //     text: _extractText(message),
+  //   );
+  // }
+  //
+  // static showLoader({String? msg}) {
+  //   EasyLoading.show(
+  //     maskType: EasyLoadingMaskType.black,
+  //     status: msg ?? "Please Wait...",
+  //     dismissOnTap: false,
+  //   );
+  // }
+
+  static Future hideLoader() async {
+    // return await EasyLoading.dismiss();
+  }
+
+  static String _extractText(String? message) {
+    if (message == null) {
+      return "";
+    }
+    if (message.length > 200) {
+      return message.substring(0, 199);
+    } else {
+      return message;
+    }
+  }
 }

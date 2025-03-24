@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:projects/controllers/homeController.dart';
 import 'package:projects/utils/colorConstants.dart';
+import 'package:projects/utils/imageViewer.dart';
 import 'package:projects/utils/routes.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({super.key});
+  HomePage({Key? key}) : super(key: key) {
+    // controller.getHomeCategories();
+  }
 
-  final List<Map<String, dynamic>> categories = [
-    {"icon": "assets/images/icon1.png", "label": "Jobs"},
-    {"icon": "assets/images/icon2.png", "label": "Real estate"},
-    {"icon": "assets/images/icon3.png", "label": "Welcome to our community"},
-    {"icon": "assets/images/icon4.png", "label": "Shopping"},
-    {"icon": "assets/images/icon5.png", "label": "Services"},
-    {"icon": "assets/images/icon6.png", "label": "Posts & Videos"},
-    {"icon": "assets/images/icon7.png", "label": "Entertainment Industry"},
+  final List<String> iconList = [
+    "assets/images/icon6.png", "assets/images/ic_business.png", "assets/images/icon7.png",
+    "assets/images/ic_fundraiser.png", "assets/images/icon1.png","assets/images/icon6.png", "assets/images/icon2.png",
+    "assets/images/icon5.png", "assets/images/icon4.png","assets/images/icon3.png"
   ];
+
+  final controller = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -202,91 +204,102 @@ class HomePage extends StatelessWidget {
               ),
 
               // Grid Categories
-              Expanded(
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 1.2,
-                  ),
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        switch (categories[index]["label"]) {
-                          case "Jobs":
-                            Get.toNamed(Routes.jobList);
-                            break;
-                          case "Real estate":
-                            Get.toNamed(Routes.estateList);
-                            break;
-                          case "Welcome to our community":
-                            Get.toNamed(Routes.communityList);
-                            break;
-                          case "Shopping":
-                            Get.toNamed(Routes.shop);
-                            break;
-                          case "Services":
-                            // Get.toNamed(Routes.shop);
-                            break;
-                          case "Posts & Videos":
-                            Get.toNamed(Routes.loginRoute);
-                            break;
-                          case "Entertainment Industry":
-                            break;
-                          default:
-                            Get.toNamed(Routes.homeRoute);
-                        }
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xFFDC7228), Color(0xFF000000)],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            stops: [0.5, 0.6],
-                          ),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              margin: EdgeInsets.only(top: 10),
-                              decoration: BoxDecoration(
-                                color: Color(0xFF4A4A49),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Image.asset(
-                                  categories[index]["icon"]!,
-                                  width: 26,
-                                  height: 26,
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              categories[index]["label"]!,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+             Obx(()=> Expanded(
+               child: GridView.builder(
+                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                   crossAxisCount: 2,
+                   crossAxisSpacing: 12,
+                   mainAxisSpacing: 12,
+                   childAspectRatio: 1.2,
+                 ),
+                 itemCount: controller.categoryList.length,
+                 itemBuilder: (context, index) {
+                   return GestureDetector(
+                     onTap: () {
+                       controller.categoryList[index].id;
+                       print("${controller.categoryList[index].id}");
+                       switch (index) {
+                         case 0:
+                           Get.toNamed(Routes.defaultScreen);
+                           break;
+                         case 1:
+                           Get.toNamed(Routes.defaultScreen);
+                           break;
+                         case 2:
+                           Get.toNamed(Routes.defaultScreen);
+                           break;
+                         case 3:
+                           Get.toNamed(Routes.defaultScreen);
+                           break;
+                         case 4:
+                           Get.toNamed(Routes.jobList);
+                           break;
+                         case 5:
+                           Get.toNamed(Routes.postsHome);
+                           break;
+                         case 6:
+                           Get.toNamed(Routes.estateList);
+                           break;
+                         case 7:
+                           Get.toNamed(Routes.defaultScreen);
+                           break;
+                         case 8:
+                           Get.toNamed(Routes.shop);
+                           break;
+                         case 9:
+                           Get.toNamed(Routes.communityList);
+                           break;
+                         default:
+                           Get.toNamed(Routes.defaultScreen);
+                           break;
+                       }
+                     },
+                     child: Container(
+                       decoration: BoxDecoration(
+                         gradient: LinearGradient(
+                           colors: [Color(0xFFDC7228), Color(0xFF000000)],
+                           begin: Alignment.topCenter,
+                           end: Alignment.bottomCenter,
+                           stops: [0.5, 0.6],
+                         ),
+                         borderRadius: BorderRadius.circular(5),
+                       ),
+                       child: Column(
+                         crossAxisAlignment: CrossAxisAlignment.center,
+                         mainAxisAlignment: MainAxisAlignment.center,
+                         children: [
+                           Container(
+                             width: 40,
+                             height: 40,
+                             margin: EdgeInsets.only(top: 10),
+                             decoration: BoxDecoration(
+                               color: Color(0xFF4A4A49),
+                               shape: BoxShape.circle,
+                             ),
+                             child: Center(
+                               child:Image.asset(
+                                 height: 26, width: 26,
+                                   iconList[index % iconList.length]
+                               )
+                             ),
+                           ),
+                           SizedBox(height: 10),
+                           Text(
+                             controller.categoryList[index].title!,
+                             textAlign: TextAlign.center,
+                             style: TextStyle(
+                               color: Colors.white,
+                               fontSize: 14,
+                               fontWeight: FontWeight.w600,
+                             ),
+                           ),
+                         ],
+                       ),
+                     ),
+                   );
+                 },
+               ),
+             ),)
             ],
           ),
         ),

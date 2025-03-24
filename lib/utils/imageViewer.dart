@@ -39,9 +39,9 @@ class ImageView extends StatelessWidget {
       width: width,
       child: (image == null)
           ? errorWidget ?? Image.asset(placeholder ?? "assets/images/ic_user.png", fit: BoxFit.cover)
-          : (image!.contains("http") == true)
+          : (image!.contains("https") == true)
           ? CachedNetworkImage(
-        imageUrl: image!,
+        imageUrl: "{https://www.finderspage.com/public/images_blog_img/$image}",
         imageBuilder: (context, imageProvider) {
           return Container(
             decoration: BoxDecoration(

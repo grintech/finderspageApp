@@ -1,10 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/date_symbol_data_file.dart';
 import 'package:projects/utils/colorConstants.dart';
+import 'package:projects/utils/helper/storageHelper.dart';
 import 'package:projects/utils/routeGenerator.dart';
 import 'package:projects/utils/routes.dart';
 
-void main() async {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpOverrides();
+  await StorageHelper.init();
   String initialRoute = await findInitialRoute();
   runApp(MyApp(initialRoute));
 }
@@ -50,6 +57,13 @@ class ClearFocusOnPush extends NavigatorObserver {
     super.didPush(route, previousRoute);
     final focus = FocusManager.instance.primaryFocus;
     focus?.unfocus();
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 }
 

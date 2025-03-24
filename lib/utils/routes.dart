@@ -10,6 +10,7 @@ class Routes {
   static const String shop = "/shop";
   static const String shopSingle = "/shop/single";
   static const String profileRoute = "/profile";
+  static const String defaultScreen = "/defaultScreen";
   static const String editProfileRoute = "/edit-profile";
   static const String jobList = "/jobList";
   static const String jobDetail = "/jobDetail";
