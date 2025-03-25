@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:projects/data/models/shopDetailModel.dart';
 import 'package:projects/data/models/shopModel.dart';
 
 import '../../utils/shared/dataResponse.dart';
@@ -34,13 +35,25 @@ class HomeApiProvider{
     }
   }
 
-  // Future<DataResponse> getShopDetail(String slug) async {
-  //   try {
-  //     Response response = await _dio.get('${ApiConstants.shopDetail}/$slug', options: Injector.getHeaderToken());
-  //     var dataResponse = DataResponse<ChatModel>.fromJson(response.data, (data) => ChatModel.fromJson(data as Map<String, dynamic>));
-  //     return dataResponse;
-  //   } catch (error) {
-  //     return DataResponse(message: error.toString());
-  //   }
-  // }
+  Future<DataResponse> getShopDetail(String slug) async {
+    try {
+      Response response = await _dio.get(
+        '${ApiConstants.shopDetail}/$slug',
+        options: Injector.getHeaderToken(),
+      );
+
+      print("Raw API Response: ${response.data}");
+
+      var dataResponse = DataResponse<ShopDetailModel>.fromJson(response.data, (data) => ShopDetailModel.fromJson(data as Map<String, dynamic>),
+      );
+
+      print("Parsed DataResponse: ${dataResponse.toJson}");
+
+      return dataResponse;
+    } catch (error) {
+      print("API Error: $error");
+      return DataResponse(error: "$error");
+    }
+  }
+
 }

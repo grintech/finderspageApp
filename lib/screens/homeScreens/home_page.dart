@@ -18,62 +18,63 @@ class HomePage extends StatelessWidget {
 
   final controller = Get.put(HomeController());
 
+  final showSearch = true.obs;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      drawer: Drawer(
-        backgroundColor: Colors.white,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  stops: [0.3, 1.0],
-                ),
-               
-              ),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  'Finderspage',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-
-            ListTile(
-              leading: Icon(Icons.home, color: Colors.black),
-              title: Text('Home', style: TextStyle(color: Colors.black)),
-              onTap: () {
-                Get.back();
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.settings, color: Colors.black),
-              title: Text('Settings', style: TextStyle(color: Colors.black)),
-              onTap: () {
-                Get.back();
-              },
-            ),
-            ListTile(
-              leading: Image.asset("assets/images/logout-icon.png"),
-              title: Text('Logout', style: TextStyle(color: Colors.black)),
-              onTap: () {
-                Get.offAllNamed(Routes.loginRoute);
-              },
-            ),
-          ],
-        ),
-      ),
+      // drawer: Drawer(
+      //   backgroundColor: Colors.white,
+      //   child: ListView(
+      //     padding: EdgeInsets.zero,
+      //     children: <Widget>[
+      //       DrawerHeader(
+      //         decoration: BoxDecoration(
+      //           gradient: LinearGradient(
+      //             colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
+      //             begin: Alignment.topCenter,
+      //             end: Alignment.bottomCenter,
+      //             stops: [0.3, 1.0],
+      //           ),
+      //
+      //         ),
+      //         child: Align(
+      //           alignment: Alignment.topLeft,
+      //           child: Text(
+      //             'Finderspage',
+      //             style: TextStyle(
+      //               fontSize: 20,
+      //               fontWeight: FontWeight.bold,
+      //               color: Colors.white,
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //       ListTile(
+      //         leading: Icon(Icons.home, color: Colors.black),
+      //         title: Text('Home', style: TextStyle(color: Colors.black)),
+      //         onTap: () {
+      //           Get.back();
+      //         },
+      //       ),
+      //       ListTile(
+      //         leading: Icon(Icons.settings, color: Colors.black),
+      //         title: Text('Settings', style: TextStyle(color: Colors.black)),
+      //         onTap: () {
+      //           Get.back();
+      //         },
+      //       ),
+      //       ListTile(
+      //         leading: Image.asset("assets/images/logout-icon.png"),
+      //         title: Text('Logout', style: TextStyle(color: Colors.black)),
+      //         onTap: () {
+      //           Get.offAllNamed(Routes.loginRoute);
+      //         },
+      //       ),
+      //     ],
+      //   ),
+      // ),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -83,34 +84,60 @@ class HomePage extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Menu Icon (Drawer)
-              Builder(
-                builder:
-                    (context) => IconButton(
-                      icon: Icon(Icons.menu, color: Colors.black),
-                      onPressed: () {
-                        Scaffold.of(context).openDrawer();
-                      },
-                    ),
-              ),
-
-              // Logo (Center)
               Image.asset(
                 "assets/images/new_logo.png",
                 height: 41.21,
                 width: 40,
               ),
-
-              // Notification Icon (Right)
-              IconButton(
-                icon: Icon(
-                  Icons.notifications_none,
-                  size: 24,
-                  color: Colors.black,
-                ),
-                onPressed: () {
-                  Navigator.pushNamed(context, Routes.notificationRoute);
-                },
+              Row(
+                children: [
+                  Container(
+                    height: 40,
+                    padding: EdgeInsets.symmetric(horizontal: 12,),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset("assets/images/ic_location_white.png", height: 16, width: 13,),
+                        SizedBox(width: 8),
+                        Text(
+                          "Chicago",
+                          style:TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      showSearch.value = !showSearch.value;
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12),
+                      child: Icon(Icons.search, color: fieldBorderColor, size: 26,),
+                    ),
+                  ),
+                  // IconButton(
+                  //   icon: Icon(
+                  //     Icons.notifications_none,
+                  //     size: 28,
+                  //     color: Colors.black,
+                  //   ),
+                  //   onPressed: () {
+                  //     Navigator.pushNamed(context, Routes.notificationRoute);
+                  //   },
+                  // ),
+                ],
               ),
             ],
           ),
@@ -122,90 +149,42 @@ class HomePage extends StatelessWidget {
           FocusScope.of(context).requestFocus(FocusScopeNode());
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 25),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Row(
-                  children: [
-                    Container(
-                      height: 50,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Image.asset("assets/images/ic_location_white.png", height: 16, width: 13,),
-                          SizedBox(width: 8),
-                          Text(
-                            "Chicago",
-                            style:TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    // Search Input
-                    Expanded(
-                      child: Container(
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: searchBorderColor,
-                            width: 2,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                decoration: InputDecoration(
-                                  hintText: "Search",
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  contentPadding: EdgeInsets.symmetric(
-                                    vertical: 8,
-                                    horizontal: 10,
-                                  ),
-                                  border: InputBorder.none,
-                                ),
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                right: 10,
-                              ),
-                              child: Icon(Icons.search, color: fieldBorderColor),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Grid Categories
+             Obx(()=> Visibility(
+               visible: !showSearch.value,
+               child: Container(
+                 height: 40,
+                 decoration: BoxDecoration(
+                   color: Colors.white,
+                   borderRadius: BorderRadius.circular(5),
+                   border: Border.all(
+                     color: searchBorderColor,
+                     width: 1,
+                   ),
+                 ),
+                 child: Expanded(
+                   child: TextField(
+                     decoration: InputDecoration(
+                       hintText: "Search",
+                       filled: true,
+                       fillColor: Colors.white,
+                       contentPadding: EdgeInsets.symmetric(
+                         vertical: 10,
+                         horizontal: 10,
+                       ),
+                       border: InputBorder.none,
+                     ),
+                     style: TextStyle(fontSize: 16),
+                   ),
+                 ),
+               ),
+             ),),
              Obx(()=> Expanded(
                child: GridView.builder(
+                 padding: EdgeInsets.symmetric(vertical: 12),
                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                    crossAxisCount: 2,
                    crossAxisSpacing: 12,

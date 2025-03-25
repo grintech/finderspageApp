@@ -6,8 +6,18 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
 
+import '../../../controllers/shopController.dart';
+
 class ShopSingle extends StatelessWidget {
-  ShopSingle({super.key});
+  ShopSingle({Key? key, required this.slug}) : super(key: key) {
+    controller.getShopDetailApi(slug);
+    // controller.getSlots(model.id);
+  }
+
+  final String slug;
+
+  final controller = Get.put(ShopController());
+
   final quantity = 1.obs;
   final selectedSize = "L".obs;
 
@@ -39,7 +49,7 @@ class ShopSingle extends StatelessWidget {
           padding: EdgeInsets.only(left: 20),
           child: GestureDetector(
             onTap: () {
-              Navigator.pop(context);
+              Get.back();
             },
             child: Image.asset(
               'assets/images/arrow.png',
@@ -84,7 +94,7 @@ class ShopSingle extends StatelessWidget {
 
                   // Custom Dots Indicator (Inside Image)
                   Positioned(
-                    bottom: 10, 
+                    bottom: 10,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children:
@@ -110,7 +120,7 @@ class ShopSingle extends StatelessWidget {
 
               SizedBox(height: 10),
               Text(
-                "Polar Bear Penguin Outdoor Decoration",
+                "${controller.shopDetailModel.value.blog?.title}",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -178,10 +188,10 @@ class ShopSingle extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0x14000000), 
-                      offset: Offset(0, 2), 
+                      color: Color(0x14000000),
+                      offset: Offset(0, 2),
                       blurRadius: 6,
-                      spreadRadius: 0, 
+                      spreadRadius: 0,
                     ),
                   ],
                 ),
@@ -191,7 +201,7 @@ class ShopSingle extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.all(
                         15,
-                      ), 
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -211,7 +221,7 @@ class ShopSingle extends StatelessWidget {
                                 height: 1.62,
                                 color:
                                     Colors
-                                        .black, 
+                                        .black,
                               ),
                               children: [
                                 TextSpan(
@@ -243,7 +253,7 @@ class ShopSingle extends StatelessWidget {
                             ),
                           ),
 
-                       
+
                         ],
                       ),
                     ),

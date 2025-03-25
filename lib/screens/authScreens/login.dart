@@ -19,9 +19,9 @@ class Login extends StatelessWidget {
     return Scaffold(
       backgroundColor: blackColor,
       appBar: AppBar(
-        leading: GestureDetector(
-            onTap: () => Get.back(),
-            child: Icon(Icons.arrow_back_ios, color: fieldBorderColor,)),
+        // leading: GestureDetector(
+        //     onTap: () => Get.back(),
+        //     child: Icon(Icons.arrow_back_ios, color: fieldBorderColor,)),
         backgroundColor: blackColor,
       ),
       body: GestureDetector(

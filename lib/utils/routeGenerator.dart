@@ -59,7 +59,7 @@ class RouteGenerator{
         widgetScreen = ShopPage();
         break;
       case Routes.shopSingle:
-        widgetScreen = ShopSingle();
+        widgetScreen = ShopSingle(slug: args as String);
         break;
       case Routes.notificationRoute:
         widgetScreen = Notifications();

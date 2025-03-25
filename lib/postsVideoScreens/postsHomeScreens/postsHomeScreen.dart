@@ -29,17 +29,18 @@ class Postshomescreen extends StatelessWidget {
           onTap: () => Get.offAllNamed(Routes.homeRoute),
           child: Padding(
             padding: const EdgeInsets.only(top: 6, left: 10, bottom: 6),
-            child: Image.asset(
-              "assets/images/new_logo.png",
-              height: 50,
-              width: 50,
-            ),
+            child: Icon(Icons.arrow_back, color: whiteColor,),
           ),
         ),
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              MyTextWidget(
+                data: "Back to main",
+                size: 12, color: whiteColor,
+              ),
+              SizedBox(width: 130,),
               Row(
                 children: [
                   Icon(Icons.notifications_none_outlined, color: whiteColor,size: 30,),

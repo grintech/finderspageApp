@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:projects/utils/commonWidgets/CommonAppBar.dart';
 import 'package:projects/utils/routes.dart';
 
 class Profile extends StatelessWidget {
@@ -9,17 +10,10 @@ class Profile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          "Profile",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
-        elevation: 0,
-        centerTitle: true,
+      appBar: CommonAppBar(
+        leading: false,
+        centreTxt: true,
+        title: "Profile",
       ),
       body: Column(
         children: [

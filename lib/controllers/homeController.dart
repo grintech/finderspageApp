@@ -14,7 +14,7 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
 
   var currentIndex = 0.obs;
   RxList<UserModel> categoryList=RxList();
-  RxList<ShopModel> shopList=RxList();
+
 
 
   updateIndexValue(value){
@@ -29,9 +29,8 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
   @override
   void onInit() {
     apiProvider = HomeApiProvider();
-    tabController = TabController(length: 4, vsync: this);
+    tabController = TabController(length: 5, vsync: this);
     getHomeCategories();
-    getShopListApi();
     super.onInit();
   }
 
@@ -52,21 +51,7 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
     }
   }
 
-  Future<void> getShopListApi() async {
-    if (await Utils.hasNetwork()) {
-    // Utils.showLoader();
-    var response = await apiProvider.getShopList();
-    // Utils.hideLoader();
-    if (response.success == true) {
-      shopList.addAll(response.data! as Iterable<ShopModel>);
-    }
-     else {
-    handleError(response);
-    }
-    } else {
-    // Utils.showErrorAlert("Please Check Your Internet Connection");
-    }
-  }
+
 
   void handleError(dynamic response) {
     if (response.message != null) {

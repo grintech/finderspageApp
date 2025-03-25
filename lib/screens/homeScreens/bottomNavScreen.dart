@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:projects/postsVideoScreens/postCreateScreen/postCreateScreen.dart';
 import 'package:projects/screens/Events/event_calendar.dart';
+import 'package:projects/screens/Profile/aboutScreen.dart';
 import 'package:projects/screens/Profile/profile.dart';
+import 'package:projects/screens/authScreens/login.dart';
 import 'package:projects/screens/homeScreens/home_page.dart';
 import 'package:projects/screens/homeScreens/notifications.dart';
+import 'package:projects/screens/homeScreens/trendingScreen.dart';
 
 import '../../controllers/homeController.dart';
 
@@ -19,13 +23,14 @@ class BottomNavScreen extends StatelessWidget {
         index: controller.tabIndex.value,
         children: [
           HomePage(),
-          EventCalendar(),
-          Notifications(),
-          Profile()
+          TrendingScreen(),
+          PostCreateScreen(),
+          AboutScreen(),
+          Login(),
         ],
       ),),
       bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(vertical: 8),
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 15),
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border(
@@ -37,7 +42,7 @@ class BottomNavScreen extends StatelessWidget {
         ),
         child: Row(
           mainAxisAlignment:
-          MainAxisAlignment.spaceEvenly,
+          MainAxisAlignment.spaceBetween,
           children: [
             GestureDetector(
               onTap: () {
@@ -69,15 +74,15 @@ class BottomNavScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Image.asset(
-                    'assets/images/calendar-icon.png',
+                    'assets/images/ic_trending.png',
                     color: Colors.black,
-                    height: 20,
-                    width: 20,
+                    height: 25,
+                    width: 25,
                   ),
                   SizedBox(height: 4),
                   Text(
-                    "Calendar",
-                    style: TextStyle(fontSize: 12, color: Colors.black),
+                    "Trending",
+                    style: TextStyle(fontSize: 10, color: Colors.black),
                   ),
                 ],
               ),
@@ -96,29 +101,9 @@ class BottomNavScreen extends StatelessWidget {
               ),
               child: IconButton(
                 icon: Icon(Icons.add, size: 35, color: Colors.white),
-                onPressed: () {},
-              ),
-            ),
-
-            GestureDetector(
-              onTap: () {
-                controller.changeTabIndex(2);
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(
-                    'assets/images/newpost-icon.png',
-                    color: Colors.black,
-                    height: 20,
-                    width: 20,
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    "Create List",
-                    style: TextStyle(fontSize: 12, color: Colors.black),
-                  ),
-                ],
+                onPressed: () {
+                  controller.changeTabIndex(2);
+                },
               ),
             ),
 
@@ -130,14 +115,52 @@ class BottomNavScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Image.asset(
-                    'assets/images/profile-icon.png',
+                    'assets/images/ic_about.png',
+                    color: Colors.black,
+                    height: 25,
+                    width: 25,
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    "About",
+                    style: TextStyle(fontSize: 12, color: Colors.black),
+                  ),
+                ],
+              ),
+            ),
+
+            GestureDetector(
+              onTap: () {
+                controller.changeTabIndex(4);
+              },
+              child:
+              // Column(
+              //   mainAxisSize: MainAxisSize.min,
+              //   children: [
+              //     Image.asset(
+              //       'assets/images/profile-icon.png',
+              //       color: Colors.black,
+              //       height: 25,
+              //       width: 25,
+              //     ),
+              //     SizedBox(height: 4),
+              //     Text(
+              //       "Profile",
+              //       style: TextStyle(fontSize: 12, color: Colors.black),
+              //     ),
+              //   ],
+              // ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset("assets/images/logout-icon.png",
                     color: Colors.black,
                     height: 20,
                     width: 20,
                   ),
                   SizedBox(height: 4),
                   Text(
-                    "Profile",
+                    "Login",
                     style: TextStyle(fontSize: 12, color: Colors.black),
                   ),
                 ],

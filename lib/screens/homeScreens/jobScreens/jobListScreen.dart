@@ -6,24 +6,57 @@ import 'package:projects/utils/routes.dart';
 import 'package:projects/utils/util.dart';
 
 class JobListScreen extends StatelessWidget {
-  const JobListScreen({super.key});
+  JobListScreen({super.key});
+
+  final showSearch = true.obs;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
-        centreTxt: true,
-        title: "Job Opportunities",
+        leading: true,
+        centreTxt: false,
+        title: "",
         widgets: [
           Padding(
-            padding: EdgeInsets.only(right: 24),
-            child: GestureDetector(
-              onTap: () {},
-              child: Image.asset(
-                'assets/images/filter.png',
-                width: 25,
-                height: 25,
+            padding: const EdgeInsets.only(left: 40),
+            child: MyTextWidget(data: "Job Opportunity", size: 16, weight: FontWeight.w600,),
+          ),
+          Spacer(),
+          Container(
+            height: 40,
+            padding: EdgeInsets.symmetric(horizontal: 12,),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset("assets/images/ic_location_white.png", height: 16, width: 13,),
+                SizedBox(width: 8),
+                Text(
+                  "Chicago",
+                  style:TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              showSearch.value = !showSearch.value;
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(left: 12, right: 20),
+              child: Icon(Icons.search, color: fieldBorderColor, size: 26,),
             ),
           ),
         ],
@@ -35,83 +68,36 @@ class JobListScreen extends StatelessWidget {
         },
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20, top: 20),
-              child: Row(
-                children: [
-                  Container(
-                    height: 58,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset("assets/images/ic_location_white.png", height: 16, width: 13,),
-                        SizedBox(width: 8),
-                        Text(
-                          "Chicago",
-                          style:TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
+            Obx(()=> Visibility(
+              visible: !showSearch.value,
+              child: Container(
+                height: 40,
+                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(
+                    color: searchBorderColor,
+                    width: 1,
                   ),
-                  SizedBox(width: 10),
-                  // Search Input
-                  Expanded(
-                    child: Container(
-                      height: 58,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(
-                          color: searchBorderColor,
-                          width: 1,
-                        ),
+                ),
+                child: Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: "Search",
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 10,
                       ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: "Search",
-                                filled: true,
-                                fillColor: Colors.white,
-                                contentPadding: EdgeInsets.symmetric(
-                                  vertical: 18,
-                                  horizontal: 10,
-                                ),
-                                border:
-                                InputBorder.none,
-                              ),
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              right: 10,
-                            ),
-                            child: Icon(Icons.search, color: Color(0xAAA54DB7)),
-                          ),
-                        ],
-                      ),
+                      border: InputBorder.none,
                     ),
+                    style: TextStyle(fontSize: 16),
                   ),
-                ],
+                ),
               ),
-            ),
+            ),),
             Expanded(
               child: GridView.builder(
                 itemCount: 12,
@@ -121,7 +107,7 @@ class JobListScreen extends StatelessWidget {
                       crossAxisCount: 2,
                     mainAxisSpacing: 20,
                     crossAxisSpacing: 20,
-                    childAspectRatio: 0.95
+                    childAspectRatio: 0.92
                   ),
                   itemBuilder: (context, index){
                     return GestureDetector(
@@ -137,7 +123,7 @@ class JobListScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Image.asset("assets/images/image1.png",fit: BoxFit.fill,
-                              height: 120, width: Get.width,),
+                              height: 100, width: Get.width,),
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4),
                               child: MyTextWidget(data: "Remote Senior Financial Analyst Houston", size: 15,

@@ -1,28 +1,27 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:projects/utils/util.dart';
 
-import '../../../utils/colorConstants.dart';
-import '../../../utils/commonWidgets/CommonAppBar.dart';
-import '../../../utils/routes.dart';
+import '../../utils/colorConstants.dart';
+import '../../utils/commonWidgets/CommonAppBar.dart';
+import '../../utils/routes.dart';
+import '../../utils/util.dart';
 
-class EstateListScreen extends StatelessWidget {
-  EstateListScreen({super.key});
+class TrendingScreen extends StatelessWidget {
+  TrendingScreen({super.key});
 
   final showSearch = true.obs;
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
-        leading: true,
         centreTxt: false,
         title: "",
         widgets: [
           Padding(
-            padding: const EdgeInsets.only(left: 40),
-            child: MyTextWidget(data: "Real Estate", size: 18, weight: FontWeight.w600,),
+            padding: const EdgeInsets.only(left: 20),
+            child: MyTextWidget(data: "Trending", size: 18, weight: FontWeight.w600,),
           ),
           Spacer(),
           Container(
@@ -101,56 +100,42 @@ class EstateListScreen extends StatelessWidget {
               ),
             ),),
             Expanded(
-              child: ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index){
-                return GestureDetector(
-                  onTap: () => Get.toNamed(Routes.estateDetail),
-                  child: Container(
-                    padding: EdgeInsets.all(8),
-                    margin: EdgeInsets.only(left: 20, right: 20, bottom: 15),
-                    decoration: BoxDecoration(
-                        border: Border.all(color: fieldBorderColor),
-                        borderRadius: BorderRadius.circular(12)
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.asset("assets/images/image1.png", height: 100, width: 120,),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                MyTextWidget(data: "Model Home For Sale", size: 14, weight: FontWeight.w600,),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      MyTextWidget(data: "4 BHK", size: 14, weight: FontWeight.w500,),
-                                      MyTextWidget(data: "16 Days Ago", size: 14, weight: FontWeight.w500,),
-                                    ],
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    MyTextWidget(data: "\$500.00", size: 12, weight: FontWeight.w500,),
-                                    MyTextWidget(data: "+919417185951", size: 12, weight: FontWeight.w500,),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
+              child: GridView.builder(
+                  itemCount: 12,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  physics: ClampingScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 20,
+                      crossAxisSpacing: 20,
+                      childAspectRatio: 0.92
                   ),
-                );
-              }),
+                  itemBuilder: (context, index){
+                    return GestureDetector(
+                      onTap: () => Get.toNamed(Routes.jobDetail),
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: fieldBorderColor),
+                            borderRadius: BorderRadius.circular(12)
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Image.asset("assets/images/image1.png",fit: BoxFit.fill,
+                              height: 100, width: Get.width,),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              child: MyTextWidget(data: "Remote Senior Financial Analyst Houston", size: 15,
+                                weight: FontWeight.w600, overflow: TextOverflow.ellipsis,),
+                            ),
+                            MyTextWidget(data: "15 Days ago", size: 10, weight: FontWeight.w500,)
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
             )
           ],
         ),

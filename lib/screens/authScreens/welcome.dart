@@ -25,7 +25,7 @@ class _WelcomeState extends State<Welcome> {
       backgroundColor: Colors.black,
       body: Center(
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 68, horizontal: 85),
+          padding: EdgeInsets.symmetric(vertical: 68, horizontal: 65),
           margin: EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -37,10 +37,9 @@ class _WelcomeState extends State<Welcome> {
             children: [
               Text(
                 "Welcome to",
-                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  fontSize: 26,
+                  fontSize: 24,
                   color: Colors.black,
                 ),
               ),

@@ -22,6 +22,7 @@ class EstateDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: CommonAppBar(
         centreTxt: true,
+        leading: true,
         title: "Estate Details",
       ),
       body: SingleChildScrollView(
@@ -124,6 +125,7 @@ class EstateDetailScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(right: 50),
@@ -133,7 +135,7 @@ class EstateDetailScreen extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
-                                    MyTextWidget(data: "Price: ", size: 14, weight: FontWeight.w600,),
+                                    MyTextWidget(data: "Price: ", size: 12, weight: FontWeight.w600,),
                                     MyTextWidget(data: "\$999.00", size: 12, weight: FontWeight.w500,)
                                   ],
                                 ),
@@ -141,14 +143,14 @@ class EstateDetailScreen extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(vertical: 4),
                                   child: Row(
                                     children: [
-                                      MyTextWidget(data: "Garage: ", size: 14, weight: FontWeight.w600,),
+                                      MyTextWidget(data: "Garage: ", size: 12, weight: FontWeight.w600,),
                                       MyTextWidget(data: "4", size: 12, weight: FontWeight.w500,)
                                     ],
                                   ),
                                 ),
                                 Row(
                                   children: [
-                                    MyTextWidget(data: "Units: ", size: 14, weight: FontWeight.w600,),
+                                    MyTextWidget(data: "Units: ", size: 12, weight: FontWeight.w600,),
                                     MyTextWidget(data: "4", size: 12, weight: FontWeight.w500,)
                                   ],
                                 ),
@@ -156,10 +158,16 @@ class EstateDetailScreen extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(vertical: 4),
                                   child: Row(
                                     children: [
-                                      MyTextWidget(data: "Bathroom: ", size: 14, weight: FontWeight.w600,),
+                                      MyTextWidget(data: "Bathroom: ", size: 12, weight: FontWeight.w600,),
                                       MyTextWidget(data: "4", size: 12, weight: FontWeight.w500,)
                                     ],
                                   ),
+                                ),
+                                Row(
+                                  children: [
+                                    MyTextWidget(data: "Posted By: ", size: 12, weight: FontWeight.w600,),
+                                    MyTextWidget(data: "Collin Kendal", size: 12, weight: FontWeight.w500,)
+                                  ],
                                 ),
                               ],
                             ),
@@ -182,12 +190,6 @@ class EstateDetailScreen extends StatelessWidget {
                                       Flexible(child: MyTextWidget(data: "4412 Fair Lakes Ct Fairfax, VA 22033", size: 12, weight: FontWeight.w500,))
                                     ],
                                   ),
-                                ),
-                                Row(
-                                  children: [
-                                    MyTextWidget(data: "Posted By: ", size: 14, weight: FontWeight.w600,),
-                                    MyTextWidget(data: "Collin Kendal", size: 12, weight: FontWeight.w500,)
-                                  ],
                                 ),
                               ],
                             ),
