@@ -1,52 +1,74 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
-class VideoPreviewScreen extends StatefulWidget {
-  final String videoPath;
-  const VideoPreviewScreen({Key? key, required this.videoPath}) : super(key: key);
-
+class VideoPickerScreen extends StatefulWidget {
   @override
-  _VideoPreviewScreenState createState() => _VideoPreviewScreenState();
+  _VideoPickerScreenState createState() => _VideoPickerScreenState();
 }
 
-class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
-  late VideoPlayerController _videoController;
+class _VideoPickerScreenState extends State<VideoPickerScreen> {
+  final ImagePicker _picker = ImagePicker();
+  File? _videoFile;
 
-  @override
-  void initState() {
-    super.initState();
-    _videoController = VideoPlayerController.file(File(widget.videoPath))
-      ..initialize().then((_) {
-        setState(() {});
-        _videoController.play();
+  Future<void> _pickVideo() async {
+    final XFile? pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _videoFile = File(pickedFile.path);
       });
+    }
   }
+  //
+  // Future<void> _recordVideo() async {
+  //   final XFile? recordedFile = await _picker.pickVideo(source: ImageSource.camera);
+  //
+  //   if (recordedFile != null) {
+  //     setState(() {
+  //       _videoFile = File(recordedFile.path);
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Video Preview")),
-      body: Center(
-        child: _videoController.value.isInitialized
-            ? AspectRatio(
-          aspectRatio: _videoController.value.aspectRatio,
-          child: VideoPlayer(_videoController),
-        )
-            : const CircularProgressIndicator(),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _videoController.value.isPlaying ? _videoController.pause() : _videoController.play();
-        },
-        child: Icon(_videoController.value.isPlaying ? Icons.pause : Icons.play_arrow),
+    return GestureDetector(
+      onTap: () {
+        _pickVideo();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+            automaticallyImplyLeading: false,
+            title: Text("Upload Video")),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (_videoFile != null)
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text("Video Selected: ${_videoFile!.path}"),
+              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Video will be uploaded here"),
+                // ElevatedButton.icon(
+                //   onPressed: _pickVideo,
+                //   icon: Icon(Icons.video_library),
+                //   label: Text("Pick Video"),
+                // ),
+                // SizedBox(width: 10),
+                // ElevatedButton.icon(
+                //   onPressed: _recordVideo,
+                //   icon: Icon(Icons.videocam),
+                //   label: Text("Record Video"),
+                // ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _videoController.dispose();
-    super.dispose();
   }
 }

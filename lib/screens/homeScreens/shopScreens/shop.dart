@@ -11,6 +11,7 @@ import 'package:projects/utils/imageViewer.dart';
 import 'package:projects/utils/util.dart';
 
 import '../../../utils/colorConstants.dart';
+import '../../../utils/commonWidgets/CommonAppBar.dart';
 import '../../../utils/routes.dart';
 
 class ShopPage extends StatefulWidget {
@@ -26,51 +27,57 @@ class _ShopPageState extends State<ShopPage> {
 
   final controller = Get.put(ShopController());
 
-
+  final showSearch = true.obs;
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            "Shop Now",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        leading: Padding(
-          padding: EdgeInsets.only(left: 24),
-          child: GestureDetector(
-            onTap: () {
-              Get.back();
-            },
-            child: Image.asset(
-              'assets/images/arrow.png',
-              width: 25,
-              height: 25,
-            ),
-          ),
-        ),
-        actions: [
+      appBar: CommonAppBar(
+        leading: true,
+        centreTxt: false,
+        title: "",
+        widgets: [
           Padding(
-            padding: EdgeInsets.only(right: 24),
-            child: GestureDetector(
-              onTap: () {},
-              child: Image.asset(
-                'assets/images/filter.png',
-                width: 25,
-                height: 25,
+            padding: const EdgeInsets.only(left: 40),
+            child: MyTextWidget(data: "Shop Now", size: 16, weight: FontWeight.w600,),
+          ),
+          Spacer(),
+          Container(
+            height: 40,
+            padding: EdgeInsets.symmetric(horizontal: 12,),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset("assets/images/ic_location_white.png", height: 16, width: 13,),
+                SizedBox(width: 8),
+                Text(
+                  "Chicago",
+                  style:TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              showSearch.value = !showSearch.value;
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(left: 12, right: 20),
+              child: Icon(Icons.search, color: fieldBorderColor, size: 26,),
             ),
           ),
         ],
@@ -80,83 +87,111 @@ class _ShopPageState extends State<ShopPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Row(
-                children: [
-                  Container(
-                    height: 58,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset("assets/images/ic_location_white.png", height: 16, width: 13,),
-                        SizedBox(width: 8),
-                        Text(
-                          "Chicago",
-                          style:TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
+            Obx(()=> Visibility(
+              visible: !showSearch.value,
+              child: Container(
+                height: 40,
+                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(
+                    color: searchBorderColor,
+                    width: 1,
                   ),
-                  SizedBox(width: 10),
-                  // Search Input
-                  Expanded(
-                    child: Container(
-                      height: 58,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(
-                          color: searchBorderColor,
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: "Search",
-                                filled: true,
-                                fillColor: Colors.white,
-                                contentPadding: EdgeInsets.symmetric(
-                                  vertical: 18,
-                                  horizontal: 10,
-                                ),
-                                border:
-                                InputBorder.none,
-                              ),
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              right: 10,
-                            ),
-                            child: Icon(Icons.search, color: Color(0xAAA54DB7)),
-                          ),
-                        ],
-                      ),
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "Search",
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 10,
                     ),
+                    border: InputBorder.none,
                   ),
-                ],
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
-            ),
+            ),),
+            // Padding(
+            //   padding: const EdgeInsets.only(bottom: 20),
+            //   child: Row(
+            //     children: [
+            //       Container(
+            //         height: 58,
+            //         padding: EdgeInsets.symmetric(
+            //           horizontal: 12,
+            //         ),
+            //         decoration: BoxDecoration(
+            //           gradient: LinearGradient(
+            //             colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
+            //             begin: Alignment.topCenter,
+            //             end: Alignment.bottomCenter,
+            //           ),
+            //           borderRadius: BorderRadius.circular(5),
+            //         ),
+            //         child: Row(
+            //           mainAxisSize: MainAxisSize.min,
+            //           children: [
+            //             Image.asset("assets/images/ic_location_white.png", height: 16, width: 13,),
+            //             SizedBox(width: 8),
+            //             Text(
+            //               "Chicago",
+            //               style:TextStyle(
+            //                 color: Colors.white,
+            //                 fontSize: 16,
+            //                 fontWeight: FontWeight.w600,
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //       SizedBox(width: 10),
+            //       // Search Input
+            //       Expanded(
+            //         child: Container(
+            //           height: 58,
+            //           decoration: BoxDecoration(
+            //             color: Colors.white,
+            //             borderRadius: BorderRadius.circular(5),
+            //             border: Border.all(
+            //               color: searchBorderColor,
+            //               width: 1,
+            //             ),
+            //           ),
+            //           child: Row(
+            //             children: [
+            //               Expanded(
+            //                 child: TextField(
+            //                   decoration: InputDecoration(
+            //                     hintText: "Search",
+            //                     filled: true,
+            //                     fillColor: Colors.white,
+            //                     contentPadding: EdgeInsets.symmetric(
+            //                       vertical: 18,
+            //                       horizontal: 10,
+            //                     ),
+            //                     border:
+            //                     InputBorder.none,
+            //                   ),
+            //                   style: TextStyle(fontSize: 16),
+            //                 ),
+            //               ),
+            //               Padding(
+            //                 padding: EdgeInsets.only(
+            //                   right: 10,
+            //                 ),
+            //                 child: Icon(Icons.search, color: Color(0xAAA54DB7)),
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
             Wrap(
               spacing: 8.0,
               runSpacing: 8.0,

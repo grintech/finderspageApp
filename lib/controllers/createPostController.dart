@@ -20,6 +20,7 @@ class CreatePostController extends GetxController {
   Timer? timer;
   final int maxRecordingTime = 15;
 
+
   Future<void> pickImage(ImageSource source) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: source);
@@ -48,6 +49,7 @@ class CreatePostController extends GetxController {
     isCameraInitialized.value = true;
     update();
   }
+
 
   /// Stop Camera when not in use
   Future<void> stopCamera() async {

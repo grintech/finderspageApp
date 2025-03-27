@@ -4,7 +4,7 @@ import 'package:projects/data/apiProvider/homeApiProvider.dart';
 import 'package:projects/data/models/shopModel.dart';
 import 'package:projects/utils/helper/storageHelper.dart';
 
-import '../data/models/userModel.dart';
+import '../data/models/mainHomeModel.dart';
 import '../utils/util.dart';
 
 class HomeController extends GetxController with GetSingleTickerProviderStateMixin{
@@ -13,7 +13,7 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
   late HomeApiProvider apiProvider;
 
   var currentIndex = 0.obs;
-  RxList<UserModel> categoryList=RxList();
+  RxList<MainHomeModel> categoryList=RxList();
 
 
 
@@ -41,7 +41,7 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
     var response = await apiProvider.getHomeList();
     // Utils.hideLoader();
     if (response.success == true) {
-      categoryList.addAll(response.data! as Iterable<UserModel>);
+      categoryList.addAll(response.data! as Iterable<MainHomeModel>);
     }
      else {
     handleError(response);

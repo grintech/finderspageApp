@@ -22,7 +22,7 @@ class PostProfileScreen extends StatelessWidget {
         backgroundColor: blackColor,
         surfaceTintColor: blackColor,
         leading: GestureDetector(
-          onTap: () => Get.offAllNamed(Routes.homeRoute),
+          // onTap: () => Get.offAllNamed(Routes.homeRoute),
           child: Padding(
             padding: const EdgeInsets.only(top: 6, left: 10, bottom: 6),
             child: Image.asset(

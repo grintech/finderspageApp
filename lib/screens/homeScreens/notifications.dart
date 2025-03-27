@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:projects/utils/colorConstants.dart';
 
 class Notifications extends StatelessWidget {
   const Notifications({super.key});
@@ -19,54 +21,24 @@ class Notifications extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         surfaceTintColor: Colors.white, 
-        scrolledUnderElevation:
-            0, 
+        scrolledUnderElevation: 0,
         centerTitle: true,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 24),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Image.asset(
-              'assets/images/arrow.png',
-              width: 25,
-              height: 25,
-            ),
-          ),
+        leading: GestureDetector(
+          onTap: () {
+            Get.back();
+          },
+          child:Icon(Icons.arrow_back_ios, color: fieldBorderColor,)
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 17),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "List",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                ),
-                Text(
-                  "9 Total",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
             Expanded(
               child: ListView.builder(
                 itemCount: 9,
                 physics: ClampingScrollPhysics(),
-                padding: EdgeInsets.only(top: 12),
                 itemBuilder: (context, index) {
                   return Container(
                     height: 55,

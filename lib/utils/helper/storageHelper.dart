@@ -3,6 +3,7 @@ import 'dart:ffi';
 
 import 'package:get_storage/get_storage.dart';
 
+import '../../data/models/mainHomeModel.dart';
 import '../../data/models/userModel.dart';
 
 class StorageHelper{

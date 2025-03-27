@@ -26,24 +26,33 @@ class Postshomescreen extends StatelessWidget {
         backgroundColor: blackColor,
         surfaceTintColor: blackColor,
         leading: GestureDetector(
-          onTap: () => Get.offAllNamed(Routes.homeRoute),
+          // onTap: () => Get.offAllNamed(Routes.homeRoute),
           child: Padding(
             padding: const EdgeInsets.only(top: 6, left: 10, bottom: 6),
-            child: Icon(Icons.arrow_back, color: whiteColor,),
+            child: Image.asset(
+              "assets/images/new_logo.png",
+              height: 50,
+              width: 50,
+            ),
           ),
         ),
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              MyTextWidget(
-                data: "Back to main",
-                size: 12, color: whiteColor,
-              ),
-              SizedBox(width: 130,),
+              // MyTextWidget(
+              //   data: "Back to main",
+              //   size: 12, color: whiteColor,
+              // ),
+              // SizedBox(width: 130,),
               Row(
                 children: [
-                  Icon(Icons.notifications_none_outlined, color: whiteColor,size: 30,),
+                  GestureDetector(
+                    onTap: () {
+                      Get.toNamed(Routes.notificationRoute);
+                    },
+                      child: Icon(Icons.notifications_none_outlined,
+                        color: whiteColor,size: 30,)),
                   Padding(
                     padding: const EdgeInsets.only(left: 15, right: 20),
                     child: Image.asset("assets/images/ic_chat.png", height: 25, width: 25, color: fieldBorderColor,)

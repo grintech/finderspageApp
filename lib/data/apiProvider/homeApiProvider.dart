@@ -6,7 +6,7 @@ import '../../utils/shared/dataResponse.dart';
 import '../../utils/shared/pageResponse.dart';
 import '../Injector.dart';
 import '../apiConstants.dart';
-import '../models/userModel.dart';
+import '../models/mainHomeModel.dart';
 
 class HomeApiProvider{
   late Dio _dio;
@@ -18,7 +18,7 @@ class HomeApiProvider{
   Future<PageResponse> getHomeList() async {
     try {
       Response response = await _dio.get(ApiConstants.homeList, options: Injector.getHeaderToken());
-      var dataResponse = PageResponse<UserModel>.fromJson(response.data, (data) => UserModel.fromJson(data as Map<String, dynamic>));
+      var dataResponse = PageResponse<MainHomeModel>.fromJson(response.data, (data) => MainHomeModel.fromJson(data as Map<String, dynamic>));
       return dataResponse;
     } catch (error) {
       return PageResponse(message: error.toString());

@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:projects/controllers/createPostController.dart';
 import 'package:projects/postsVideoScreens/postCreateScreen/customCameraScreen.dart';
+import 'package:projects/postsVideoScreens/postCreateScreen/videoPreviewScreen.dart';
 import 'package:projects/utils/util.dart';
 
 import '../../utils/colorConstants.dart';
@@ -14,6 +16,8 @@ class PostCreateScreen extends StatelessWidget{
   PostCreateScreen({super.key});
 
   // late CameraHelper cameraHelper;
+  final ImagePicker _picker = ImagePicker();
+  File? _videoFile;
   RxnString imgUrl = RxnString();
   final selected = 0.obs;
   final CreatePostController imagePickerController = Get.put(CreatePostController());
@@ -28,9 +32,13 @@ class PostCreateScreen extends StatelessWidget{
       body: Column(
         children: [
           Expanded(
-            child:Obx(()=> selected.value == 0? Text("hello")
+            child:Obx(()=> selected.value == 0? VideoPickerScreen()
                 :selected.value == 1?CustomCameraScreen()
-                :selected.value == 2?liveWidget() :postWidget(),)
+                :selected.value == 2?GestureDetector(
+              onTap: () {
+                _recordVideo();
+              },
+                child: liveWidget()) :postWidget(),)
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -40,6 +48,7 @@ class PostCreateScreen extends StatelessWidget{
                 GestureDetector(
                     onTap:() {
                       selected.value = 0;
+                      _pickVideo();
                     },
                     child: MyTextWidget(data: "Video",)),
                 GestureDetector(
@@ -50,6 +59,7 @@ class PostCreateScreen extends StatelessWidget{
                 GestureDetector(
                     onTap: () {
                       selected.value = 2;
+                      _recordVideo();
                     },
                     child: MyTextWidget(data: "Live",)),
                 GestureDetector(
@@ -105,7 +115,7 @@ class PostCreateScreen extends StatelessWidget{
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Image.asset("assets/images/ic_upload.png", scale: 2,),
-                        MyTextWidget(data: "upload photos and videos here",)],
+                        MyTextWidget(data: "Upload photos here",)],
                     ),
                   )),
             ),
@@ -124,8 +134,27 @@ class PostCreateScreen extends StatelessWidget{
   }
 
   Widget liveWidget(){
-    return Center(
-      child: MyTextWidget(data: "Coming Soon", size: 20, color: fieldBorderColor, weight: FontWeight.w600,),
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 380),
+        child: MyTextWidget(data: "You can Go Live", size: 20, color: fieldBorderColor, weight: FontWeight.w600,),
+      ),
     );
+  }
+
+  Future<void> _pickVideo() async {
+    final XFile? pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+        _videoFile = File(pickedFile.path);
+    }
+  }
+
+  Future<void> _recordVideo() async {
+    final XFile? recordedFile = await _picker.pickVideo(source: ImageSource.camera);
+
+    if (recordedFile != null) {
+        _videoFile = File(recordedFile.path);
+    }
   }
 }

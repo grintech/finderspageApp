@@ -83,20 +83,18 @@ class EstateListScreen extends StatelessWidget {
                     width: 1,
                   ),
                 ),
-                child: Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: "Search",
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 10,
-                      ),
-                      border: InputBorder.none,
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "Search",
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 10,
                     ),
-                    style: TextStyle(fontSize: 16),
+                    border: InputBorder.none,
                   ),
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
             ),),

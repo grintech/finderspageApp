@@ -81,7 +81,7 @@ class BottomNavScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    "Trending",
+                    "Popular",
                     style: TextStyle(fontSize: 10, color: Colors.black),
                   ),
                 ],

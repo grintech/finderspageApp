@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:projects/controllers/authController.dart';
+import 'package:projects/data/models/userModel.dart';
 import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/commonWidgets/commonButton.dart';
 import 'package:projects/utils/commonWidgets/commonTextField.dart';
@@ -14,11 +16,14 @@ class Login extends StatelessWidget {
   final emailController = TextEditingController();
   final passController = TextEditingController();
 
+  final getxController = Get.put(AuthController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: blackColor,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         // leading: GestureDetector(
         //     onTap: () => Get.back(),
         //     child: Icon(Icons.arrow_back_ios, color: fieldBorderColor,)),
@@ -235,6 +240,10 @@ class Login extends StatelessWidget {
           "Finders Page", "Please Enter Your Password");
       return;
     }
-    Get.offAllNamed(Routes.postsHome);
+    getxController.login(UserModel(
+      email: emailController.text.toString(),
+      password: passController.text.toString()
+    ));
+
   }
 }

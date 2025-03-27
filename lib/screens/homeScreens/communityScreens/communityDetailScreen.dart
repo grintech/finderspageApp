@@ -21,6 +21,7 @@ class CommunityDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
+        leading: true,
         centreTxt: true,
         title: "Community Overview",
       ),

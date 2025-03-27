@@ -7,6 +7,7 @@ class PostsHomeController extends GetxController with GetSingleTickerProviderSta
   late TabController tabController;
 
   var currentIndex = 0.obs;
+  var isVideoScreenActive = false.obs;
 
 
   updateIndexValue(value){
@@ -14,12 +15,14 @@ class PostsHomeController extends GetxController with GetSingleTickerProviderSta
   }
 
 
-  changeTabIndex(int index) {
+  void changeTabIndex(int index) {
+    isVideoScreenActive.value = (index == 1); // Check if VideoFeedScreen is active
     tabIndex.value = index;
   }
 
   @override
   void onInit() {
+    super.onInit();
     tabController = TabController(length: 5, vsync: this);
   }
 
