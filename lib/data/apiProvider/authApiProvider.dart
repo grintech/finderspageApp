@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:projects/data/models/signupModel.dart';
 
 import '../../utils/shared/dataResponse.dart';
 import '../Injector.dart';
@@ -16,16 +19,30 @@ class AuthApiProvider {
   Future<dynamic> signIn(UserModel userModel) async {
     try {
       Response response = await _dio.post(ApiConstants.loginApi, data: userModel);
-      var dataResponse = DataResponse<UserModel>.fromJson(response.data, (data) => UserModel.fromJson(data as Map<String, dynamic>));
+      var dataResponse = DataResponse<UserModel>.fromJson(response.data,
+              (data) => UserModel.fromJson(data as Map<String, dynamic>));
       return dataResponse;
     } catch (error) {
       return DataResponse(message: error.toString());
     }
   }
 
-  Future<dynamic> signUp(UserModel userModel) async {
+
+
+
+  Future<dynamic> signUp(SignupModel userModel) async {
     try {
-      Response response = await _dio.post(ApiConstants.signupApi, data: userModel);
+      Response response = await _dio.post(ApiConstants.signupApi, data: userModel.toJson());
+      var dataResponse = DataResponse<SignupModel>.fromJson(response.data, (data) => SignupModel.fromJson(data as Map<String, dynamic>));
+      return dataResponse;
+    } catch (error) {
+      return DataResponse(message: error.toString());
+    }
+  }
+
+  Future<dynamic> forgot(UserModel userModel) async {
+    try {
+      Response response = await _dio.post(ApiConstants.forgotApi, data: userModel);
       var dataResponse = DataResponse<UserModel>.fromJson(response.data, (data) => UserModel.fromJson(data as Map<String, dynamic>));
       return dataResponse;
     } catch (error) {

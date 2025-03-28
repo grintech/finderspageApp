@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:projects/controllers/authController.dart';
+import 'package:projects/data/models/userModel.dart';
 import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/commonWidgets/commonButton.dart';
 import 'package:projects/utils/commonWidgets/commonTextField.dart';
 import 'package:projects/utils/routes.dart';
 
+import '../../utils/util.dart';
+
 class ForgotPassword extends StatelessWidget {
   ForgotPassword({super.key});
 
   final emailController = TextEditingController();
+  final controller = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
@@ -101,10 +106,12 @@ class ForgotPassword extends StatelessWidget {
                     margin: EdgeInsets.only(bottom: 15),
                     onPressed: () {
                       if(emailController.text.isEmpty){
-                        Get.snackbar(backgroundColor: Color(0xFFDC7228), colorText: whiteColor, "Finders Page", "Please Enter Your Email");
-                        return;
+                        Utils.error("Please enter registered email");
+                      return;
                       }
-                      Get.toNamed(Routes.resetPasswordRoute);
+                      controller.forgot(UserModel(
+                        email: emailController.text
+                      ));
                     },
                     padding: EdgeInsets.symmetric(horizontal: 42, vertical: 10),
                     radius: 50,

@@ -9,6 +9,8 @@ import 'package:projects/utils/commonWidgets/commonButton.dart';
 import 'package:projects/utils/commonWidgets/commonTextField.dart';
 import 'package:projects/utils/routes.dart';
 
+import '../../utils/util.dart';
+
 class Login extends StatelessWidget {
   Login({super.key});
 
@@ -235,9 +237,12 @@ class Login extends StatelessWidget {
       Get.snackbar(backgroundColor: Color(0xFFDC7228), colorText: whiteColor, "Finders Page", "Please Enter Your Email");
       return;
     }
+    if (!Utils.isValidEmail(emailController.text.toString().trim())) {
+      Utils.error("Please enter valid Email");
+      return;
+    }
     if(passController.text.isEmpty){
-      Get.snackbar(backgroundColor: Color(0xFFDC7228), colorText: whiteColor,
-          "Finders Page", "Please Enter Your Password");
+     Utils.error("Please enter password");
       return;
     }
     getxController.login(UserModel(

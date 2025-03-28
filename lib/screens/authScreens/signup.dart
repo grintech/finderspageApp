@@ -2,10 +2,15 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:projects/controllers/authController.dart';
+import 'package:projects/data/models/userModel.dart';
 import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/commonWidgets/commonButton.dart';
 import 'package:projects/utils/commonWidgets/commonTextField.dart';
 import 'package:projects/utils/routes.dart';
+
+import '../../data/models/signupModel.dart';
+import '../../utils/util.dart';
 
 class Signup extends StatelessWidget {
   Signup({super.key});
@@ -14,9 +19,12 @@ class Signup extends StatelessWidget {
   final confPass = true.obs;
 
   final nameController = TextEditingController();
+  final userNameController = TextEditingController();
   final emailController = TextEditingController();
   final passController = TextEditingController();
   final confPassController = TextEditingController();
+
+  final controller = AuthController();
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +87,25 @@ class Signup extends StatelessWidget {
                       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       hint: "Name",
                     ),
-
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20, top: 8),
+                      child: Text(
+                        "Username",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF000000),
+                        ),
+                      ),
+                    ),
+                    CommonTextField(
+                      height: 45,
+                      keyboardAction: TextInputAction.next,
+                      keyboardType: TextInputType.text,
+                      textController: userNameController,
+                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      hint: "Username",
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8),
                       child: Text(
@@ -267,29 +293,35 @@ class Signup extends StatelessWidget {
   }
   void validate(){
     if(emailController.text.isEmpty){
-      Get.snackbar(backgroundColor: Color(0xFFDC7228), colorText: whiteColor, "Finders Page", "Please Enter Your Email");
+      Utils.error("Please enter your email");
+      return;
+    }
+    if (!Utils.isValidEmail(emailController.text.toString().trim())) {
+      Utils.error("Please enter valid Email");
       return;
     }
     if(passController.text.isEmpty){
-      Get.snackbar(backgroundColor: Color(0xFFDC7228), colorText: whiteColor,
-          "Finders Page", "Please Enter Password");
+      Utils.error("Please enter your password");
       return;
     }
     if(confPassController.text.isEmpty){
-      Get.snackbar(backgroundColor: Color(0xFFDC7228), colorText: whiteColor,
-          "Finders Page", "Your password doesn't matched");
+      Utils.error("Password doesn't matched");
       return;
     }
     if(passController.text != confPassController.text){
-      Get.snackbar(backgroundColor: Color(0xFFDC7228), colorText: whiteColor,
-          "Finders Page", "Your password doesn't matched");
+      Utils.error("Password doesn't matched");
       return;
     }
-    if(nameController.text.isEmpty){
-      Get.snackbar(backgroundColor: Color(0xFFDC7228), colorText: whiteColor,
-          "Finders Page", "Please Enter Your Name");
+    if(nameController.text.isEmpty) {
+      Utils.error("Please enter your name");
       return;
     }
-    Get.offAllNamed(Routes.homeRoute);
+    controller.signup(SignupModel(
+      firstName:nameController.text,
+      username: userNameController.text,
+      email: emailController.text,
+      password: passController.text,
+    ));
+
   }
 }

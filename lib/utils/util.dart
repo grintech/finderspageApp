@@ -1,5 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:cooler_alerts/cooler_alerts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:projects/utils/colorConstants.dart';
@@ -103,7 +105,7 @@ class Utils{
   static Future<bool> hasNetwork() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
-      // Utils.showErrorAlert("Check Your Internet Connection");
+      Utils.showErrorAlert("Check Your Internet Connection");
       return false;
     } else {
       return true;
@@ -117,59 +119,59 @@ class Utils{
     return regExp.hasMatch(email);
   }
 
-  // static showErrorAlert(String? error) {
-  //   CoolAlert.show(
-  //     context: Get.context!,
-  //     type: CoolAlertType.error,
-  //     title: 'Error',
-  //     text: _extractText(error),
-  //     confirmBtnColor: fieldBorderColor,
-  //     loopAnimation: false,
-  //     backgroundColor: fieldBorderColor,
-  //   );
-  // }
-  //
-  // static showErrorMsgAlert(String title,String error) {
-  //   CoolAlert.show(
-  //     context: Get.context!,
-  //     type: CoolAlertType.error,
-  //     title: title,
-  //     text: _extractText(error),
-  //     confirmBtnColor: fieldBorderColor,
-  //     loopAnimation: false,
-  //     backgroundColor: fieldBorderColor,
-  //   );
-  // }
-  //
-  // static showSuccessAlert(String message) {
-  //   CoolAlert.show(
-  //     context: Get.context!,
-  //     title: "Success",
-  //     type: CoolAlertType.success,
-  //     text: _extractText(message),
-  //     backgroundColor: fieldBorderColor,
-  //   );
-  // }
-  //
-  // static showInfoAlert(String message,String? title) {
-  //   CoolAlert.show(
-  //     context: Get.context!,
-  //     type: CoolAlertType.warning,
-  //     title: title??"Info",
-  //     text: _extractText(message),
-  //   );
-  // }
-  //
-  // static showLoader({String? msg}) {
-  //   EasyLoading.show(
-  //     maskType: EasyLoadingMaskType.black,
-  //     status: msg ?? "Please Wait...",
-  //     dismissOnTap: false,
-  //   );
-  // }
+  static showErrorAlert(String? error) {
+    CoolerAlerts.show(
+      context: Get.context!,
+      type: CoolAlertType.error,
+      title: 'Error',
+      text: _extractText(error),
+      confirmBtnColor: fieldBorderColor,
+      loopAnimation: false,
+      backgroundColor: fieldBorderColor,
+    );
+  }
+
+  static showErrorMsgAlert(String title,String error) {
+    CoolerAlerts.show(
+      context: Get.context!,
+      type: CoolAlertType.error,
+      title: title,
+      text: _extractText(error),
+      confirmBtnColor: fieldBorderColor,
+      loopAnimation: false,
+      backgroundColor: fieldBorderColor,
+    );
+  }
+
+  static showSuccessAlert(String message) {
+    CoolerAlerts.show(
+      context: Get.context!,
+      title: "Success",
+      type: CoolAlertType.success,
+      text: _extractText(message),
+      backgroundColor: fieldBorderColor,
+    );
+  }
+
+  static showInfoAlert(String message,String? title) {
+    CoolerAlerts.show(
+      context: Get.context!,
+      type: CoolAlertType.warning,
+      title: title??"Info",
+      text: _extractText(message),
+    );
+  }
+
+  static showLoader({String? msg}) {
+    EasyLoading.show(
+      maskType: EasyLoadingMaskType.clear,
+      status: msg ?? "",
+      dismissOnTap: false,
+    );
+  }
 
   static Future hideLoader() async {
-    // return await EasyLoading.dismiss();
+    return await EasyLoading.dismiss();
   }
 
   static String _extractText(String? message) {

@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_file.dart';
 import 'package:projects/utils/colorConstants.dart';
@@ -13,12 +15,33 @@ Future<void> main() async {
   HttpOverrides.global = MyHttpOverrides();
   await StorageHelper.init();
   String initialRoute = await findInitialRoute();
-  runApp(MyApp(initialRoute));
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
+      .then((value) => runApp(MyApp(initialRoute)));
+  configLoading();
 }
 
 Future<String> findInitialRoute() async{
   String initialRoute = Routes.welcome;
   return initialRoute;
+}
+
+void configLoading() {
+  EasyLoading.instance
+    ..displayDuration = const Duration(milliseconds: 500)
+    ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+    ..loadingStyle = EasyLoadingStyle.custom
+    ..indicatorSize = 65.0
+    ..radius = 12.0
+    ..progressColor = purpleColor
+    ..backgroundColor = Color(0xFFFFFF)
+    ..indicatorColor = purpleColor
+    ..textColor = purpleColor
+    ..textStyle = const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)
+    ..maskColor = Color(0xFFFFFF)
+    ..textPadding = const EdgeInsets.only(bottom: 20)
+    ..contentPadding = const EdgeInsets.symmetric(horizontal: 20, vertical: 18)
+    ..userInteractions = false
+    ..dismissOnTap = false;
 }
 
 
@@ -38,6 +61,13 @@ class MyApp extends StatelessWidget {
         fontFamily: "Montserrat",
         scaffoldBackgroundColor: whiteColor
       ),
+      builder: EasyLoading.init(builder: (BuildContext? context, Widget? child) {
+        final MediaQueryData data = MediaQuery.of(context!);
+        return MediaQuery(
+          data: data.copyWith(textScaleFactor: 1.0),
+          child: child ?? Container(),
+        );
+      }),
       navigatorObservers: [ClearFocusOnPush()],
       initialRoute: Routes.welcome,
       onGenerateRoute: RouteGenerator.generateRoute,
