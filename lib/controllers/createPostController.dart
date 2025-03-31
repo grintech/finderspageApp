@@ -18,8 +18,10 @@ class CreatePostController extends GetxController {
   RxString recordedVideoPath = ''.obs;
   RxBool isCameraInitialized = false.obs;
   RxBool isFrontCamera = false.obs;
+  RxBool isFlash = false.obs;
 
   RxInt recordingSeconds = 0.obs; // Timer counter
+  FlashMode _flashMode = FlashMode.off;
   Timer? timer;
   final int maxRecordingTime = 15;
 
@@ -91,6 +93,8 @@ class CreatePostController extends GetxController {
       }
     });
   }
+
+
   ///Select gallery videos
   Future<void> pickVideo() async {
     final XFile? pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
@@ -110,6 +114,19 @@ class CreatePostController extends GetxController {
     await cameraController!.initialize();
     isCameraInitialized.value = true;
     update();
+  }
+
+
+  ///toggle flash
+  void toggleFlash() {
+      if (_flashMode == FlashMode.off) {
+        _flashMode = FlashMode.torch;
+        isFlash.value = !isFlash.value;
+      } else {
+        _flashMode = FlashMode.off;
+      }
+      cameraController?.setFlashMode(_flashMode);
+
   }
 
   /// Capture Photo

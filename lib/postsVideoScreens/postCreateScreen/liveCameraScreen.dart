@@ -24,7 +24,7 @@ class LiveCameraScreen extends StatelessWidget {
             CameraPreview(controller.cameraController!),
             Positioned(
               right: 10,
-                top: 80,
+                top: 120,
                 child: Column(
               children: [
                 GestureDetector(
@@ -32,7 +32,18 @@ class LiveCameraScreen extends StatelessWidget {
                     controller.switchCamera();
                   },
                     child: Image.asset("assets/images/switch_camera.png",
-                      scale: 12, color: whiteColor,))
+                      scale: 12, color: whiteColor,)),
+                GestureDetector(
+                  onTap: controller.toggleFlash,
+                    child: controller.isFlash.value
+                        ?Padding(
+                          padding: const EdgeInsets.only(top: 18),
+                          child: Icon(Icons.flash_off, color: whiteColor, size: 30,),
+                        )
+                        :Padding(
+                      padding: const EdgeInsets.only(top: 18),
+                          child: Icon(Icons.flash_on, color: whiteColor, size: 30,),
+                        ))
               ],
             )),
 
@@ -48,16 +59,19 @@ class LiveCameraScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: controller.toggleRecording,
                     child: Container(
-                      child: Container(
-                        height: 40, width: 40,
+                      height: controller.isRecording.value?70:60, width: controller.isRecording.value?70:60,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color:controller.isRecording.value ? Colors.red : Colors.white, width: 3),
+                      ),
+                      child: controller.isRecording.value
+                          ?Icon(Icons.stop, size: 60, color: Colors.red,)
+                          :Container(height: 40, width: 40,
+                        margin: EdgeInsets.all(controller.isRecording.value?12:6),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color:controller.isRecording.value ? Colors.red : Colors.black, width: 6),
-                          color: controller.isRecording.value ? Colors.red : Colors.white,
-                        ),
-                        child: Icon(
-                          controller.isRecording.value ? Icons.stop : Icons.fiber_manual_record,
-                          color: Colors.black,
+                          border: Border.all(color:Colors.red, width: 6),
+                          color:  Colors.red,
                         ),
                       ),
                     ),

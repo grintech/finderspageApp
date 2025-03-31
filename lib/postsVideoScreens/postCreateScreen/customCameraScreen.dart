@@ -54,7 +54,7 @@ class CustomCameraScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // Select Video from Gallery
+                  //Select Video from Gallery
                   FloatingActionButton(
                     onPressed: controller.pickVideo,
                     backgroundColor: Colors.white,
@@ -62,7 +62,7 @@ class CustomCameraScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Icon(Icons.add, color: Colors.black),
-                        MyTextWidget(data: "Add", size: 12,)
+                        MyTextWidget(data: "Add", size: 10,)
                       ],
                     ),
                   ),
