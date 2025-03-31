@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:projects/controllers/createPostController.dart';
 import 'package:projects/postsVideoScreens/postCreateScreen/customCameraScreen.dart';
+import 'package:projects/postsVideoScreens/postCreateScreen/liveCameraScreen.dart';
 import 'package:projects/postsVideoScreens/postCreateScreen/videoPreviewScreen.dart';
 import 'package:projects/utils/util.dart';
 
@@ -34,11 +35,7 @@ class PostCreateScreen extends StatelessWidget{
           Expanded(
             child:Obx(()=> selected.value == 0? VideoPickerScreen()
                 :selected.value == 1?CustomCameraScreen()
-                :selected.value == 2?GestureDetector(
-              onTap: () {
-                _recordVideo();
-              },
-                child: liveWidget()) :postWidget(),)
+                :selected.value == 2?LiveCameraScreen() :postWidget(),)
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -59,7 +56,7 @@ class PostCreateScreen extends StatelessWidget{
                 GestureDetector(
                     onTap: () {
                       selected.value = 2;
-                      _recordVideo();
+                      // _recordVideo();
                     },
                     child: MyTextWidget(data: "Live",)),
                 GestureDetector(
@@ -134,11 +131,9 @@ class PostCreateScreen extends StatelessWidget{
   }
 
   Widget liveWidget(){
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 380),
-        child: MyTextWidget(data: "You can Go Live", size: 20, color: fieldBorderColor, weight: FontWeight.w600,),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(top: 380),
+      child: MyTextWidget(data: "You can Go Live", size: 20, color: fieldBorderColor, weight: FontWeight.w600,),
     );
   }
 

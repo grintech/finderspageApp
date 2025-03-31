@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -106,7 +107,18 @@ class PostProfileScreen extends StatelessWidget {
                    Text("Blocked User"),
                  ],
                ),),
-               PopupMenuItem(value: 9,child: Row(
+               PopupMenuItem(value: 9,
+                 onTap: () {
+                   selectAccount();
+                 },
+                 child: Row(
+                   children: [
+                     Icon(CupertinoIcons.person, color: Colors.black, size: 25,),
+                     SizedBox(width: 10,),
+                     Text("Switch Accounts"),
+                   ],
+                 ),),
+               PopupMenuItem(value: 10,child: Row(
                  children: [
                    Image.asset("assets/images/ic_settings.png", scale: 22,),
                    SizedBox(width: 10,),
@@ -568,7 +580,6 @@ class PostProfileScreen extends StatelessWidget {
         });
   }
 
-
   void selectProfileImage(){
     showModalBottomSheet(
         isDismissible: true,
@@ -592,6 +603,39 @@ class PostProfileScreen extends StatelessWidget {
                       Get.back();
                     },
                     child: Icon(Icons.perm_media_outlined, color: Colors.white,))
+              ],
+            ),
+          );
+        });
+  }
+
+  void selectAccount(){
+    showModalBottomSheet(
+        context: Get.context!,
+        builder: (BuildContext context){
+          return SizedBox(
+            height: 140,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: MyTextWidget(data: "Add Account",
+                    size: 15, color: blackColor, weight: FontWeight.w600,),
+                ),
+                Divider(thickness: 0.5, height: 1, color: CupertinoColors.systemGrey2,),
+                GestureDetector(
+                    onTap: () {
+                      Get.back();
+                      Get.toNamed(Routes.loginRoute, arguments: "profile");
+                    },
+                    child: MyTextWidget(data: "Login to Existing Account",size: 14, weight: FontWeight.w500, color: fieldBorderColor,)),
+                SizedBox(height: 10,),
+                GestureDetector(
+                    onTap: () {
+                      Get.back();
+                      Get.toNamed(Routes.signupRoute, arguments: "profile");
+                    },
+                    child: MyTextWidget(data: "Create New Account",size: 14, weight: FontWeight.w500, color: fieldBorderColor,))
               ],
             ),
           );

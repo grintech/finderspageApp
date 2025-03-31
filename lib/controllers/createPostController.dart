@@ -9,6 +9,9 @@ import 'package:path_provider/path_provider.dart';
 class CreatePostController extends GetxController {
   var selectedImagePath = ''.obs;
 
+  final ImagePicker _picker = ImagePicker();
+  File? _videoFile;
+
   CameraController? cameraController;
   late List<CameraDescription> cameras;
   RxBool isRecording = false.obs;
@@ -87,6 +90,14 @@ class CreatePostController extends GetxController {
         await stopRecording();
       }
     });
+  }
+  ///Select gallery videos
+  Future<void> pickVideo() async {
+    final XFile? pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      _videoFile = File(pickedFile.path);
+    }
   }
 
   /// Switch between front and back camera
