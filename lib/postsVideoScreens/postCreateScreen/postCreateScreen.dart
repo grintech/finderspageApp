@@ -7,29 +7,35 @@ import 'package:image_picker/image_picker.dart';
 import 'package:projects/controllers/createPostController.dart';
 import 'package:projects/postsVideoScreens/postCreateScreen/customCameraScreen.dart';
 import 'package:projects/postsVideoScreens/postCreateScreen/videoPreviewScreen.dart';
+import 'package:projects/screens/authScreens/login.dart';
 import 'package:projects/utils/util.dart';
 
 import '../../utils/colorConstants.dart';
 import '../../utils/commonWidgets/commonButton.dart';
 
 class PostCreateScreen extends StatelessWidget{
-  PostCreateScreen({super.key});
+  PostCreateScreen({super.key, required this.main});
 
   // late CameraHelper cameraHelper;
   final ImagePicker _picker = ImagePicker();
   File? _videoFile;
   RxnString imgUrl = RxnString();
   final selected = 0.obs;
+  final bool? main;
   final CreatePostController imagePickerController = Get.put(CreatePostController());
 
   @override
   Widget build(BuildContext context) {
     // cameraHelper = CameraHelper(this);
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 0,
-      ),
-      body: Column(
+      // appBar: AppBar(
+      //   toolbarHeight: 0,
+      // ),
+      body:
+      main!
+          ?Expanded(child: Login(from: "welcome"))
+          :
+      Column(
         children: [
           Expanded(
             child:Obx(()=> selected.value == 0? VideoPickerScreen()

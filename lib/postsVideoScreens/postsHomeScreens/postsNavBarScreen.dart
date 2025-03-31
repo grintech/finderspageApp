@@ -25,7 +25,7 @@ class PostsNavBarScreen extends StatelessWidget {
         children: [
           Postshomescreen(),
           VideoFeedScreen(),
-          PostCreateScreen(),
+          PostCreateScreen(main: false,),
           PostSearchScreen(),
           PostProfileScreen()
         ],

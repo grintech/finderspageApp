@@ -24,8 +24,9 @@ class BottomNavScreen extends StatelessWidget {
         children: [
           HomePage(),
           TrendingScreen(),
-          PostCreateScreen(),
-          AboutScreen(),
+          PostCreateScreen(main: true,),
+          Login(from: 'welcome',),
+          // AboutScreen(),
           // Profile()
           Login(from: 'welcome',),
         ],
@@ -83,7 +84,7 @@ class BottomNavScreen extends StatelessWidget {
                   SizedBox(height: 4),
                   Text(
                     "Popular",
-                    style: TextStyle(fontSize: 10, color: Colors.black),
+                    style: TextStyle(fontSize: 12, color: Colors.black),
                   ),
                 ],
               ),
@@ -118,13 +119,14 @@ class BottomNavScreen extends StatelessWidget {
                   Image.asset(
                     'assets/images/ic_about.png',
                     color: Colors.black,
-                    height: 25,
-                    width: 25,
+                    height: 22,
+                    width: 22,
                   ),
                   SizedBox(height: 4),
                   Text(
-                    "About",
-                    style: TextStyle(fontSize: 12, color: Colors.black),
+                    "Posts\n/Videos",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 11, color: Colors.black),
                   ),
                 ],
               ),
