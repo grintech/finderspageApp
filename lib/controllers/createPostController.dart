@@ -16,6 +16,9 @@ class CreatePostController extends GetxController {
   RxBool isCameraInitialized = false.obs;
   RxBool isFrontCamera = false.obs;
 
+  final ImagePicker _picker = ImagePicker();
+  File? _videoFile;
+
   RxInt recordingSeconds = 0.obs; // Timer counter
   Timer? timer;
   final int maxRecordingTime = 15;
@@ -131,6 +134,15 @@ class CreatePostController extends GetxController {
       recordedVideoPath.value = videoPath;
     } catch (e) {
       print("Error starting video recording: $e");
+    }
+  }
+
+  ///Select Video
+  Future<void> pickVideo() async {
+    final XFile? pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      _videoFile = File(pickedFile.path);
     }
   }
 

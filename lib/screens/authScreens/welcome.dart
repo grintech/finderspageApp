@@ -14,7 +14,7 @@ class _WelcomeState extends State<Welcome> {
   void initState() {
     super.initState();
     Future.delayed(Duration(seconds: 3), () {
-      Get.toNamed(Routes.homeRoute);
+      Get.offAllNamed(Routes.homeRoute);
     });
   }
 

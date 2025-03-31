@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:projects/controllers/createPostController.dart';
+import 'package:projects/utils/util.dart';
 
 
 class CustomCameraScreen extends StatelessWidget {
@@ -53,6 +54,19 @@ class CustomCameraScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  //Select Video from Gallery
+                  FloatingActionButton(
+                    onPressed: controller.pickVideo,
+                    backgroundColor: Colors.white,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.add, color: Colors.black),
+                        MyTextWidget(data: "Add", size: 10,)
+                      ],
+                    ),
+                  ),
+
                   // Switch Camera Button
                   FloatingActionButton(
                     onPressed: controller.switchCamera,

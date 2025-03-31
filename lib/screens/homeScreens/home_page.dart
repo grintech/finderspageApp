@@ -212,7 +212,7 @@ class HomePage extends StatelessWidget {
                            Get.toNamed(Routes.jobList);
                            break;
                          case 5:
-                           Get.toNamed(Routes.postsHome);
+                           Get.toNamed(Routes.loginRoute, arguments: "home");
                            break;
                          case 6:
                            Get.toNamed(Routes.estateList);

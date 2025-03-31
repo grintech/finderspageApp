@@ -41,7 +41,7 @@ class PostCreateScreen extends StatelessWidget{
                 child: liveWidget()) :postWidget(),)
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -50,39 +50,26 @@ class PostCreateScreen extends StatelessWidget{
                       selected.value = 0;
                       _pickVideo();
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: MyTextWidget(data: "Video",),
-                    )),
+                    child: MyTextWidget(data: "Video",)),
                 GestureDetector(
                     onTap: () {
                       selected.value = 1;
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: MyTextWidget(data: "Short",),
-                    )),
+                    child: MyTextWidget(data: "Short",)),
                 GestureDetector(
                     onTap: () {
                       selected.value = 2;
                       _recordVideo();
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: MyTextWidget(data: "Live",),
-                    )),
+                    child: MyTextWidget(data: "Live",)),
                 GestureDetector(
                     onTap: () {
                       selected.value = 3;
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: MyTextWidget(data: "Post",),
-                    )),
+                    child: MyTextWidget(data: "Post",)),
               ],
             ),
           )
-
         ],
       ),
     );
@@ -147,11 +134,9 @@ class PostCreateScreen extends StatelessWidget{
   }
 
   Widget liveWidget(){
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 380),
-        child: MyTextWidget(data: "You can Go Live", size: 20, color: fieldBorderColor, weight: FontWeight.w600,),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(top: 380),
+      child: MyTextWidget(data: "You can Go Live", size: 20, color: fieldBorderColor, weight: FontWeight.w600,),
     );
   }
 
@@ -166,8 +151,8 @@ class PostCreateScreen extends StatelessWidget{
   Future<void> _recordVideo() async {
     final XFile? recordedFile = await _picker.pickVideo(source: ImageSource.camera);
 
-    if (recordedFile != null) {
-        _videoFile = File(recordedFile.path);
-    }
+    // if (recordedFile != null) {
+    //     _videoFile = File(recordedFile.path);
+    // }
   }
 }
