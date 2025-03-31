@@ -35,10 +35,10 @@ class RouteGenerator{
         widgetScreen = Welcome();
         break;
       case Routes.loginRoute:
-        widgetScreen = Login();
+        widgetScreen = Login(from: args as String,);
         break;
       case Routes.signupRoute:
-        widgetScreen = Signup();
+        widgetScreen = Signup(from: args as String,);
         break;
       case Routes.forgetPasswordRoute:
         widgetScreen = ForgotPassword();

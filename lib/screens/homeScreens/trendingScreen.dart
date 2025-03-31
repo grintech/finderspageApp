@@ -21,7 +21,7 @@ class TrendingScreen extends StatelessWidget {
         widgets: [
           Padding(
             padding: const EdgeInsets.only(left: 20),
-            child: MyTextWidget(data: "Trending", size: 18, weight: FontWeight.w600,),
+            child: MyTextWidget(data: "Popular", size: 18, weight: FontWeight.w600,),
           ),
           Spacer(),
           Container(

@@ -26,7 +26,8 @@ class BottomNavScreen extends StatelessWidget {
           TrendingScreen(),
           PostCreateScreen(),
           AboutScreen(),
-          Login(),
+          // Profile()
+          Login(from: 'welcome',),
         ],
       ),),
       bottomNavigationBar: Container(

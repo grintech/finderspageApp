@@ -10,11 +10,13 @@ import 'package:projects/utils/commonWidgets/commonTextField.dart';
 import 'package:projects/utils/routes.dart';
 
 import '../../data/models/signupModel.dart';
+import '../../utils/commonWidgets/CommonAppBar.dart';
 import '../../utils/util.dart';
 
 class Signup extends StatelessWidget {
-  Signup({super.key});
+  Signup({super.key, required this.from});
 
+  final String from;
   final showPass = true.obs;
   final confPass = true.obs;
 
@@ -30,6 +32,16 @@ class Signup extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+      appBar: from == "login"?AppBar(
+        automaticallyImplyLeading: false,
+        // leading: GestureDetector(
+        //     onTap: () => Get.back(),
+        //     child: Icon(Icons.arrow_back_ios, color: fieldBorderColor,)),
+        backgroundColor: blackColor,
+      ):CommonAppBar(
+        leading: true,
+        background: blackColor,
+      ),
       body: SafeArea(
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
@@ -316,12 +328,15 @@ class Signup extends StatelessWidget {
       Utils.error("Please enter your name");
       return;
     }
-    controller.signup(SignupModel(
-      firstName:nameController.text,
-      username: userNameController.text,
-      email: emailController.text,
-      password: passController.text,
-    ));
+
+    Get.offAllNamed(Routes.postsHome);
+
+    // controller.signup(SignupModel(
+    //   firstName:nameController.text,
+    //   username: userNameController.text,
+    //   email: emailController.text,
+    //   password: passController.text,
+    // ));
 
   }
 }

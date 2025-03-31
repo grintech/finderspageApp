@@ -26,14 +26,10 @@ class Postshomescreen extends StatelessWidget {
         backgroundColor: blackColor,
         surfaceTintColor: blackColor,
         leading: GestureDetector(
-          // onTap: () => Get.offAllNamed(Routes.homeRoute),
+          onTap: () => Get.offAllNamed(Routes.homeRoute),
           child: Padding(
             padding: const EdgeInsets.only(top: 6, left: 10, bottom: 6),
-            child: Image.asset(
-              "assets/images/new_logo.png",
-              height: 50,
-              width: 50,
-            ),
+            child: Icon(Icons.arrow_back_ios, color: fieldBorderColor,)
           ),
         ),
         actions: [

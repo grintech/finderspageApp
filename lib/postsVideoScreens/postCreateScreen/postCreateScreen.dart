@@ -41,7 +41,7 @@ class PostCreateScreen extends StatelessWidget{
                 child: liveWidget()) :postWidget(),)
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -50,26 +50,39 @@ class PostCreateScreen extends StatelessWidget{
                       selected.value = 0;
                       _pickVideo();
                     },
-                    child: MyTextWidget(data: "Video",)),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: MyTextWidget(data: "Video",),
+                    )),
                 GestureDetector(
                     onTap: () {
                       selected.value = 1;
                     },
-                    child: MyTextWidget(data: "Short",)),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: MyTextWidget(data: "Short",),
+                    )),
                 GestureDetector(
                     onTap: () {
                       selected.value = 2;
                       _recordVideo();
                     },
-                    child: MyTextWidget(data: "Live",)),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: MyTextWidget(data: "Live",),
+                    )),
                 GestureDetector(
                     onTap: () {
                       selected.value = 3;
                     },
-                    child: MyTextWidget(data: "Post",)),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: MyTextWidget(data: "Post",),
+                    )),
               ],
             ),
           )
+
         ],
       ),
     );

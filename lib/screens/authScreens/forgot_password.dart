@@ -109,9 +109,10 @@ class ForgotPassword extends StatelessWidget {
                         Utils.error("Please enter registered email");
                       return;
                       }
-                      controller.forgot(UserModel(
-                        email: emailController.text
-                      ));
+                      Get.offAllNamed(Routes.loginRoute);
+                      // controller.forgot(UserModel(
+                      //   email: emailController.text
+                      // ));
                     },
                     padding: EdgeInsets.symmetric(horizontal: 42, vertical: 10),
                     radius: 50,

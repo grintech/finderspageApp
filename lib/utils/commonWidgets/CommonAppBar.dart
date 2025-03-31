@@ -4,7 +4,7 @@ import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/util.dart';
 
 class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final Color? backgroundColor = Colors.red;
+  final Color? background;
   final String? title;
   final AppBar? appBar;
   final bool? centreTxt;
@@ -13,7 +13,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   /// you can add more fields that meet your needs
 
-  const CommonAppBar({super.key, this.title, this.appBar, this.widgets, this.centreTxt, this.leading});
+  const CommonAppBar({super.key, this.title, this.appBar, this.widgets, this.centreTxt, this.leading, this.background});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
           onTap: () => Get.back(),
           child: Icon(Icons.arrow_back_ios, color: fieldBorderColor,)):SizedBox(),
       title: MyTextWidget(data:title??"", size: 18, weight: FontWeight.w600, color: blackColor,),
-      backgroundColor: whiteColor,
+      backgroundColor: background??whiteColor,
       actions: widgets,
     );
   }

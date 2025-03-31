@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:projects/controllers/authController.dart';
 import 'package:projects/data/models/userModel.dart';
 import 'package:projects/utils/colorConstants.dart';
+import 'package:projects/utils/commonWidgets/CommonAppBar.dart';
 import 'package:projects/utils/commonWidgets/commonButton.dart';
 import 'package:projects/utils/commonWidgets/commonTextField.dart';
 import 'package:projects/utils/routes.dart';
@@ -12,9 +14,10 @@ import 'package:projects/utils/routes.dart';
 import '../../utils/util.dart';
 
 class Login extends StatelessWidget {
-  Login({super.key});
+  Login({super.key, required this.from});
 
   final showPass = true.obs;
+  final String from;
   final emailController = TextEditingController();
   final passController = TextEditingController();
 
@@ -24,12 +27,15 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: blackColor,
-      appBar: AppBar(
+      appBar: from == "welcome"?AppBar(
         automaticallyImplyLeading: false,
         // leading: GestureDetector(
         //     onTap: () => Get.back(),
         //     child: Icon(Icons.arrow_back_ios, color: fieldBorderColor,)),
         backgroundColor: blackColor,
+      ):CommonAppBar(
+        leading: true,
+        background: blackColor,
       ),
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
@@ -146,7 +152,7 @@ class Login extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Get.toNamed(Routes.signupRoute);
+                      Get.toNamed(Routes.signupRoute, arguments: "login");
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(top: 20, bottom: 10),
@@ -245,10 +251,13 @@ class Login extends StatelessWidget {
      Utils.error("Please enter password");
       return;
     }
-    getxController.login(UserModel(
-      email: emailController.text.toString(),
-      password: passController.text.toString()
-    ));
+
+    Get.offAllNamed(Routes.postsHome);
+
+    // getxController.login(UserModel(
+    //   email: emailController.text.toString(),
+    //   password: passController.text.toString()
+    // ));
 
   }
 }
