@@ -27,13 +27,12 @@ class AuthApiProvider {
     }
   }
 
-
-
-
-  Future<dynamic> signUp(SignupModel userModel) async {
+  Future<dynamic> signUp(UserModel userModel) async {
     try {
-      Response response = await _dio.post(ApiConstants.signupApi, data: userModel.toJson());
-      var dataResponse = DataResponse<SignupModel>.fromJson(response.data, (data) => SignupModel.fromJson(data as Map<String, dynamic>));
+      Response response = await _dio.post(ApiConstants.signupApi,
+          data: userModel);
+      var dataResponse = DataResponse<UserModel>.fromJson(
+          response.data, (data) => UserModel.fromJson(data as Map<String, dynamic>));
       return dataResponse;
     } catch (error) {
       return DataResponse(message: error.toString());
@@ -49,4 +48,6 @@ class AuthApiProvider {
       return DataResponse(message: error.toString());
     }
   }
+
+
 }

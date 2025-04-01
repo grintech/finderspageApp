@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,7 +23,23 @@ class LiveCameraScreen extends StatelessWidget {
 
         return Stack(
           children: [
-            CameraPreview(controller.cameraController!),
+            controller.isCameraOn.value &&
+                controller.cameraController?.value.isInitialized == true?
+            SizedBox(
+                height: Get.height,
+                child: CameraPreview(controller.cameraController!)):
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+              child: Container(
+                color: Colors.black.withOpacity(0.3), // Semi-transparent overlay
+                child: Center(
+                  child: Text(
+                    "Camera Off",
+                    style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
             Positioned(
               right: 10,
                 top: 120,
@@ -38,12 +56,20 @@ class LiveCameraScreen extends StatelessWidget {
                     child: controller.isFlash.value
                         ?Padding(
                           padding: const EdgeInsets.only(top: 18),
-                          child: Icon(Icons.flash_off, color: whiteColor, size: 30,),
+                          child: Icon(Icons.flash_off_outlined, color: whiteColor, size: 30,),
                         )
                         :Padding(
                       padding: const EdgeInsets.only(top: 18),
-                          child: Icon(Icons.flash_on, color: whiteColor, size: 30,),
-                        ))
+                          child: Icon(Icons.flash_on_outlined, color: whiteColor, size: 30,),
+                        )),
+                Obx(()=>GestureDetector(
+                    onTap: controller.stopVideo,
+                    child: controller.isCameraOn.value
+                        ?Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(Icons.videocam_outlined, color: whiteColor,),
+                        )
+                        :Icon(Icons.videocam_off_outlined, color: whiteColor,)))
               ],
             )),
 

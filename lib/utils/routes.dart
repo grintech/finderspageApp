@@ -23,4 +23,5 @@ class Routes {
 
   //Posts Screens
   static const String postsHome = "/postsHome";
+  static const String postsSetting = "/postsSetting";
 }

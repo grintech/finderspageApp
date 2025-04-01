@@ -21,6 +21,7 @@ import 'package:projects/screens/homeScreens/shopScreens/shop_single.dart';
 import 'package:projects/utils/commonWidgets/defaultScreen.dart';
 import 'package:projects/utils/routes.dart';
 
+import '../postsVideoScreens/postsProfileScreens/settingScreens/settingScreen.dart';
 import '../screens/authScreens/welcome.dart';
 import '../screens/homeScreens/estateScreens/estateDetailScreen.dart';
 import '../screens/homeScreens/estateScreens/estateListScreen.dart';
@@ -96,6 +97,9 @@ class RouteGenerator{
         //Posts Screens
       case Routes.postsHome:
         widgetScreen = PostsNavBarScreen();
+        break;
+      case Routes.postsSetting:
+        widgetScreen = PostsSettingScreen();
         break;
       default:
         widgetScreen = _errorRoute();

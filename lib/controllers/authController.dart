@@ -32,7 +32,7 @@ class AuthController extends GetxController{
           userModel = response.data as UserModel;
           storageHelper.saveUserModel(userModel);
           // storageHelper.saveUserType(userModel.userType);
-          storageHelper.saveUserToken(userModel.token);
+          // storageHelper.saveUserToken(userModel.token);
           // storageHelper.saveUserId(userModel.id);
           Get.offAllNamed(Routes.postsHome);
         }
@@ -44,17 +44,17 @@ class AuthController extends GetxController{
     }
   }
 
-  Future<void> signup(SignupModel model)async{
+  Future<void> signup(UserModel model)async{
     if(await Utils.hasNetwork()){
       Utils.showLoader();
       var res= await _authApiProvider.signUp(model);
       Utils.hideLoader();
       var response = res as DataResponse;
       if(response.success == true){
-        var userModel = SignupModel();
+        var userModel = UserModel();
         if(response.data != null){
-          userModel = response.data as SignupModel;
-          storageHelper.saveUserToken(userModel.token);
+          userModel = response.data as UserModel;
+          // storageHelper.saveUserToken(userModel.token);
           Get.offAllNamed(Routes.postsHome);
         }
       }else{

@@ -1,54 +1,93 @@
-class SignupModel{
+class SignupModel {
+  bool? success;
+  String? message;
+  UserData? data;
+
+  SignupModel({this.success, this.message, this.data});
+
+  SignupModel.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
+    message = json['message'];
+    data = json['data'] != null ? UserData.fromJson(json['data']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['success'] = success;
+    data['message'] = message;
+    if (this.data != null) {
+      data['data'] = this.data!.toJson();
+    }
+    return data;
+  }
+}
+
+class UserData {
+  SignupUser? user;
+  String? token;
+
+  UserData({this.user, this.token});
+
+  UserData.fromJson(Map<String, dynamic> json) {
+    user = json['user'] != null ? SignupUser.fromJson(json['user']) : null;
+    token = json['token'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (user != null) {
+      data['user'] = user!.toJson();
+    }
+    data['token'] = token;
+    return data;
+  }
+}
+
+class SignupUser {
   String? firstName;
   String? username;
   String? email;
-  String? password;
-  int? id;
   String? slug;
+  int? id;
   int? status;
-  dynamic createdBy;
-  String? created;
   int? firstTimeLogin;
-  String? messengerColor;
-  String? modified;
   int? completed;
+  int? createdBy;
+  String? messengerColor;
   String? userFrom;
-  SignupModel? user;
-  String? token;
+  DateTime? created;
+  DateTime? modified;
 
-  SignupModel(
-      {this.firstName,
-        this.username,
-        this.email,
-        this.password,
-        this.id,
-        this.slug,
-        this.status,
-        this.createdBy,
-        this.created,
-        this.firstTimeLogin,
-        this.messengerColor,
-        this.modified,
-        this.completed,
-        this.userFrom});
+  SignupUser({
+    this.firstName,
+    this.username,
+    this.email,
+    this.slug,
+    this.id,
+    this.status,
+    this.firstTimeLogin,
+    this.completed,
+    this.createdBy,
+    this.messengerColor,
+    this.userFrom,
+    this.created,
+    this.modified,
+  });
 
-  SignupModel.fromJson(Map<String, dynamic> json) {
+  SignupUser.fromJson(Map<String, dynamic> json) {
     firstName = json['first_name'];
     username = json['username'];
     email = json['email'];
-    password = json['password'];
-    id = json['id'];
     slug = json['slug'];
+    id = json['id'];
     status = json['status'];
-    createdBy = json['created_by'];
-    created = json['created'];
     firstTimeLogin = json['first_time_login'];
-    messengerColor = json['messenger_color'];
-    modified = json['modified'];
     completed = json['completed'];
+    createdBy = json['created_by'];
+    messengerColor = json['messenger_color'];
     userFrom = json['user_from'];
-    user = json['user'] != null ? SignupModel.fromJson(json['user']) : null;
-    token = json['token'];
+    created = json['created'] != null ? DateTime.tryParse(json['created']) : null;
+    modified = json['modified'] != null ? DateTime.tryParse(json['modified']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -56,21 +95,16 @@ class SignupModel{
     data['first_name'] = firstName;
     data['username'] = username;
     data['email'] = email;
-    data['password'] = password;
-    data['id'] = id;
     data['slug'] = slug;
+    data['id'] = id;
     data['status'] = status;
-    data['created_by'] = createdBy;
-    data['created'] = created;
     data['first_time_login'] = firstTimeLogin;
-    data['messenger_color'] = messengerColor;
-    data['modified'] = modified;
     data['completed'] = completed;
+    data['created_by'] = createdBy;
+    data['messenger_color'] = messengerColor;
     data['user_from'] = userFrom;
-    if (user != null) {
-      data['user'] = user!.toJson();
-    }
-    data['token'] = token;
+    data['created'] = created?.toIso8601String();
+    data['modified'] = modified?.toIso8601String();
     return data;
   }
 }

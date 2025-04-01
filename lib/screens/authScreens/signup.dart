@@ -316,7 +316,7 @@ class Signup extends StatelessWidget {
       Utils.error("Please enter your name");
       return;
     }
-    controller.signup(SignupModel(
+    controller.signup(UserModel(
       firstName:nameController.text,
       username: userNameController.text,
       email: emailController.text,

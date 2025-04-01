@@ -118,8 +118,11 @@ class PostProfileScreen extends StatelessWidget {
                      Text("Switch Accounts"),
                    ],
                  ),),
-               PopupMenuItem(value: 10,child: Row(
-                 children: [
+               PopupMenuItem(value: 10,
+                 onTap: () {
+                   Get.toNamed(Routes.postsSetting);
+                 },
+                 child: Row(children: [
                    Image.asset("assets/images/ic_settings.png", scale: 22,),
                    SizedBox(width: 10,),
                    Text("Account Settings"),

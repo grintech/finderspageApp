@@ -22,6 +22,13 @@ Future<void> main() async {
 
 Future<String> findInitialRoute() async{
   String initialRoute = Routes.welcome;
+  StorageHelper storageHelper = StorageHelper();
+  // if(storageHelper.getUserToken() != null){
+  //   initialRoute = Routes.postsHome;
+  //   print("user token -----> ${storageHelper.getUserToken()}");
+  // }else{
+  //   initialRoute = Routes.welcome;
+  // }
   return initialRoute;
 }
 

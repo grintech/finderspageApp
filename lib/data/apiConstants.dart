@@ -10,4 +10,5 @@ static const String homeList = "$_baseUrl/category-main";
 static const String subCategories = "$_baseUrl/category-sub/";
 static const String shopList = "$_baseUrl/Shop/list";
 static const String shopDetail = "$_baseUrl/Shop/single";
+static const String logOutApi = "$_baseUrl/logout-app";
 }

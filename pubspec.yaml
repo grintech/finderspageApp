@@ -52,6 +52,7 @@ dependencies:
   flutter_staggered_grid_view: ^0.7.0
   cooler_alerts: ^2.1.2
   flutter_easyloading: ^3.0.5
+  json_annotation: ^4.9.0
 #  flare_flutter: ^3.0.2  #error on flare flutter
 #  video_trimmer: ^4.0.2
 #  video_compress: ^3.1.4

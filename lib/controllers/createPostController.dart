@@ -19,6 +19,7 @@ class CreatePostController extends GetxController {
   RxBool isCameraInitialized = false.obs;
   RxBool isFrontCamera = false.obs;
   RxBool isFlash = false.obs;
+  RxBool isCameraOn = false.obs;
 
   RxInt recordingSeconds = 0.obs; // Timer counter
   FlashMode _flashMode = FlashMode.off;
@@ -52,6 +53,7 @@ class CreatePostController extends GetxController {
     cameraController = CameraController(cameras[0], ResolutionPreset.high);
     await cameraController!.initialize();
     isCameraInitialized.value = true;
+    isCameraOn.value = !isCameraOn.value;
     update();
   }
 
@@ -62,6 +64,16 @@ class CreatePostController extends GetxController {
       await cameraController!.dispose();
       isCameraInitialized.value = false;
       update();
+    }
+  }
+
+  void stopVideo() {
+    if (isCameraOn.value) {
+      isCameraOn.value = !isCameraOn.value;
+      // isCameraInitialized.value = false;
+      // cameraController?.dispose();
+    } else {
+      initializeCamera();
     }
   }
 

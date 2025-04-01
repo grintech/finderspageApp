@@ -19,7 +19,9 @@ class CustomCameraScreen extends StatelessWidget {
 
         return Stack(
           children: [
-            CameraPreview(controller.cameraController!),
+            SizedBox(
+                height: Get.height,
+                child: CameraPreview(controller.cameraController!)),
 
             // Progress Bar & Timer
             Positioned(
