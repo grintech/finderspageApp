@@ -8,8 +8,6 @@ import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/commonWidgets/commonButton.dart';
 import 'package:projects/utils/commonWidgets/commonTextField.dart';
 import 'package:projects/utils/routes.dart';
-
-import '../../data/models/signupModel.dart';
 import '../../utils/util.dart';
 
 class Signup extends StatelessWidget {
@@ -317,7 +315,7 @@ class Signup extends StatelessWidget {
       return;
     }
     controller.signup(UserModel(
-      firstName:nameController.text,
+      first_name:nameController.text,
       username: userNameController.text,
       email: emailController.text,
       password: passController.text,

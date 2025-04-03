@@ -41,7 +41,7 @@ class Injector {
       // if (userId != null) {
       //   Utils.showLog("userId =>" + userId.toString());
       // }
-      var headerOptions = Options(headers: {'x-access-token': token,});
+      var headerOptions = Options(headers: {"Authorization":'Bearer ${token}' ,});
       return headerOptions;
     }
     return null;

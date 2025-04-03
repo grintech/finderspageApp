@@ -29,8 +29,11 @@ class PostsSettingScreen extends StatelessWidget {
           ),
           ListTile(
             onTap: (){
-              controller.storageHelper.clearAll();
-              Get.offAllNamed(Routes.loginRoute);
+              controller.logOut();
+              // Utils.showLoader();
+              // controller.storageHelper.clearAll();
+              // Utils.hideLoader();
+              // Get.offAllNamed(Routes.loginRoute);
             },
             title: MyTextWidget(data: "Log Out",),
           ),

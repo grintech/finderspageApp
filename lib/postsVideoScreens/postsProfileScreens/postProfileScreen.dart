@@ -4,6 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:projects/controllers/postProfileController.dart';
+import 'package:projects/controllers/postsHomeController.dart';
+import 'package:projects/data/apiConstants.dart';
+import 'package:projects/utils/commonWidgets/commonButton.dart';
+import 'package:projects/utils/imageViewer.dart';
 import 'package:projects/utils/util.dart';
 import '../../utils/colorConstants.dart';
 import '../../utils/routes.dart';
@@ -15,601 +20,1061 @@ class PostProfileScreen extends StatelessWidget {
   var coverImagePath = ''.obs;
   var profileImagePath = ''.obs;
 
+  PostProfileController controller = Get.put(PostProfileController());
+
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: blackColor,
-        surfaceTintColor: blackColor,
-        leading: GestureDetector(
-          // onTap: () => Get.offAllNamed(Routes.homeRoute),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 6, left: 10, bottom: 6),
-            child: Image.asset(
-              "assets/images/new_logo.png",
-              height: 50,
-              width: 50,
+    return GetBuilder<PostProfileController>(builder: (controller){
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: blackColor,
+          surfaceTintColor: blackColor,
+          leading: GestureDetector(
+            // onTap: () => Get.offAllNamed(Routes.homeRoute),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 6, left: 10, bottom: 6),
+              child: Image.asset(
+                "assets/images/new_logo.png",
+                height: 50,
+                width: 50,
+              ),
             ),
           ),
+          actions: [
+            Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: PopupMenuButton<int>(
+                    color: whiteColor,
+                    surfaceTintColor: whiteColor,
+                    icon: Icon(Icons.menu, color: whiteColor,),
+                    offset: Offset(-12, 35),
+                    menuPadding: EdgeInsets.zero,
+                    itemBuilder: (context){
+                      return <PopupMenuEntry<int>>[
+                        PopupMenuItem(value: 0,child: Row(
+                          children: [
+                            Image.asset("assets/images/ic_edit.png", scale: 22,),
+                            SizedBox(width: 10,),
+                            Text("Create Ads"),
+                          ],
+                        ),),
+                        PopupMenuItem(value: 1,child: Row(
+                          children: [
+                            Image.asset("assets/images/ic_fund.png", scale: 22,),
+                            SizedBox(width: 10,),
+                            Text("Create Fundraisers"),
+                          ],
+                        ),),
+                        PopupMenuItem(value: 2,child: Row(
+                          children: [
+                            Image.asset("assets/images/ic_bus_page.png", scale: 22,),
+                            SizedBox(width: 10,),
+                            Text("Create Business Page"),
+                          ],
+                        ),),
+                        PopupMenuItem(value: 3,child: Row(
+                          children: [
+                            Image.asset("assets/images/ic_resume.png", scale: 22,),
+                            SizedBox(width: 10,),
+                            Text("Create Resume"),
+                          ],
+                        ),),
+                        PopupMenuItem(value: 4,child: Row(
+                          children: [
+                            Image.asset("assets/images/ic_save.png", scale: 22,),
+                            SizedBox(width: 10,),
+                            Text("Saved"),
+                          ],
+                        ),),
+                        PopupMenuItem(value: 5,child: Row(
+                          children: [
+                            Image.asset("assets/images/ic_support.png", scale: 22,),
+                            SizedBox(width: 10,),
+                            Text("Support"),
+                          ],
+                        ),),
+                        PopupMenuItem(value: 6,child: Row(
+                          children: [
+                            Image.asset("assets/images/ic_subscription.png", scale: 22,),
+                            SizedBox(width: 10,),
+                            Text("Subscriptions"),
+                          ],
+                        ),),
+                        PopupMenuItem(value: 7,child: Row(
+                          children: [
+                            Icon(Icons.delete, size: 30, color: blackColor,),
+                            SizedBox(width: 10,),
+                            Text("Recently Deleted"),
+                          ],
+                        ),),
+                        PopupMenuItem(value: 8,child: Row(
+                          children: [
+                            Image.asset("assets/images/ic_blocked.png", scale: 22,),
+                            SizedBox(width: 10,),
+                            Text("Blocked User"),
+                          ],
+                        ),),
+                        PopupMenuItem(value: 9,
+                          onTap: () {
+                            selectAccount();
+                          },
+                          child: Row(
+                            children: [
+                              Icon(CupertinoIcons.person, color: Colors.black, size: 25,),
+                              SizedBox(width: 10,),
+                              Text("Switch Accounts"),
+                            ],
+                          ),),
+                        PopupMenuItem(value: 10,
+                          onTap: () {
+                            Get.toNamed(Routes.postsSetting);
+                          },
+                          child: Row(children: [
+                            Image.asset("assets/images/ic_settings.png", scale: 22,),
+                            SizedBox(width: 10,),
+                            Text("Account Settings"),
+                          ],
+                          ),),
+                      ];
+                    })
+            )
+          ],
         ),
-        actions: [
-         Padding(
-           padding: const EdgeInsets.only(right: 20),
-           child: PopupMenuButton<int>(
-             color: whiteColor,
-               surfaceTintColor: whiteColor,
-               icon: Icon(Icons.menu, color: whiteColor,),
-               offset: Offset(-12, 35),
-               menuPadding: EdgeInsets.zero,
-               itemBuilder: (context){
-             return <PopupMenuEntry<int>>[
-               PopupMenuItem(value: 0,child: Row(
-                 children: [
-                   Image.asset("assets/images/ic_edit.png", scale: 22,),
-                   SizedBox(width: 10,),
-                   Text("Create Ads"),
-                 ],
-               ),),
-               PopupMenuItem(value: 1,child: Row(
-                 children: [
-                   Image.asset("assets/images/ic_fund.png", scale: 22,),
-                   SizedBox(width: 10,),
-                   Text("Create Fundraisers"),
-                 ],
-               ),),
-               PopupMenuItem(value: 2,child: Row(
-                 children: [
-                   Image.asset("assets/images/ic_bus_page.png", scale: 22,),
-                   SizedBox(width: 10,),
-                   Text("Create Business Page"),
-                 ],
-               ),),
-               PopupMenuItem(value: 3,child: Row(
-                 children: [
-                   Image.asset("assets/images/ic_resume.png", scale: 22,),
-                   SizedBox(width: 10,),
-                   Text("Create Resume"),
-                 ],
-               ),),
-               PopupMenuItem(value: 4,child: Row(
-                 children: [
-                   Image.asset("assets/images/ic_save.png", scale: 22,),
-                   SizedBox(width: 10,),
-                   Text("Saved"),
-                 ],
-               ),),
-               PopupMenuItem(value: 5,child: Row(
-                 children: [
-                   Image.asset("assets/images/ic_support.png", scale: 22,),
-                   SizedBox(width: 10,),
-                   Text("Support"),
-                 ],
-               ),),
-               PopupMenuItem(value: 6,child: Row(
-                 children: [
-                   Image.asset("assets/images/ic_subscription.png", scale: 22,),
-                   SizedBox(width: 10,),
-                   Text("Subscriptions"),
-                 ],
-               ),),
-               PopupMenuItem(value: 7,child: Row(
-                 children: [
-                   Icon(Icons.delete, size: 30, color: blackColor,),
-                   SizedBox(width: 10,),
-                   Text("Recently Deleted"),
-                 ],
-               ),),
-               PopupMenuItem(value: 8,child: Row(
-                 children: [
-                   Image.asset("assets/images/ic_blocked.png", scale: 22,),
-                   SizedBox(width: 10,),
-                   Text("Blocked User"),
-                 ],
-               ),),
-               PopupMenuItem(value: 9,
-                 onTap: () {
-                   selectAccount();
-                 },
-                 child: Row(
-                   children: [
-                     Icon(CupertinoIcons.person, color: Colors.black, size: 25,),
-                     SizedBox(width: 10,),
-                     Text("Switch Accounts"),
-                   ],
-                 ),),
-               PopupMenuItem(value: 10,
-                 onTap: () {
-                   Get.toNamed(Routes.postsSetting);
-                 },
-                 child: Row(children: [
-                   Image.asset("assets/images/ic_settings.png", scale: 22,),
-                   SizedBox(width: 10,),
-                   Text("Account Settings"),
-                 ],
-               ),),
-             ];
-           })
-         )
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                Stack(
-                  children: [
-                    Obx(()=>Container(
-                      margin: EdgeInsets.only(bottom: 40),
-                      height: 300,
-                      width: Get.width,
-                      child: coverImagePath.isEmpty
-                          ?Image.asset("assets/images/no_image.png", fit: BoxFit.fill,):
-                      Image.file(
-                        File(coverImagePath.value),
-                        width: Get.width,
-                        height: 300,
-                        fit: BoxFit.contain,
+        body: controller.userModel.value == null || controller.userModel.value!.user == null?
+            Center(child: CircularProgressIndicator()):
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  Stack(
+                    children: [
+                      Container(
+                          margin: EdgeInsets.only(bottom: 40),
+                          height: 180,
+                          width: Get.width,
+                          child: controller.userModel.value?.user?.cover_img == ""
+                              || controller.userModel.value?.user?.cover_img == null
+                              ?Image.asset("assets/images/no_image.png", fit: BoxFit.fill,):
+                          Image.network("${ApiConstants.profileUrl}/"
+                              "${controller.userModel.value?.user?.cover_img}",fit: BoxFit.fill,)
                       ),
-                    ),),
-                    Positioned(
-                      right: 12, bottom: 50,
-                      child: GestureDetector(
-                        onTap: () {
-                          selectCoverImage();
-                        },
-                        child: Container(
-                          width: 25,
-                          height: 25,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
+                      // Positioned(
+                      //   right: 12, bottom: 50,
+                      //   child: GestureDetector(
+                      //     onTap: () {
+                      //       selectCoverImage();
+                      //     },
+                      //     child: Container(
+                      //       width: 25,
+                      //       height: 25,
+                      //       decoration: BoxDecoration(
+                      //         shape: BoxShape.circle,
+                      //         gradient: LinearGradient(
+                      //           begin: Alignment.topCenter,
+                      //           end: Alignment.bottomCenter,
+                      //           colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
+                      //         ),
+                      //       ),
+                      //       child: Image.asset(
+                      //         "assets/images/edit-icon.png",
+                      //         height: 20,
+                      //         width: 20,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // )
+                    ],
+                  ),
+                  Positioned(
+                    left: 20,
+                    child: GestureDetector(
+                      onTap: () {
+                        // selectProfileImage();
+                        // Get.toNamed(Routes.editProfileRoute);
+                      },
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: 70, width: 70,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
                             ),
+                            child: controller.userModel.value?.user?.image == "" || controller.userModel.value?.user?.image == null ?
+                            ImageView(height: 80, width: 70,) : ClipRRect(borderRadius: BorderRadius.circular(50),
+                                child: Image.network("${ApiConstants.profileUrl}/${controller.userModel.value?.user?.image}",
+                                  width: 80, height: 80,fit: BoxFit.fill,)),
                           ),
-                          child: Image.asset(
-                            "assets/images/edit-icon.png",
-                            height: 20,
-                            width: 20,
-                          ),
-                        ),
+                          // Positioned(
+                          //   bottom: 2,
+                          //   right: 0,
+                          //   child: Container(
+                          //     width: 20,
+                          //     height: 22,
+                          //     decoration: BoxDecoration(
+                          //       shape: BoxShape.circle,
+                          //       gradient: LinearGradient(
+                          //         begin: Alignment.topCenter,
+                          //         end: Alignment.bottomCenter,
+                          //         colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
+                          //       ),
+                          //     ),
+                          //     child: Image.asset(
+                          //       "assets/images/edit-icon.png",
+                          //       height: 20,
+                          //       width: 20,
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
                       ),
+                    ),
+                  )
+                ],
+              ),
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: MyTextWidget(data: "@${controller.userModel.value?.user?.username}",size: 14, weight: FontWeight.w600,),
+                  )),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    CommonButton(
+                      onPressed: () => Get.toNamed(Routes.editProfileRoute),
+                      radius: 10,
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      btnTxt: "Edit Profile",
+                    ),
+                    SizedBox(width: 30,),
+                    CommonButton(
+                      radius: 10,
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      btnTxt: "Share Profile",
                     )
                   ],
                 ),
-                Positioned(
-                  left: 20,
-                  child: GestureDetector(
-                    onTap: () {
-                      selectProfileImage();
-                    },
-                    child: Stack(
-                      children: [
-                        Obx(()=>Container(
-                          height: 70, width: 70,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                          ),
-                          child: profileImagePath.isEmpty
-                              ?Image.asset("assets/images/user_img.png",
-                            height: 80, width: 70,fit: BoxFit.fill,):
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Image.file(
-                              File(profileImagePath.value),
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),),
-                        Positioned(
-                          bottom: 2,
-                          right: 0,
-                          child: Container(
-                            width: 20,
-                            height: 22,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
-                              ),
-                            ),
-                            child: Image.asset(
-                              "assets/images/edit-icon.png",
-                              height: 20,
-                              width: 20,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-            Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: MyTextWidget(data: "@username(Web Developer)", size: 14, weight: FontWeight.w600,),
-                )),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, top: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  RichText(text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: "24",
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: blackColor)
-                      ),
-                      TextSpan(
-                          text: " My Connections",
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: blackColor)
-                      ),
-                    ]
-                  ))
-                ],
               ),
-            ),
-
-            Container(
-              margin: EdgeInsets.only(top: 8),
-              height: 40,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                  itemCount: 16,
-                  itemBuilder: (context, index){
-                return Container(
-                  margin: EdgeInsets.symmetric(horizontal: 3),
-                  height: 40, width: 40,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                  ),
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset("assets/images/profile-pic.png")),
-                );
-              }),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Obx(()=>GestureDetector(
-                      onTap:() {
-                        selectedIndex.value = 0;
-                      },
-                      child: MyTextWidget(data: "Posts", size: 12,
-                        weight: selectedIndex.value == 0 ? FontWeight.w500 : FontWeight.w400)
-                  ),),
-                  Obx(()=>GestureDetector(
-                    onTap: () {
-                      selectedIndex.value = 1;
-                    },
-                    child: MyTextWidget(data: "Videos",size: 12,
-                      weight: selectedIndex.value == 1 ? FontWeight.w500 : FontWeight.w400,
-                    ),
-                  ),),
-                  Obx(()=> GestureDetector(
-                      onTap: () {
-                        selectedIndex.value = 2;
-                      },
-                      child: MyTextWidget(data: "Business",size: 12,
-                        weight: selectedIndex.value == 2? FontWeight.w500 : FontWeight.w400,)),),
-                  Obx(()=>Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          selectedIndex.value = 3;
-                        },
-                        child: MyTextWidget(data: "Ads",size: 12,
-                          weight:selectedIndex.value==3 ? FontWeight.w500 : FontWeight.w400,),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          showModalBottomSheet(
-                              context: context,
-                              builder: (context){
-                                return Container(
-                                  padding: EdgeInsets.symmetric(vertical: 12),
-                                  height: 250,
-                                  child: ListView(
-                                    children: [
-                                      ListTile(title: Text("Shopping"), onTap: Get.back,),
-                                      ListTile(title: Text("Community"),onTap: Get.back,),
-                                      ListTile(title: Text("Services"),onTap: Get.back,),
-                                      ListTile(title: Text("Entertainment Industry"),onTap: Get.back,),
-                                    ],
-                                  ),
-                                );
-                              }
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            SizedBox(width: 20,),
-                            Icon(Icons.keyboard_arrow_down, size: 18,)
-                          ],
-                        ),
-                      )
-                    ],
-                  ),),
-
-                ],
-              ),
-            ),
-            Obx(()=>selectedIndex.value == 0?
-            ListView.builder(
-                itemCount: 8,
-                physics: NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.only(bottom: 20),
-                shrinkWrap: true,
-                itemBuilder: (context, index){
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    height: 30,
-                                    margin: EdgeInsets.only(right: 10),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Image.asset("assets/images/user_img.png", height: 100, fit: BoxFit.fill,),
-                                  ),
-                                  MyTextWidget(data: "John Doe", size: 12, weight: FontWeight.w500,)
-                                ],
-                              ),
-                              PopupMenuButton<int>(
-                                  color: whiteColor,
-                                  surfaceTintColor: whiteColor,
-                                  icon: Icon(Icons.more_vert, color: blackColor, size: 20,),
-                                  offset: Offset(-12, 35),
-                                  menuPadding: EdgeInsets.zero,
-                                  itemBuilder: (context){
-                                    return <PopupMenuEntry<int>>[
-                                      PopupMenuItem(value: 0,child: Text("Edit"),),
-                                      PopupMenuItem(value: 1,child: Text("Delete"),),
-                                    ];
-                                  })
-                            ],
+              controller.userModel.value?.followerDetails?.length != 0?
+              Padding(
+                padding: const EdgeInsets.only(left: 20, top: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    RichText(text: TextSpan(
+                        children: [
+                          TextSpan(
+                              text:controller.userModel.value?.followerDetails?.length.toString(),
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: blackColor)
                           ),
-                        ),
-                        Container(
-                            decoration:BoxDecoration(
-                                color: Colors.grey.shade200
-                            ),
-                            child: Image.asset("assets/images/image1.png", height: 150,
-                              width: Get.width, fit: BoxFit.contain,))
-                      ],
-                    ),
-                  );
-                }):
-            selectedIndex.value == 1? ListView.builder(
-                itemCount: 2,
-                physics: NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.only(bottom: 20),
-                shrinkWrap: true,
-                itemBuilder: (context, index){
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    height: 30,
-                                    margin: EdgeInsets.only(right: 10),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Image.asset("assets/images/user_img.png", height: 100, fit: BoxFit.fill,),
-                                  ),
-                                  MyTextWidget(data: "John Doe", size: 12, weight: FontWeight.w500,)
-                                ],
-                              ),
-                              PopupMenuButton<int>(
-                                  color: whiteColor,
-                                  surfaceTintColor: whiteColor,
-                                  icon: Icon(Icons.more_vert, color: blackColor, size: 20,),
-                                  offset: Offset(-12, 35),
-                                  menuPadding: EdgeInsets.zero,
-                                  itemBuilder: (context){
-                                    return <PopupMenuEntry<int>>[
-                                      PopupMenuItem(value: 0,child: Text("Edit"),),
-                                      PopupMenuItem(value: 1,child: Text("Delete"),),
-                                    ];
-                                  })
-                            ],
+                          TextSpan(
+                              text: " My Connections",
+                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: blackColor)
                           ),
-                        ),
-                        Container(
-                            decoration:BoxDecoration(
-                                color: Colors.grey.shade200
-                            ),
-                            child: Image.asset("assets/images/image1.png", height: 300,
-                              width: Get.width, fit: BoxFit.contain,))
-                      ],
-                    ),
-                  );
-                }) :
-            selectedIndex.value == 2? Padding(
-              padding: const EdgeInsets.only(top: 100),
-              child: MyTextWidget(data: "Coming Soon", size: 20, weight: FontWeight.w600, color: fieldBorderColor,),
-            )
-                :ListView.builder(
-                    itemCount: 1,
-                    physics: NeverScrollableScrollPhysics(),
-                    padding: EdgeInsets.only(bottom: 20),
-                    shrinkWrap: true,
+                        ]
+                    ))
+                  ],
+                ),
+              ):SizedBox(),
+
+              controller.userModel.value?.followerDetails?.length != 0?
+              Container(
+                margin: EdgeInsets.only(top: 8),
+                height: 40,
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: controller.userModel.value?.followerDetails?.length,
                     itemBuilder: (context, index){
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        height: 30,
-                                        margin: EdgeInsets.only(right: 10),
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Image.asset("assets/images/user_img.png", height: 100, fit: BoxFit.fill,),
-                                      ),
-                                      MyTextWidget(data: "John Doe", size: 12, weight: FontWeight.w500,)
-                                    ],
-                                  ),
-                                  PopupMenuButton<int>(
-                                      color: whiteColor,
-                                      surfaceTintColor: whiteColor,
-                                      icon: Icon(Icons.more_vert, color: blackColor, size: 20,),
-                                      offset: Offset(-12, 35),
-                                      menuPadding: EdgeInsets.zero,
-                                      itemBuilder: (context){
-                                        return <PopupMenuEntry<int>>[
-                                          PopupMenuItem(value: 0,child: Text("Edit"),),
-                                          PopupMenuItem(value: 1,child: Text("Delete"),),
-                                        ];
-                                      })
-                                ],
-                              ),
-                            ),
-                            Container(
-                                decoration:BoxDecoration(
-                                    color: Colors.grey.shade200
-                                ),
-                                child: Image.asset("assets/images/image1.png", height: 150,
-                                  width: Get.width, fit: BoxFit.contain,))
-                          ],
+                      return Container(
+                        height: 40, width: 40,
+                        margin: EdgeInsets.symmetric(horizontal: 3),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
                         ),
+                        child: controller.userModel.value?.followerDetails?[index].image == "" || controller.userModel.value?.followerDetails?[index].image == null ?
+                        ImageView(height: 40, width: 40,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                            child: Image.network("${ApiConstants.profileUrl}/${controller.userModel.value?.followerDetails?[index].image}",
+                              width: 40, height: 40, fit: BoxFit.fill,)),
                       );
-                    }))
-            // MyTextWidget(data: "No content is published yet",),
-          ],
+                    }),
+              ):SizedBox(child: MyTextWidget(data: "No Connections Yet",),),
+
+              Obx(()=>Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                        onTap:() {
+                          selectedIndex.value = 0;
+                        },
+                        child: MyTextWidget(data: "Posts", size: 12,
+                            weight: selectedIndex.value == 0 ? FontWeight.w500 : FontWeight.w400)
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        selectedIndex.value = 1;
+                      },
+                      child: MyTextWidget(data: "Videos",size: 12,
+                        weight: selectedIndex.value == 1 ? FontWeight.w500 : FontWeight.w400,
+                      ),
+                    ),
+                    GestureDetector(
+                        onTap: () {
+                          selectedIndex.value = 2;
+                        },
+                        child: MyTextWidget(data: "Business",size: 12,
+                          weight: selectedIndex.value == 2? FontWeight.w500 : FontWeight.w400,)),
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            selectedIndex.value = 3;
+                          },
+                          child: MyTextWidget(data: "Ads",size: 12,
+                            weight:selectedIndex.value==3 ? FontWeight.w500 : FontWeight.w400,),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                                context: context,
+                                builder: (context){
+                                  return Container(
+                                    padding: EdgeInsets.symmetric(vertical: 12),
+                                    height: 300,
+                                    child: ListView(
+                                      children: [
+                                        ListTile(title: Text("Shopping"),
+                                          onTap: (){
+                                          selectedIndex.value = 4;
+                                          Get.back();
+                                          },),
+                                        ListTile(title: Text("Community"),
+                                          onTap: (){
+                                          selectedIndex.value = 5;
+                                          Get.back();
+                                          },),
+                                        ListTile(title: Text("Services"),
+                                          onTap: (){
+                                          selectedIndex.value = 6;
+                                          Get.back();
+                                          },),
+                                        ListTile(title: Text("Entertainment Industry"),
+                                          onTap: (){
+                                          selectedIndex.value = 7;
+                                          Get.back();
+                                          },),
+                                        ListTile(title: Text("Fundraiser"),
+                                          onTap: (){
+                                            selectedIndex.value = 8;
+                                            Get.back();
+                                          },),
+                                      ],
+                                    ),
+                                  );
+                                }
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              SizedBox(width: 20,),
+                              Icon(Icons.keyboard_arrow_down, size: 18,)
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),),
+
+              // Obx(() {
+              //   List<dynamic> mergedList = [];
+              //
+              //   // Merging all items based on selectedIndex
+              //   if (selectedIndex.value == 0) {
+              //     mergedList = controller.userModel.value?.post ?? [];
+              //   } else if (selectedIndex.value == 1) {
+              //     mergedList = List.generate(2, (index) => {"type": "video"}); // Dummy video items
+              //   } else if (selectedIndex.value == 2) {
+              //     mergedList = controller.userModel.value?.business ?? [];
+              //   } else if (selectedIndex.value == 3){
+              //     mergedList = controller.userModel.value?.ads ?? [];
+              //   } else if (selectedIndex.value == 4){
+              //     mergedList = controller.userModel.value?.shopping ?? [];
+              //   } else if (selectedIndex.value == 5){
+              //     mergedList = controller.userModel.value?.community ?? [];
+              //   } else if (selectedIndex.value == 6){
+              //     mergedList = controller.userModel.value?.service ?? [];
+              //   } else{
+              //     mergedList = controller.userModel.value?.entertainment ?? [];
+              //   }
+              //
+              //   return ListView.builder(
+              //     itemCount: mergedList.length,
+              //     physics: NeverScrollableScrollPhysics(),
+              //     padding: EdgeInsets.only(bottom: 20),
+              //     shrinkWrap: true,
+              //     itemBuilder: (context, index) {
+              //       var item = mergedList[index];
+              //       return Padding(
+              //         padding: const EdgeInsets.only(bottom: 12),
+              //         child: Column(
+              //           crossAxisAlignment: CrossAxisAlignment.start,
+              //           children: [
+              //             // User Info Row
+              //             Padding(
+              //               padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
+              //               child: Row(
+              //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //                 children: [
+              //                   Row(
+              //                     children: [
+              //                       Container(
+              //                         height: 40,
+              //                         width: 40,
+              //                         margin: EdgeInsets.only(right: 10),
+              //                         decoration: BoxDecoration(shape: BoxShape.circle),
+              //                         child: controller.userModel.value?.user?.image == "" || controller.userModel.value?.user?.image == null
+              //                             ? ImageView(height: 40, width: 40)
+              //                             : ClipRRect(
+              //                           borderRadius: BorderRadius.circular(30),
+              //                           child: Image.network(
+              //                             "${ApiConstants.profileUrl}/${controller.userModel.value?.user?.image}",
+              //                             width: 40,
+              //                             height: 40,
+              //                             fit: BoxFit.fill,
+              //                           ),
+              //                         ),
+              //                       ),
+              //                       MyTextWidget(
+              //                         data: "${controller.userModel.value?.user?.username}",
+              //                         size: 12,
+              //                         weight: FontWeight.w500,
+              //                       )
+              //                     ],
+              //                   ),
+              //                   PopupMenuButton<int>(
+              //                     color: whiteColor,
+              //                     surfaceTintColor: whiteColor,
+              //                     icon: Icon(Icons.more_vert, color: blackColor, size: 20),
+              //                     offset: Offset(-12, 35),
+              //                     menuPadding: EdgeInsets.zero,
+              //                     itemBuilder: (context) {
+              //                       return <PopupMenuEntry<int>>[
+              //                         PopupMenuItem(value: 0, child: Text("Edit")),
+              //                         PopupMenuItem(value: 1, child: Text("Delete")),
+              //                       ];
+              //                     },
+              //                   )
+              //                 ],
+              //               ),
+              //             ),
+              //
+              //             // Content Image
+              //             Container(
+              //               height: 240,
+              //               width: Get.width,
+              //               decoration: BoxDecoration(color: Colors.grey.shade200),
+              //               child: (selectedIndex.value == 1) // For videos (Placeholder)
+              //                   ? Image.asset("assets/images/no_image.png", fit: BoxFit.fill)
+              //                   : (item.image == "" || item.image == null)
+              //                   ? Image.asset("assets/images/no_image.png", fit: BoxFit.fill)
+              //                   : ClipRRect(
+              //                 borderRadius: BorderRadius.circular(30),
+              //                 child: Image.network(
+              //                   selectedIndex.value == 2
+              //                       ? "${ApiConstants.businessImgUrl}/${item.image}"
+              //                       : selectedIndex.value == 3
+              //                       ? "${ApiConstants.postImgUrl}/${item.image}"
+              //                       : "${ApiConstants.postImgUrl}/${item.image}",
+              //                   width: 40,
+              //                   height: 40,
+              //                   fit: BoxFit.contain,
+              //                 ),
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //       );
+              //     },
+              //   );
+              // })
+
+
+              Obx(()=>selectedIndex.value == 0? ListView.builder(
+                  itemCount: controller.userModel.value?.post?.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(bottom: 20),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index){
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      height: 40, width: 40,
+                                      margin: EdgeInsets.only(right: 10),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: controller.userModel.value?.user?.image == "" || controller.userModel.value?.user?.image == null ?
+                                      ImageView(height: 40, width: 40,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                          child: Image.network("${ApiConstants.profileUrl}/${controller.userModel.value?.user?.image}",
+                                            width: 40, height: 40, fit: BoxFit.fill,)),
+                                    ),
+                                    MyTextWidget(data: "${controller.userModel.value?.user?.username}", size: 12, weight: FontWeight.w500,)
+                                  ],
+                                ),
+                                PopupMenuButton<int>(
+                                    color: whiteColor,
+                                    surfaceTintColor: whiteColor,
+                                    icon: Icon(Icons.more_vert, color: blackColor, size: 20,),
+                                    offset: Offset(-12, 35),
+                                    menuPadding: EdgeInsets.zero,
+                                    itemBuilder: (context){
+                                      return <PopupMenuEntry<int>>[
+                                        PopupMenuItem(value: 0,child: Text("Edit"),),
+                                        PopupMenuItem(value: 1,child: Text("Delete"),),
+                                      ];
+                                    })
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height:240, width:Get.width,
+                              decoration:BoxDecoration(
+                                  color: Colors.grey.shade200
+                              ),
+                              child: controller.userModel.value?.post?[index].image == ""
+                                  || controller.userModel.value?.post?[index].image == null ?
+                              Image.asset("assets/images/no_image.png", fit: BoxFit.fill,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                  child: Image.network("${ApiConstants.postImgUrl}/${controller.userModel.value?.post?[index].image}",
+                                    width: 40, height: 40, fit: BoxFit.contain,)),)
+                        ],
+                      ),
+                    );
+                  }):
+              selectedIndex.value == 1? ListView.builder(
+                  itemCount: 2,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(bottom: 20),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index){
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      height: 30,
+                                      margin: EdgeInsets.only(right: 10),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Image.asset("assets/images/user_img.png", height: 100, fit: BoxFit.fill,),
+                                    ),
+                                    MyTextWidget(data: "${controller.userModel.value?.user?.username}", size: 12, weight: FontWeight.w500,)
+                                  ],
+                                ),
+                                PopupMenuButton<int>(
+                                    color: whiteColor,
+                                    surfaceTintColor: whiteColor,
+                                    icon: Icon(Icons.more_vert, color: blackColor, size: 20,),
+                                    offset: Offset(-12, 35),
+                                    menuPadding: EdgeInsets.zero,
+                                    itemBuilder: (context){
+                                      return <PopupMenuEntry<int>>[
+                                        PopupMenuItem(value: 0,child: Text("Edit"),),
+                                        PopupMenuItem(value: 1,child: Text("Delete"),),
+                                      ];
+                                    })
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height:240, width:Get.width,
+                              decoration:BoxDecoration(
+                                  color: Colors.grey.shade200
+                              ),
+                              child: Image.asset("assets/images/no_image.png",
+                                fit: BoxFit.fill,))
+                        ],
+                      ),
+                    );
+                  }) :
+              selectedIndex.value == 2? ListView.builder(
+                  itemCount: controller.userModel.value?.business?.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(bottom: 20),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index){
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      height: 40, width: 40,
+                                      margin: EdgeInsets.only(right: 10),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: controller.userModel.value?.user?.image == "" || controller.userModel.value?.user?.image == null ?
+                                      ImageView(height: 40, width: 40,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                          child: Image.network("${ApiConstants.profileUrl}/${controller.userModel.value?.user?.image}",
+                                            width: 40, height: 40, fit: BoxFit.fill,)),
+                                    ),
+                                    MyTextWidget(data: "${controller.userModel.value?.user?.username}", size: 12, weight: FontWeight.w500,)
+                                  ],
+                                ),
+                                PopupMenuButton<int>(
+                                    color: whiteColor,
+                                    surfaceTintColor: whiteColor,
+                                    icon: Icon(Icons.more_vert, color: blackColor, size: 20,),
+                                    offset: Offset(-12, 35),
+                                    menuPadding: EdgeInsets.zero,
+                                    itemBuilder: (context){
+                                      return <PopupMenuEntry<int>>[
+                                        PopupMenuItem(value: 0,child: Text("Edit"),),
+                                        PopupMenuItem(value: 1,child: Text("Delete"),),
+                                      ];
+                                    })
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height:240, width:Get.width,
+                            decoration:BoxDecoration(
+                                color: Colors.grey.shade200
+                            ),
+                            child: controller.userModel.value?.business?[index].image == ""
+                                || controller.userModel.value?.business?[index].image == null ?
+                            Image.asset("assets/images/no_image.png", fit: BoxFit.fill,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                child: Image.network("${ApiConstants.businessImgUrl}/${controller.userModel.value?.business?[index].image}",
+                                  width: 40, height: 40, fit: BoxFit.contain,)),)
+                        ],
+                      ),
+                    );
+                  }) :
+              selectedIndex.value == 3? ListView.builder(
+                  itemCount: controller.userModel.value?.ads?.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(bottom: 20),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index){
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      height: 40, width: 40,
+                                      margin: EdgeInsets.only(right: 10),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: controller.userModel.value?.user?.image == "" || controller.userModel.value?.user?.image == null ?
+                                      ImageView(height: 40, width: 40,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                          child: Image.network("${ApiConstants.profileUrl}/${controller.userModel.value?.user?.image}",
+                                            width: 40, height: 40, fit: BoxFit.fill,)),
+                                    ),
+                                    MyTextWidget(data: "${controller.userModel.value?.user?.username}", size: 12, weight: FontWeight.w500,)
+                                  ],
+                                ),
+                                PopupMenuButton<int>(
+                                    color: whiteColor,
+                                    surfaceTintColor: whiteColor,
+                                    icon: Icon(Icons.more_vert, color: blackColor, size: 20,),
+                                    offset: Offset(-12, 35),
+                                    menuPadding: EdgeInsets.zero,
+                                    itemBuilder: (context){
+                                      return <PopupMenuEntry<int>>[
+                                        PopupMenuItem(value: 0,child: Text("Edit"),),
+                                        PopupMenuItem(value: 1,child: Text("Delete"),),
+                                      ];
+                                    })
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height:240, width:Get.width,
+                            decoration:BoxDecoration(
+                                color: Colors.grey.shade200
+                            ),
+                            child: controller.userModel.value?.ads?[index].image == ""
+                                || controller.userModel.value?.ads?[index].image == null ?
+                            Image.asset("assets/images/no_image.png", fit: BoxFit.fill,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                child: Image.network("${ApiConstants.postImgUrl}/${controller.userModel.value?.ads?[index].image}",
+                                  width: 40, height: 40, fit: BoxFit.contain,)),)
+                        ],
+                      ),
+                    );
+                  }) :
+              selectedIndex.value == 4? ListView.builder(
+                  itemCount: controller.userModel.value?.shopping?.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(bottom: 20),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index){
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      height: 40, width: 40,
+                                      margin: EdgeInsets.only(right: 10),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: controller.userModel.value?.user?.image == "" || controller.userModel.value?.user?.image == null ?
+                                      ImageView(height: 40, width: 40,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                          child: Image.network("${ApiConstants.profileUrl}/${controller.userModel.value?.user?.image}",
+                                            width: 40, height: 40, fit: BoxFit.fill,)),
+                                    ),
+                                    MyTextWidget(data: "${controller.userModel.value?.user?.username}", size: 12, weight: FontWeight.w500,)
+                                  ],
+                                ),
+                                PopupMenuButton<int>(
+                                    color: whiteColor,
+                                    surfaceTintColor: whiteColor,
+                                    icon: Icon(Icons.more_vert, color: blackColor, size: 20,),
+                                    offset: Offset(-12, 35),
+                                    menuPadding: EdgeInsets.zero,
+                                    itemBuilder: (context){
+                                      return <PopupMenuEntry<int>>[
+                                        PopupMenuItem(value: 0,child: Text("Edit"),),
+                                        PopupMenuItem(value: 1,child: Text("Delete"),),
+                                      ];
+                                    })
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height:240, width:Get.width,
+                            decoration:BoxDecoration(
+                                color: Colors.grey.shade200
+                            ),
+                            child: controller.userModel.value?.shopping?[index].image == ""
+                                || controller.userModel.value?.shopping?[index].image == null ?
+                            Image.asset("assets/images/no_image.png", fit: BoxFit.fill,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                child: Image.network("${ApiConstants.postImgUrl}/${controller.userModel.value?.shopping?[index].image}",
+                                  width: 40, height: 40, fit: BoxFit.contain,)),)
+                        ],
+                      ),
+                    );
+                  }) :
+              selectedIndex.value == 5? ListView.builder(
+                  itemCount: controller.userModel.value?.community?.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(bottom: 20),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index){
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      height: 40, width: 40,
+                                      margin: EdgeInsets.only(right: 10),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: controller.userModel.value?.user?.image == "" || controller.userModel.value?.user?.image == null ?
+                                      ImageView(height: 40, width: 40,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                          child: Image.network("${ApiConstants.profileUrl}/${controller.userModel.value?.user?.image}",
+                                            width: 40, height: 40, fit: BoxFit.fill,)),
+                                    ),
+                                    MyTextWidget(data: "${controller.userModel.value?.user?.username}", size: 12, weight: FontWeight.w500,)
+                                  ],
+                                ),
+                                PopupMenuButton<int>(
+                                    color: whiteColor,
+                                    surfaceTintColor: whiteColor,
+                                    icon: Icon(Icons.more_vert, color: blackColor, size: 20,),
+                                    offset: Offset(-12, 35),
+                                    menuPadding: EdgeInsets.zero,
+                                    itemBuilder: (context){
+                                      return <PopupMenuEntry<int>>[
+                                        PopupMenuItem(value: 0,child: Text("Edit"),),
+                                        PopupMenuItem(value: 1,child: Text("Delete"),),
+                                      ];
+                                    })
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height:240, width:Get.width,
+                            decoration:BoxDecoration(
+                                color: Colors.grey.shade200
+                            ),
+                            child: controller.userModel.value?.community?[index].image == ""
+                                || controller.userModel.value?.community?[index].image == null ?
+                            Image.asset("assets/images/no_image.png", fit: BoxFit.fill,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                child: Image.network("${ApiConstants.postImgUrl}/${controller.userModel.value?.community?[index].image}",
+                                  width: 40, height: 40, fit: BoxFit.contain,)),)
+                        ],
+                      ),
+                    );
+                  }) :
+              selectedIndex.value == 6? ListView.builder(
+                  itemCount: controller.userModel.value?.service?.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(bottom: 20),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index){
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      height: 40, width: 40,
+                                      margin: EdgeInsets.only(right: 10),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: controller.userModel.value?.user?.image == "" || controller.userModel.value?.user?.image == null ?
+                                      ImageView(height: 40, width: 40,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                          child: Image.network("${ApiConstants.profileUrl}/${controller.userModel.value?.user?.image}",
+                                            width: 40, height: 40, fit: BoxFit.fill,)),
+                                    ),
+                                    MyTextWidget(data: "${controller.userModel.value?.user?.username}", size: 12, weight: FontWeight.w500,)
+                                  ],
+                                ),
+                                PopupMenuButton<int>(
+                                    color: whiteColor,
+                                    surfaceTintColor: whiteColor,
+                                    icon: Icon(Icons.more_vert, color: blackColor, size: 20,),
+                                    offset: Offset(-12, 35),
+                                    menuPadding: EdgeInsets.zero,
+                                    itemBuilder: (context){
+                                      return <PopupMenuEntry<int>>[
+                                        PopupMenuItem(value: 0,child: Text("Edit"),),
+                                        PopupMenuItem(value: 1,child: Text("Delete"),),
+                                      ];
+                                    })
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height:240, width:Get.width,
+                            decoration:BoxDecoration(
+                                color: Colors.grey.shade200
+                            ),
+                            child: controller.userModel.value?.service?[index].image == ""
+                                || controller.userModel.value?.service?[index].image == null ?
+                            Image.asset("assets/images/no_image.png", fit: BoxFit.fill,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                child: Image.network("${ApiConstants.postImgUrl}/${controller.userModel.value?.service?[index].image}",
+                                  width: 40, height: 40, fit: BoxFit.contain,)),)
+                        ],
+                      ),
+                    );
+                  }) :
+              selectedIndex.value == 7? ListView.builder(
+                  itemCount: controller.userModel.value?.entertainment?.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(bottom: 20),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index){
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      height: 40, width: 40,
+                                      margin: EdgeInsets.only(right: 10),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: controller.userModel.value?.user?.image == "" || controller.userModel.value?.user?.image == null ?
+                                      ImageView(height: 40, width: 40,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                          child: Image.network("${ApiConstants.profileUrl}/${controller.userModel.value?.user?.image}",
+                                            width: 40, height: 40, fit: BoxFit.fill,)),
+                                    ),
+                                    MyTextWidget(data: "${controller.userModel.value?.user?.username}", size: 12, weight: FontWeight.w500,)
+                                  ],
+                                ),
+                                PopupMenuButton<int>(
+                                    color: whiteColor,
+                                    surfaceTintColor: whiteColor,
+                                    icon: Icon(Icons.more_vert, color: blackColor, size: 20,),
+                                    offset: Offset(-12, 35),
+                                    menuPadding: EdgeInsets.zero,
+                                    itemBuilder: (context){
+                                      return <PopupMenuEntry<int>>[
+                                        PopupMenuItem(value: 0,child: Text("Edit"),),
+                                        PopupMenuItem(value: 1,child: Text("Delete"),),
+                                      ];
+                                    })
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height:240, width:Get.width,
+                            decoration:BoxDecoration(
+                                color: Colors.grey.shade200
+                            ),
+                            child: controller.userModel.value?.entertainment?[index].image == ""
+                                || controller.userModel.value?.entertainment?[index].image == null ?
+                            Image.asset("assets/images/no_image.png", fit: BoxFit.fill,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                child: Image.network("${ApiConstants.entertainImgUrl}/${controller.userModel.value?.entertainment?[index].image}",
+                                  width: 40, height: 40, fit: BoxFit.contain,)),)
+                        ],
+                      ),
+                    );
+                  }) :
+              ListView.builder(
+                  itemCount: controller.userModel.value?.fundraisers?.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(bottom: 20),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index){
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      height: 40, width: 40,
+                                      margin: EdgeInsets.only(right: 10),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: controller.userModel.value?.user?.image == "" || controller.userModel.value?.user?.image == null ?
+                                      ImageView(height: 40, width: 40,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                          child: Image.network("${ApiConstants.profileUrl}/${controller.userModel.value?.user?.image}",
+                                            width: 40, height: 40, fit: BoxFit.fill,)),
+                                    ),
+                                    MyTextWidget(data: "${controller.userModel.value?.user?.username}", size: 12, weight: FontWeight.w500,)
+                                  ],
+                                ),
+                                PopupMenuButton<int>(
+                                    color: whiteColor,
+                                    surfaceTintColor: whiteColor,
+                                    icon: Icon(Icons.more_vert, color: blackColor, size: 20,),
+                                    offset: Offset(-12, 35),
+                                    menuPadding: EdgeInsets.zero,
+                                    itemBuilder: (context){
+                                      return <PopupMenuEntry<int>>[
+                                        PopupMenuItem(value: 0,child: Text("Edit"),),
+                                        PopupMenuItem(value: 1,child: Text("Delete"),),
+                                      ];
+                                    })
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height:240, width:Get.width,
+                            decoration:BoxDecoration(
+                                color: Colors.grey.shade200
+                            ),
+                            child: controller.userModel.value?.fundraisers?[index].image == ""
+                                || controller.userModel.value?.fundraisers?[index].image == null ?
+                            Image.asset("assets/images/no_image.png", fit: BoxFit.fill,) : ClipRRect(borderRadius: BorderRadius.circular(30),
+                                child: Image.network("${ApiConstants.postImgUrl}/${controller.userModel.value?.fundraisers?[index].image}",
+                                  width: 40, height: 40, fit: BoxFit.contain,)),)
+                        ],
+                      ),
+                    );
+                  })
+              )
+              // MyTextWidget(data: "No content is published yet",),
+            ],
+          ),
         ),
-      ),
-    );
-  }
-
-  Future<void> pickImage(ImageSource source) async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: source);
-
-    if (image != null) {
-      coverImagePath.value = image.path;
-    }
-    // else {
-    //   Get.snackbar("Error", "No image selected",
-    //       snackPosition: SnackPosition.BOTTOM);
-    // }
-  }
-  Future<void> pickProfileImage(ImageSource source) async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: source);
-
-    if (image != null) {
-      profileImagePath.value = image.path;
-    }
-    // else {
-    //   Get.snackbar("Error", "No image selected",
-    //       snackPosition: SnackPosition.BOTTOM);
-    // }
-  }
-
-  void selectCoverImage(){
-    showModalBottomSheet(
-        isDismissible: true,
-        context: Get.context!,
-        builder: (context){
-          return Container(
-            height: 100,
-            color: Colors.black,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                GestureDetector(
-                    onTap:() {
-                      pickImage(ImageSource.camera);
-                      Get.back();
-                    },
-                    child: Icon(Icons.camera, color: Colors.white,)),
-                GestureDetector(
-                    onTap:() {
-                      pickImage(ImageSource.gallery);
-                      Get.back();
-                    },
-                    child: Icon(Icons.perm_media_outlined, color: Colors.white,))
-              ],
-            ),
-          );
-        });
-  }
-
-  void selectProfileImage(){
-    showModalBottomSheet(
-        isDismissible: true,
-        context: Get.context!,
-        builder: (context){
-          return Container(
-            height: 100,
-            color: Colors.black,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                GestureDetector(
-                    onTap:() {
-                      pickProfileImage(ImageSource.camera);
-                      Get.back();
-                    },
-                    child: Icon(Icons.camera, color: Colors.white,)),
-                GestureDetector(
-                    onTap:() {
-                      pickProfileImage(ImageSource.gallery);
-                      Get.back();
-                    },
-                    child: Icon(Icons.perm_media_outlined, color: Colors.white,))
-              ],
-            ),
-          );
-        });
+      );
+    });
   }
 
   void selectAccount(){

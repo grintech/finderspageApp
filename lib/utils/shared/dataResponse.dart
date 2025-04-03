@@ -15,9 +15,7 @@ class DataResponse<TModel> {
 
   factory DataResponse.fromJson(
       Map<String, dynamic> json,
-      TModel Function(Object? json) fromJsonT,
-      ) =>
-      _$DataResponseFromJson(json, fromJsonT);
+      TModel Function(Object? json) fromJsonT,) => _$DataResponseFromJson(json, fromJsonT);
 
   Map<String, dynamic> toJson(Object Function(TModel value) toJsonT) =>
       _$DataResponseToJson(this, toJsonT);

@@ -184,4 +184,8 @@ class Utils{
       return message;
     }
   }
+  String removeHtmlTags(String htmlText) {
+    final RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+    return htmlText.replaceAll(exp, '');
+  }
 }

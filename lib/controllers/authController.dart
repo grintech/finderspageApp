@@ -3,15 +3,13 @@ import 'package:projects/data/apiProvider/authApiProvider.dart';
 import 'package:projects/data/models/userModel.dart';
 import 'package:projects/utils/helper/storageHelper.dart';
 import 'package:projects/utils/shared/dataResponse.dart';
-
-import '../data/models/signupModel.dart';
 import '../utils/routes.dart';
 import '../utils/util.dart';
 
 class AuthController extends GetxController{
 
   late AuthApiProvider _authApiProvider = AuthApiProvider();
-  late StorageHelper storageHelper;
+  late StorageHelper storageHelper = StorageHelper();
 
   @override
   void onInit() {
@@ -32,9 +30,11 @@ class AuthController extends GetxController{
           userModel = response.data as UserModel;
           storageHelper.saveUserModel(userModel);
           // storageHelper.saveUserType(userModel.userType);
-          // storageHelper.saveUserToken(userModel.token);
-          // storageHelper.saveUserId(userModel.id);
-          Get.offAllNamed(Routes.postsHome);
+          storageHelper.saveUserToken(userModel.token);
+          storageHelper.saveUserId(userModel.user?.id);
+          Future.delayed(Duration(milliseconds: 200), () {
+            Get.offAllNamed(Routes.postsHome);
+          });
         }
       }else{
         handleError(response);
@@ -47,6 +47,7 @@ class AuthController extends GetxController{
   Future<void> signup(UserModel model)async{
     if(await Utils.hasNetwork()){
       Utils.showLoader();
+      print("my data --- > ${model.toJson()}");
       var res= await _authApiProvider.signUp(model);
       Utils.hideLoader();
       var response = res as DataResponse;
@@ -54,7 +55,7 @@ class AuthController extends GetxController{
         var userModel = UserModel();
         if(response.data != null){
           userModel = response.data as UserModel;
-          // storageHelper.saveUserToken(userModel.token);
+          storageHelper.saveUserToken(userModel.token);
           Get.offAllNamed(Routes.postsHome);
         }
       }else{

@@ -20,16 +20,28 @@ class PostsNavBarScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: blackColor,
-      body: Obx(()=>IndexedStack(
+      body:Obx(()=>IndexedStack(
         index: controller.tabIndex.value,
         children: [
           Postshomescreen(),
-          VideoFeedScreen(),
+          Container(),
           PostCreateScreen(),
           PostSearchScreen(),
           PostProfileScreen()
         ],
       ),),
+      // GetBuilder<PostsHomeController>(builder: (_){
+      //   return IndexedStack(
+      //     index: controller.tabIndex.value,
+      //     children: [
+      //       Postshomescreen(),
+      //       VideoFeedScreen(),
+      //       PostCreateScreen(),
+      //       PostSearchScreen(),
+      //       PostProfileScreen()
+      //     ],
+      //   );
+      // }),
       bottomNavigationBar: Container(
         height: 55,
         padding: EdgeInsets.only(bottom: 10),

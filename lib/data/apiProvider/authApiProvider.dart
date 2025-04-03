@@ -1,12 +1,10 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:projects/data/models/signupModel.dart';
 
 import '../../utils/shared/dataResponse.dart';
 import '../Injector.dart';
 import '../apiConstants.dart';
-import '../models/mainHomeModel.dart';
 import '../models/userModel.dart';
 
 class AuthApiProvider {
@@ -29,8 +27,8 @@ class AuthApiProvider {
 
   Future<dynamic> signUp(UserModel userModel) async {
     try {
-      Response response = await _dio.post(ApiConstants.signupApi,
-          data: userModel);
+      Response response = await _dio.post(ApiConstants.signupApi, data: userModel);
+
       var dataResponse = DataResponse<UserModel>.fromJson(
           response.data, (data) => UserModel.fromJson(data as Map<String, dynamic>));
       return dataResponse;

@@ -82,4 +82,12 @@ class StorageHelper{
   void saveUserToken(String? token) {
     _savePref(_userToken, token);
   }
+
+  int? getUserId() {
+    return _getPref(_userId);
+  }
+
+  void saveUserId(int? userId) {
+    _savePref(_userId, userId);
+  }
 }
