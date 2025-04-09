@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:projects/controllers/postProfileController.dart';
+import 'package:projects/data/models/userModel.dart';
 import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/commonWidgets/CommonAppBar.dart';
 import 'package:projects/utils/commonWidgets/commonButton.dart';
@@ -378,7 +379,7 @@ class EditProfile extends StatelessWidget {
                     Center(
                       child: CommonButton(
                         onPressed: (){
-
+                         validateUser();
                         },
                         margin: EdgeInsets.only(top: 30, bottom: 20),
                         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
@@ -394,5 +395,18 @@ class EditProfile extends StatelessWidget {
         ),
       ),
     );
+  }
+  Future<void> validateUser()async{
+    var model = UserModel();
+    model.id = controller.storageHelper.getUserModel()?.user?.id;
+    if(controller.profileImagePath.value.isNotEmpty){
+      model.image = controller.profileImagePath.value;
+    }else{
+      model.image = controller.userModel.value?.user?.image;
+    }
+    if (controller.nameController.text.trim().isNotEmpty) {
+      model.first_name = controller.nameController.text.trim().toString();
+    }
+    await controller.updateUserApi(model);
   }
 }

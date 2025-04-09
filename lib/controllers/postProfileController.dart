@@ -6,7 +6,7 @@ import 'package:projects/data/models/userModel.dart';
 import 'package:projects/utils/helper/storageHelper.dart';
 import 'package:projects/utils/routes.dart';
 import 'package:projects/utils/shared/dataResponse.dart';
-
+import 'package:path/path.dart' as path;
 import '../utils/util.dart';
 
 class PostProfileController extends GetxController {
@@ -16,6 +16,7 @@ class PostProfileController extends GetxController {
 
   var coverImagePath = ''.obs;
   var profileImagePath = ''.obs;
+  var profileImageFile = ''.obs;
   Rxn<UserModel> userModel = Rxn();
 
   final nameController = TextEditingController();
@@ -153,6 +154,26 @@ class PostProfileController extends GetxController {
       }else{
         handleError(dataResponse);
       }
+    }
+  }
+
+  Future<void> updateUserApi(UserModel userModel) async {
+    if (await Utils.hasNetwork()) {
+      print("show Data -----> ${userModel.toJson()}");
+        Utils.showLoader();
+      var response = await _profileApiProvider.updateProfileApi(userModel);
+      Utils.hideLoader();
+      var dataResponse = response as DataResponse;
+      if (dataResponse.success == true) {
+
+        // var userModel = dataResponse.data as UserModel;
+        Get.back();
+        getProfileApi();
+      } else {
+        handleError(dataResponse);
+      }
+    } else {
+      Utils.showErrorAlert("Please Check Your Internet Connection");
     }
   }
 

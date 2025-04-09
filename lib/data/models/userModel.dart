@@ -13,6 +13,7 @@ class UserModel {
   String? zipcode;
   String? bio;
   String? cover_img;
+  String? user_id;
   int? id;
   String? slug;
   int? status;
@@ -47,6 +48,7 @@ class UserModel {
     this.zipcode,
     this.bio,
     this.cover_img,
+    this.user_id,
     this.id,
     this.slug,
     this.status,
@@ -82,6 +84,7 @@ class UserModel {
     zipcode: json["zipcode"],
     bio: json["bio"],
     cover_img: json["cover_img"],
+    user_id: json["user_id"],
     id: json["id"],
     slug: json["slug"],
     status: json["status"],
@@ -124,6 +127,7 @@ class UserModel {
     "zipcode": zipcode,
     "bio": bio,
     "cover_img": cover_img,
+    "user_id": user_id,
     "id": id,
     "slug": slug,
     "status": status,

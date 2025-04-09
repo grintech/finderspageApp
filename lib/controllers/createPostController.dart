@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:projects/data/models/videoUploadModel.dart';
+import 'package:projects/utils/routes.dart';
 import 'package:projects/utils/shared/dataResponse.dart';
 
 import '../data/apiProvider/createPostApiProvider.dart';
@@ -200,27 +201,19 @@ class CreatePostController extends GetxController {
     // Get.toNamed('/preview', arguments: recordedVideoPath.value);
   }
 
-  Future<void> postVideo(VideoUploadModel videoModel,
-      List<File> videoFiles, List<File> imageFiles) async {
+  Future<void> postVideo(VideoUploadModel videoModel) async {
     if (await Utils.hasNetwork()) {
+      print("show VideoModel Data -----> ${videoModel.toJson()}");
       Utils.showLoader();
 
-      var response = await createApiProvider.uploadVideoApp(
-        title: videoModel.title ?? '',
-        location: videoModel.location ?? '',
-        description: videoModel.description ?? '',
-        videoFiles: videoFiles, // ✅ Now it's guaranteed to be List<File>
-        userId: videoModel.userId ?? '',
-        subCategory: videoModel.subCategory ?? '',
-        image1: imageFiles,
-      );
+      var response = await createApiProvider.uploadVideoApp(videoModel);
 
       Utils.hideLoader();
 
       if (response.success == true) {
         if (response.data != null) {
           final videoUpload = response.data as VideoUploadModel;
-          print("show upload data ----> ${videoUpload.toJson()}");
+          // Get.offAllNamed(Routes.postsHome);
         } else {
           handleError(response);
         }

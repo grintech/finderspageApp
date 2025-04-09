@@ -2,9 +2,9 @@
 class VideoUploadModel {
   String? title;
   String? slug;
-  String? userId;
-  List<String>? postVideo;
-  List<String>? image1;
+  int? userId;
+  String? postVideo;
+  String? image1;
   String? location;
   String? subCategory;
   String? description;
@@ -44,7 +44,7 @@ class VideoUploadModel {
   VideoUploadModel.fromJson(Map<String, dynamic> json) {
     title = json['title'];
     slug = json['slug'];
-    userId = json['userId'];
+    userId = json['user_id'] is int ? json['user_id'] : int.tryParse(json['user_id']?.toString() ?? '');
     location = json['location'];
     subCategory = json['subCategory'];
     description = json['description'];
@@ -58,9 +58,9 @@ class VideoUploadModel {
     draft = json['draft'];
     created = json['created'];
     modified = json['modified'];
-    id = json['user_id'];
-    postVideo = (json['post_video[]'] as List?)?.map((e) => e as String).toList();
-    image1 = (json['image1[]'] as List?)?.map((e) => e as String).toList();
+    id = json['id'];
+    postVideo = json['post_video'];
+    image1 = json['image1'];
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -87,7 +87,7 @@ class VideoUploadModel {
     writeNotNull('modified', modified);
     writeNotNull('post_video', postVideo);
     writeNotNull('image1', image1);
-    writeNotNull('user_id', id);
+    writeNotNull('id', id);
     return data;
   }
 }

@@ -21,6 +21,7 @@ class VideoPickerScreen extends StatefulWidget {
 class _VideoPickerScreenState extends State<VideoPickerScreen> {
   final ImagePicker _picker = ImagePicker();
   File? _videoFile;
+  File? imageFile;
   VideoPlayerController? _controller;
 
   final controller = Get.put(CreatePostController());
@@ -43,6 +44,21 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
         ..initialize().then((_) {
           setState(() {}); // Rebuild with controller
         });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      imageFile = File(pickedFile.path);
+
+      _controller?.dispose();
+
+      // _controller = VideoPlayerController.file(imageFile!)
+      //   ..initialize().then((_) {
+      //     setState(() {}); // Rebuild with controller
+      //   });
     }
   }
 
@@ -163,11 +179,11 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
                     location: locController.text,
                     description: descController.text,
                     type: "video",
-                    userId: controller.storageHelper.getUserModel()?.user?.id.toString(),
+                    id: controller.storageHelper.getUserModel()?.user!.id,
                     subCategory: "5449",
+                    postVideo: _videoFile?.path,
+                    image1: imagePath
                   ),
-                  _videoFile != null ? [File(_videoFile!.path)] : [],
-                  imagePath.isNotEmpty ? [File(imagePath)] : [],
                 );
               },
               radius: 12,

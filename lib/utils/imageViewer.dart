@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:projects/utils/colorConstants.dart';
 
+import '../data/apiConstants.dart';
+
 class ImageView extends StatelessWidget {
 
   final String? image;
@@ -41,7 +43,7 @@ class ImageView extends StatelessWidget {
           ? errorWidget ?? Image.asset(placeholder ?? "assets/images/ic_user.png", fit: BoxFit.cover)
           : (image!.contains("https") == true)
           ? CachedNetworkImage(
-        imageUrl: "{https://www.finderspage.com/public/images_blog_img/$image}",
+        imageUrl: ApiConstants.profileUrl,
         imageBuilder: (context, imageProvider) {
           return Container(
             decoration: BoxDecoration(

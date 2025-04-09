@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:projects/data/models/PostsListModel.dart';
 import 'package:projects/data/models/shopDetailModel.dart';
 import 'package:projects/data/models/shopModel.dart';
 
@@ -53,6 +54,17 @@ class HomeApiProvider{
     } catch (error) {
       print("API Error: $error");
       return DataResponse(error: "$error");
+    }
+  }
+
+  //Post Home Apis
+  Future<PageResponse> getAllPostList() async {
+    try {
+      Response response = await _dio.get(ApiConstants.showAllPosts, options: Injector.getHeaderToken());
+      var dataResponse = PageResponse<PostsListModel>.fromJson(response.data, (data) => PostsListModel.fromJson(data as Map<String, dynamic>));
+      return dataResponse;
+    } catch (error) {
+      return PageResponse(message: error.toString());
     }
   }
 

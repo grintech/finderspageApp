@@ -1,22 +1,28 @@
+import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:projects/controllers/postsHomeController.dart';
 import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/imageViewer.dart';
 import 'package:projects/utils/util.dart';
 
+import '../../data/apiConstants.dart';
 import '../../utils/routes.dart';
 
 class Postshomescreen extends StatelessWidget {
   Postshomescreen({super.key});
 
+  final controller = Get.put(PostsHomeController());
+
   final _currentIndex = 0.obs;
 
-  final List<String> productImages = [
-    'assets/images/image1.png',
-    'assets/images/image2.png',
-    'assets/images/image3.png',
-  ];
+  // final List<String> productImages = [
+  //   'assets/images/image1.png',
+  //   'assets/images/image2.png',
+  //   'assets/images/image3.png',
+  // ];
 
   @override
   Widget build(BuildContext context) {
@@ -63,9 +69,9 @@ class Postshomescreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView.builder(
-        padding: EdgeInsets.only(top: 0, left: 10, right: 10, bottom: 20),
-        itemCount: 4,
+      body: Obx(()=>ListView.builder(
+          padding: EdgeInsets.only(top: 0, left: 10, right: 10, bottom: 20),
+          itemCount: controller.postsList.length,
           itemBuilder: (context, index){
             return Column(
               children: [
@@ -76,61 +82,72 @@ class Postshomescreen extends StatelessWidget {
                     children: [
                       Row(
                         children: [
+                          Obx(()=>controller.postsList[index].userImage == null?
                           ImageView(
                             height: 40, width: 40,
                             margin: EdgeInsets.only(right: 15),
-                          ),
-                          MyTextWidget(data: "John", size: 15, color: whiteColor,)
+                            image: controller.postsList[index].userImage,
+                          ):Padding(
+                            padding: const EdgeInsets.only(right: 15),
+                            child: ClipRRect(borderRadius: BorderRadius.circular(50),
+                                child: Image.network("${ApiConstants.profileUrl}/${controller.postsList[index].userImage}",
+                                  width: 40, height: 40,fit: BoxFit.fill,)),
+                          ),),
+                          Obx(()=>MyTextWidget(data: "${controller.postsList[index].userName}", size: 15, color: whiteColor,)
+                          )
                         ],
                       ),
                       Icon(Icons.more_vert, color: whiteColor,)
                     ],
                   ),
                 ),
-                CarouselSlider(
-                  options: CarouselOptions(
-                    height: 500,
-                    autoPlay: false,
-                    enlargeCenterPage: false,
-                    viewportFraction: 1.0,
-                    onPageChanged: (index, reason) {
-                      _currentIndex.value = index;
-                    },
-                  ),
-                  items:
-                  productImages.map((imagePath) {
-                    return Container(
-                      color: Colors.grey.shade200,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(
-                          imagePath,
-                          width: Get.width,
+                Obx((){
+                  final imageUrls = controller.postsList
+                      .expand((post) => post.imageList.map((img) => "${ApiConstants.profileUrl}/$img"))
+                      .toList();
+                  return Column(
+                    children: [
+                      CarouselSlider(
+                        options: CarouselOptions(
                           height: 500,
-                          fit: BoxFit.contain,
+                          autoPlay: false,
+                          enlargeCenterPage: false,
+                          viewportFraction: 1.0,
+                          onPageChanged: (index, reason) {
+                            _currentIndex.value = index;
+                          },
                         ),
+                        items:imageUrls.map((url){
+                          return Container(
+                            color: Colors.grey.shade200,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: url.isNotEmpty
+                                  ?Image.network(url, width: Get.width, height: 40,fit: BoxFit.fill,)
+                                  :Image.asset("assets/images/no_image.png", fit: BoxFit.fill,width: Get.width, height: 120,),
+                            ),
+                          );
+
+                        }).toList(),),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children:  List.generate(imageUrls.length, (index) {
+                          return Obx(() => Container(
+                            width: 10,
+                            height: 10,
+                            margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: _currentIndex.value == index ? fieldBorderColor : whiteColor,
+                            ),
+                          ));
+                        }),
                       ),
-                    );
-                  }).toList(),
+                    ],
+                  );}
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: productImages.asMap().entries.map((entry) {
-                    int index = entry.key;
-                    return Obx(()=>Container(
-                      width: _currentIndex.value == index ? 10 : 10,
-                      height: 10,
-                      margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color:
-                        _currentIndex.value == index
-                            ? fieldBorderColor
-                            : whiteColor
-                      ),
-                    ));
-                  }).toList(),
-                ),
+
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: Row(
@@ -138,28 +155,28 @@ class Postshomescreen extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 5),
-                              child: Image.asset("assets/images/ic_like.png", height: 22, width: 22, color: fieldBorderColor,)
-                            ),
-                            MyTextWidget(data: "2", size: 18, weight: FontWeight.w500, color: fieldBorderColor,)
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Row(
+                          Row(
                             children: [
                               Padding(
-                                padding: const EdgeInsets.only(right: 5),
-                                child: Image.asset("assets/images/ic_message.png", height: 20, width: 20, color: fieldBorderColor),
+                                  padding: const EdgeInsets.only(right: 5),
+                                  child: Image.asset("assets/images/ic_like.png", height: 22, width: 22, color: fieldBorderColor,)
                               ),
                               MyTextWidget(data: "2", size: 18, weight: FontWeight.w500, color: fieldBorderColor,)
                             ],
                           ),
-                        ),
-                        Icon(Icons.share, color: fieldBorderColor,),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 5),
+                                  child: Image.asset("assets/images/ic_message.png", height: 20, width: 20, color: fieldBorderColor),
+                                ),
+                                MyTextWidget(data: "2", size: 18, weight: FontWeight.w500, color: fieldBorderColor,)
+                              ],
+                            ),
+                          ),
+                          Icon(Icons.share, color: fieldBorderColor,),
                         ],
                       ),
                       Row(
@@ -176,7 +193,7 @@ class Postshomescreen extends StatelessWidget {
                 )
               ],
             );
-          }),
+          }),)
     );
   }
 }

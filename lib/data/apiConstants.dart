@@ -24,4 +24,5 @@ static const String updateUser = "$_baseUrl/updateProfileApp";
 // create post apis
   static const String createPost = "$_baseUrl/createPostApp";
   static const String uploadVideo = "$_baseUrl/uploadVideoApp";
+  static const String showAllPosts = "$_baseUrl/showPostApp";
 }
