@@ -150,7 +150,6 @@ class PostProfileController extends GetxController {
           String plainTxt = Utils().removeHtmlTags(bioHtml);
           bioController.text = plainTxt;
         }
-
       }else{
         handleError(dataResponse);
       }

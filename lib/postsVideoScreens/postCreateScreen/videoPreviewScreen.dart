@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:projects/controllers/createPostController.dart';
+import 'package:projects/data/models/videoUploadModel.dart';
+import 'package:projects/utils/commonWidgets/commonButton.dart';
+import 'package:projects/utils/commonWidgets/commonTextField.dart';
+import 'package:projects/utils/util.dart';
+import 'package:video_player/video_player.dart';
 import 'dart:io';
+
+import '../../utils/colorConstants.dart';
 
 class VideoPickerScreen extends StatefulWidget {
   @override
@@ -10,65 +21,171 @@ class VideoPickerScreen extends StatefulWidget {
 class _VideoPickerScreenState extends State<VideoPickerScreen> {
   final ImagePicker _picker = ImagePicker();
   File? _videoFile;
+  VideoPlayerController? _controller;
+
+  final controller = Get.put(CreatePostController());
+
+
+
+  final titleController = TextEditingController();
+  final descController = TextEditingController();
+  final locController = TextEditingController();
 
   Future<void> _pickVideo() async {
     final XFile? pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      setState(() {
-        _videoFile = File(pickedFile.path);
-      });
+      _videoFile = File(pickedFile.path);
+
+      _controller?.dispose();
+
+      _controller = VideoPlayerController.file(_videoFile!)
+        ..initialize().then((_) {
+          setState(() {}); // Rebuild with controller
+        });
     }
   }
-  //
-  // Future<void> _recordVideo() async {
-  //   final XFile? recordedFile = await _picker.pickVideo(source: ImageSource.camera);
-  //
-  //   if (recordedFile != null) {
-  //     setState(() {
-  //       _videoFile = File(recordedFile.path);
-  //     });
-  //   }
-  // }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  void _togglePlayPause() {
+    if (_controller == null) return;
+    setState(() {
+      _controller!.value.isPlaying ? _controller!.pause() : _controller!.play();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        _pickVideo();
+        // Optional: you can call _pickVideo here if you want tap to trigger video picking.
       },
       child: Scaffold(
         appBar: AppBar(
-            automaticallyImplyLeading: false,
-            title: Text("Upload Video")),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          automaticallyImplyLeading: false,
+          title: Text("Upload Video"),
+        ),
+        body:Stack(
+          alignment: Alignment.bottomCenter,
           children: [
-            if (_videoFile != null)
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text("Video Selected: ${_videoFile!.path}"),
+            SingleChildScrollView(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: _pickVideo,
+                    child: _controller != null && _controller!.value.isInitialized?
+                    AspectRatio(
+                      aspectRatio: 1.5,
+                      child: VideoPlayer(_controller!),
+                    ):SizedBox(
+                        height: 300,
+                        child: Column(
+                          children: [
+                            Image.asset("assets/images/ic_upload_video.png", scale: 3,),
+                            SizedBox(height: 30,),
+                            MyTextWidget(data: "Select video    ",),
+                          ],
+                        )),
+                  ),
+                  SizedBox(height: 10),
+                  if (_controller != null && _controller!.value.isInitialized)
+                    IconButton(
+                      icon: Icon(
+                        _controller!.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                        size: 36,
+                      ),
+                      onPressed: _togglePlayPause,
+                    ),
+                  SizedBox(height: 20),
+                  CommonTextField(
+                    margin: EdgeInsets.only(top: 20, bottom: 10),
+                    hint: "Add Caption Here...",
+                    textController: titleController,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      children: [
+                        Flexible(
+                          child: CommonTextField(
+                            hint: "Add Location",
+                            textController: locController,
+                          ),
+                        ),
+                        SizedBox(width: 20,),
+                        Flexible(
+                          child: Container(
+                            height: 48,
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(width: 1.5, color: fieldBorderColor)
+                            ),
+                             child: Row(
+                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                               children: [
+                                 Center(child: MyTextWidget(
+                                     data: "Select Sub Category", size: 12,)),
+                                 Icon(Icons.keyboard_arrow_down)
+                               ],
+                             ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  CommonTextField(
+                    margin: EdgeInsets.only(top: 10, bottom: 20),
+                    hint: "Description",
+                    textController: descController,
+                    lines: 4,
+                  ),
+                  SizedBox(height: 80),
+                ],
               ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Video will be uploaded here"),
-                // ElevatedButton.icon(
-                //   onPressed: _pickVideo,
-                //   icon: Icon(Icons.video_library),
-                //   label: Text("Pick Video"),
-                // ),
-                // SizedBox(width: 10),
-                // ElevatedButton.icon(
-                //   onPressed: _recordVideo,
-                //   icon: Icon(Icons.videocam),
-                //   label: Text("Record Video"),
-                // ),
-              ],
+            ),
+            CommonButton(
+              onPressed: ()async{
+                String imagePath = await copyAssetToFile(
+                  'assets/images/thumbnail.jpg', // this is the asset path
+                  'thumbnail.jpg',               // this is the filename only
+                );
+                controller.postVideo(
+                  VideoUploadModel(
+                    title: titleController.text,
+                    location: locController.text,
+                    description: descController.text,
+                    type: "video",
+                    userId: controller.storageHelper.getUserModel()?.user?.id.toString(),
+                    subCategory: "5449",
+                  ),
+                  _videoFile != null ? [File(_videoFile!.path)] : [],
+                  imagePath.isNotEmpty ? [File(imagePath)] : [],
+                );
+              },
+              radius: 12,
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              btnTxt: "Share",
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<String> copyAssetToFile(String assetPath, String fileName) async {
+    final byteData = await rootBundle.load(assetPath);
+    final tempDir = await getTemporaryDirectory();
+    final filePath = '${tempDir.path}/$fileName'; // ✅ no folders here
+    final file = File(filePath);
+    await file.writeAsBytes(byteData.buffer.asUint8List());
+    return file.path;
   }
 }

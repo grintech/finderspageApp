@@ -5,7 +5,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:projects/utils/colorConstants.dart';
-
+import 'package:mime/mime.dart';
 import '../controllers/createPostController.dart';
 import '../controllers/postProfileController.dart';
 final CreatePostController imagePickerController = Get.put(CreatePostController());
@@ -100,6 +100,12 @@ class Utils{
 
   static showLog(String? log) {
     print("findersPage-log $log");
+  }
+
+  static String? getFileType(String path) {
+    final mimeType = lookupMimeType(path);
+    String? result = mimeType?.substring(0, mimeType.indexOf('/'));
+    return result;
   }
 
   static Future<bool> hasNetwork() async {

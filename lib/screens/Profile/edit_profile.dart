@@ -13,12 +13,13 @@ import 'package:projects/utils/helper/dateHelper.dart';
 import 'package:projects/utils/imageViewer.dart';
 import 'package:projects/utils/routes.dart';
 
+import '../../data/apiConstants.dart';
 import '../../utils/util.dart';
 
 class EditProfile extends StatelessWidget {
   EditProfile({super.key});
 
-  final controller = Get.put(PostProfileController());
+  PostProfileController controller = Get.put(PostProfileController());
 
 
 
@@ -58,14 +59,14 @@ class EditProfile extends StatelessWidget {
                         height: 220,
                         width: Get.width,
                         child: controller.coverImagePath.isEmpty
+                            && controller.userModel.value?.user?.cover_img == ""
+                            && controller.userModel.value?.user?.cover_img == null
                             ?Image.asset("assets/images/no_image.png",
-                          fit: BoxFit.fill,):
-                        Image.file(
-                          File(controller.coverImagePath.value),
-                          width: Get.width,
-                          height: 180,
-                          fit: BoxFit.contain,
-                        ),
+                          fit: BoxFit.fill,):controller.coverImagePath.isNotEmpty?
+                        Image.file(File(controller.coverImagePath.value),
+                          width: Get.width, height: 180, fit: BoxFit.contain,):
+                        Image.network("${ApiConstants.profileUrl}/"
+                            "${controller.userModel.value?.user?.cover_img}",fit: BoxFit.fill,),
                       ),),
                       Positioned(
                         right: 12, bottom: 50,
@@ -109,7 +110,10 @@ class EditProfile extends StatelessWidget {
                               shape: BoxShape.circle,
                             ),
                             child: controller.profileImagePath.isEmpty
-                                ?ImageView(height: 80, width: 70,):
+                                && controller.userModel.value?.user?.image == ""
+                                && controller.userModel.value?.user?.image == null
+                                ?ImageView(height: 80, width: 70,)
+                                :controller.profileImagePath.isNotEmpty?
                             ClipRRect(
                               borderRadius: BorderRadius.circular(100),
                               child: Image.file(
@@ -118,7 +122,10 @@ class EditProfile extends StatelessWidget {
                                 height: 80,
                                 fit: BoxFit.fill,
                               ),
-                            ),
+                            )
+                                :ClipRRect(borderRadius: BorderRadius.circular(50),
+                                child: Image.network("${ApiConstants.profileUrl}/${controller.userModel.value?.user?.image}",
+                                  width: 80, height: 80,fit: BoxFit.fill,)),
                           ),),
                           Positioned(
                             bottom: 2,
@@ -182,6 +189,7 @@ class EditProfile extends StatelessWidget {
                         Flexible(
                           child: CommonTextField(
                             hint: "Enter Email ID",
+                            read: true,
                             margin: EdgeInsets.only(top: 10, bottom: 10),
                             textController: controller.emailController,
                             keyboardType: TextInputType.emailAddress,
@@ -366,7 +374,16 @@ class EditProfile extends StatelessWidget {
                                   ],
                                 )
                               ],
-                            ),))
+                            ),)),
+                    Center(
+                      child: CommonButton(
+                        onPressed: controller.update,
+                        margin: EdgeInsets.only(top: 30, bottom: 20),
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                        radius: 12,
+                        btnTxt: "Update",
+                      ),
+                    )
                   ],
                 ),
               ),

@@ -20,4 +20,8 @@ static const String logOutApi = "$_baseUrl/logout-app";
 // profile apis
 static const String getUser = "$_baseUrl/showProfileApp";
 static const String updateUser = "$_baseUrl/updateProfileApp";
+
+// create post apis
+  static const String createPost = "$_baseUrl/createPostApp";
+  static const String uploadVideo = "$_baseUrl/uploadVideoApp";
 }

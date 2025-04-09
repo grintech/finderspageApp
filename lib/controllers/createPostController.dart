@@ -5,12 +5,21 @@ import 'package:camera/camera.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:projects/data/models/videoUploadModel.dart';
+import 'package:projects/utils/shared/dataResponse.dart';
+
+import '../data/apiProvider/createPostApiProvider.dart';
+import '../utils/helper/storageHelper.dart';
+import '../utils/util.dart';
 
 class CreatePostController extends GetxController {
   var selectedImagePath = ''.obs;
 
   final ImagePicker _picker = ImagePicker();
   File? _videoFile;
+
+  late CreatePostApiProvider createApiProvider = CreatePostApiProvider();
+  late StorageHelper storageHelper = StorageHelper();
 
   CameraController? cameraController;
   late List<CameraDescription> cameras;
@@ -45,6 +54,8 @@ class CreatePostController extends GetxController {
   void onInit() {
     super.onInit();
     initializeCamera();
+    createApiProvider = CreatePostApiProvider();
+    storageHelper = StorageHelper();
   }
 
   /// Initialize Camera
@@ -189,10 +200,54 @@ class CreatePostController extends GetxController {
     // Get.toNamed('/preview', arguments: recordedVideoPath.value);
   }
 
+  Future<void> postVideo(VideoUploadModel videoModel,
+      List<File> videoFiles, List<File> imageFiles) async {
+    if (await Utils.hasNetwork()) {
+      Utils.showLoader();
+
+      var response = await createApiProvider.uploadVideoApp(
+        title: videoModel.title ?? '',
+        location: videoModel.location ?? '',
+        description: videoModel.description ?? '',
+        videoFiles: videoFiles, // ✅ Now it's guaranteed to be List<File>
+        userId: videoModel.userId ?? '',
+        subCategory: videoModel.subCategory ?? '',
+        image1: imageFiles,
+      );
+
+      Utils.hideLoader();
+
+      if (response.success == true) {
+        if (response.data != null) {
+          final videoUpload = response.data as VideoUploadModel;
+          print("show upload data ----> ${videoUpload.toJson()}");
+        } else {
+          handleError(response);
+        }
+      } else {
+        Utils.showErrorAlert(response.message ?? "Upload failed");
+      }
+    } else {
+      Utils.showErrorAlert("Please check your internet connection");
+    }
+  }
+
+
+
   @override
   void onClose() {
     stopCamera();
     timer?.cancel();
     super.onClose();
+  }
+
+  void handleError(dynamic response) {
+    if (response.message != null) {
+      Utils.showErrorAlert(response.message);
+    } else if (response.error != null) {
+      Utils.showErrorAlert(response.error);
+    } else {
+      Utils.showErrorAlert("Server Error. Please Try Again");
+    }
   }
 }
