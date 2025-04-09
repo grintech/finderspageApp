@@ -377,7 +377,9 @@ class EditProfile extends StatelessWidget {
                             ),)),
                     Center(
                       child: CommonButton(
-                        onPressed: controller.update,
+                        onPressed: (){
+
+                        },
                         margin: EdgeInsets.only(top: 30, bottom: 20),
                         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                         radius: 12,
