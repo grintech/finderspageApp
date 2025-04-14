@@ -66,6 +66,7 @@ class Utils{
             fontSize: 17,
             height: 1.4),
       ),
+      duration: Duration(seconds: 2)
     );
   }
 
@@ -91,7 +92,12 @@ class Utils{
                       imagePickerController.pickImage(ImageSource.gallery);
                       Get.back();
                     },
-                    child: Icon(Icons.perm_media_outlined, color: Colors.white,))
+                    child: Icon(Icons.perm_media_outlined, color: Colors.white,)),
+                // GestureDetector(
+                //     onTap:() {
+                //       Get.back();
+                //     },
+                //     child: Icon(Icons.video_camera_back_outlined, color: Colors.white,)),
               ],
             ),
           );

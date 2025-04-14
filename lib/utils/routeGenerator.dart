@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:projects/controllers/postsHomeController.dart';
 import 'package:projects/postsVideoScreens/postsHomeScreens/postsNavBarScreen.dart';
 import 'package:projects/screens/Events/event_calendar.dart';
 import 'package:projects/screens/Profile/edit_profile.dart';
@@ -96,8 +97,12 @@ class RouteGenerator{
 
         //Posts Screens
       case Routes.postsHome:
-        widgetScreen = PostsNavBarScreen();
-        break;
+        return GetPageRoute(
+          routeName: Routes.postsHome,
+          page: () => PostsNavBarScreen(),
+          settings: settings,
+          binding: BindingsBuilder(() => Get.lazyPut(() => PostsHomeController())),
+        );
       case Routes.postsSetting:
         widgetScreen = PostsSettingScreen();
         break;

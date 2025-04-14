@@ -17,11 +17,10 @@ class AuthApiProvider {
   Future<dynamic> signIn(UserModel userModel) async {
     try {
       Response response = await _dio.post(ApiConstants.loginApi, data: userModel);
-      var dataResponse = DataResponse<UserModel>.fromJson(response.data,
-              (data) => UserModel.fromJson(data as Map<String, dynamic>));
+      var dataResponse = DataResponse<UserModel>.fromJson(response.data, (data) => UserModel.fromJson(data as Map<String, dynamic>));
       return dataResponse;
-    } catch (error) {
-      return DataResponse(message: error.toString());
+    } catch (message) {
+      return DataResponse(message: message.toString());
     }
   }
 
@@ -32,8 +31,8 @@ class AuthApiProvider {
       var dataResponse = DataResponse<UserModel>.fromJson(
           response.data, (data) => UserModel.fromJson(data as Map<String, dynamic>));
       return dataResponse;
-    } catch (error) {
-      return DataResponse(message: error.toString());
+    } catch (message) {
+      return DataResponse(message: message.toString());
     }
   }
 

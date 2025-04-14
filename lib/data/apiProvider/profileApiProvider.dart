@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 import 'package:projects/utils/helper/storageHelper.dart';
 import 'package:path/path.dart' as path;
 import '../../utils/shared/dataResponse.dart';
@@ -35,6 +36,15 @@ class ProfileApiProvider{
       formData.fields.addAll([
         MapEntry('id', userModel.id.toString()),
         MapEntry('first_name', userModel.first_name ?? ''),
+        MapEntry('username', userModel.username ?? ''),
+        MapEntry('bio', userModel.bio ?? ''),
+        MapEntry('zipcode', userModel.zipcode ?? ''),
+        MapEntry('address', userModel.address ?? ''),
+        MapEntry('phonenumber', userModel.phonenumber ?? ''),
+        // MapEntry(
+        //   'dob', userModel.dob != null ? DateFormat('yyyy-MM-dd').format(userModel.dob!) : '',
+        // ),
+        MapEntry('profession', userModel.profession ?? ''),
       ]);
 
       // Add image file only if it exists
@@ -43,6 +53,16 @@ class ProfileApiProvider{
         if (await file.exists()) {
           formData.files.add(MapEntry(
             'image',
+            await MultipartFile.fromFile(file.path, filename: path.basename(file.path)),
+          ));
+        }
+      }
+
+      if (userModel.cover_img != null && userModel.cover_img!.isNotEmpty) {
+        final file = File(userModel.cover_img!);
+        if (await file.exists()) {
+          formData.files.add(MapEntry(
+            'cover_img',
             await MultipartFile.fromFile(file.path, filename: path.basename(file.path)),
           ));
         }

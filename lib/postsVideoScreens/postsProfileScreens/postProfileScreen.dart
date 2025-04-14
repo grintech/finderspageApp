@@ -20,7 +20,7 @@ class PostProfileScreen extends StatelessWidget {
   var coverImagePath = ''.obs;
   var profileImagePath = ''.obs;
 
-  PostProfileController controller = Get.put(PostProfileController());
+  final controller = Get.lazyPut(() => PostProfileController());
 
 
   @override
@@ -141,105 +141,57 @@ class PostProfileScreen extends StatelessWidget {
             )
           ],
         ),
-        body: controller.userModel.value == null || controller.userModel.value!.user == null?
-            Center(child: CircularProgressIndicator()):
-        SingleChildScrollView(
+        body: SingleChildScrollView(
           child: Column(
             children: [
-              Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  Stack(
-                    children: [
-                      Container(
-                          margin: EdgeInsets.only(bottom: 40),
-                          height: 180,
-                          width: Get.width,
-                          child: controller.userModel.value?.user?.cover_img == ""
-                              || controller.userModel.value?.user?.cover_img == null
-                              ?Image.asset("assets/images/no_image.png", fit: BoxFit.fill,):
-                          Image.network("${ApiConstants.profileUrl}/"
-                              "${controller.userModel.value?.user?.cover_img}",fit: BoxFit.fill,)
-                      ),
-                      // Positioned(
-                      //   right: 12, bottom: 50,
-                      //   child: GestureDetector(
-                      //     onTap: () {
-                      //       selectCoverImage();
-                      //     },
-                      //     child: Container(
-                      //       width: 25,
-                      //       height: 25,
-                      //       decoration: BoxDecoration(
-                      //         shape: BoxShape.circle,
-                      //         gradient: LinearGradient(
-                      //           begin: Alignment.topCenter,
-                      //           end: Alignment.bottomCenter,
-                      //           colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
-                      //         ),
-                      //       ),
-                      //       child: Image.asset(
-                      //         "assets/images/edit-icon.png",
-                      //         height: 20,
-                      //         width: 20,
-                      //       ),
-                      //     ),
-                      //   ),
-                      // )
-                    ],
-                  ),
-                  Positioned(
-                    left: 20,
-                    child: GestureDetector(
-                      onTap: () {
-                        // selectProfileImage();
-                        // Get.toNamed(Routes.editProfileRoute);
-                      },
-                      child: Stack(
-                        children: [
-                          Container(
-                            height: 70, width: 70,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                            ),
-                            child: controller.userModel.value?.user?.image == "" || controller.userModel.value?.user?.image == null ?
-                            ImageView(height: 80, width: 70,) : ClipRRect(borderRadius: BorderRadius.circular(50),
-                                child: Image.network("${ApiConstants.profileUrl}/${controller.userModel.value?.user?.image}",
-                                  width: 80, height: 80,fit: BoxFit.fill,)),
-                          ),
-                          // Positioned(
-                          //   bottom: 2,
-                          //   right: 0,
-                          //   child: Container(
-                          //     width: 20,
-                          //     height: 22,
-                          //     decoration: BoxDecoration(
-                          //       shape: BoxShape.circle,
-                          //       gradient: LinearGradient(
-                          //         begin: Alignment.topCenter,
-                          //         end: Alignment.bottomCenter,
-                          //         colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
-                          //       ),
-                          //     ),
-                          //     child: Image.asset(
-                          //       "assets/images/edit-icon.png",
-                          //       height: 20,
-                          //       width: 20,
-                          //     ),
-                          //   ),
-                          // ),
-                        ],
-                      ),
-                    ),
-                  )
-                ],
-              ),
-              Align(
+             Obx(()=> Stack(
+               alignment: Alignment.bottomCenter,
+               children: [
+                 Stack(
+                   children: [
+                     Container(
+                         margin: EdgeInsets.only(bottom: 40),
+                         height: 180,
+                         width: Get.width,
+                         child: controller.userModel.value?.user?.cover_img == ""
+                             || controller.userModel.value?.user?.cover_img == null
+                             ?Image.asset("assets/images/no_image.png", fit: BoxFit.fill,):
+                         Image.network("${ApiConstants.profileUrl}/"
+                             "${controller.userModel.value?.user?.cover_img}",fit: BoxFit.fill,)
+                     ),
+                   ],
+                 ),
+                 Positioned(
+                   left: 20,
+                   child: GestureDetector(
+                     onTap: () {
+                       // selectProfileImage();
+                       // Get.toNamed(Routes.editProfileRoute);
+                     },
+                     child: Stack(
+                       children: [
+                         Container(
+                           height: 70, width: 70,
+                           decoration: BoxDecoration(
+                             shape: BoxShape.circle,
+                           ),
+                           child: controller.userModel.value?.user?.image == "" || controller.userModel.value?.user?.image == null ?
+                           ImageView(height: 80, width: 70,) : ClipRRect(borderRadius: BorderRadius.circular(50),
+                               child: Image.network("${ApiConstants.profileUrl}/${controller.userModel.value?.user?.image}",
+                                 width: 80, height: 80,fit: BoxFit.fill,)),
+                         ),
+                       ],
+                     ),
+                   ),
+                 )
+               ],
+             ),),
+              Obx(()=>Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 20),
                     child: MyTextWidget(data: "@${controller.userModel.value?.user?.username}",size: 14, weight: FontWeight.w600,),
-                  )),
+                  )),),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
                 child: Row(
@@ -260,7 +212,7 @@ class PostProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              controller.userModel.value?.followerDetails?.length != 0?
+              Obx(()=>controller.userModel.value?.followerDetails?.length != 0?
               Padding(
                 padding: const EdgeInsets.only(left: 20, top: 8),
                 child: Row(
@@ -280,9 +232,9 @@ class PostProfileScreen extends StatelessWidget {
                     ))
                   ],
                 ),
-              ):SizedBox(),
+              ):SizedBox(),),
 
-              controller.userModel.value?.followerDetails?.length != 0?
+              Obx(()=>controller.userModel.value?.followerDetails?.length != 0?
               Container(
                 margin: EdgeInsets.only(top: 8),
                 height: 40,
@@ -302,7 +254,7 @@ class PostProfileScreen extends StatelessWidget {
                               width: 40, height: 40, fit: BoxFit.fill,)),
                       );
                     }),
-              ):SizedBox(child: MyTextWidget(data: "No Connections Yet",),),
+              ):SizedBox(child: MyTextWidget(data: "No Connections Yet",),),),
 
               Obx(()=>Padding(
                 padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
@@ -392,121 +344,14 @@ class PostProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),),
-
-              // Obx(() {
-              //   List<dynamic> mergedList = [];
-              //
-              //   // Merging all items based on selectedIndex
-              //   if (selectedIndex.value == 0) {
-              //     mergedList = controller.userModel.value?.post ?? [];
-              //   } else if (selectedIndex.value == 1) {
-              //     mergedList = List.generate(2, (index) => {"type": "video"}); // Dummy video items
-              //   } else if (selectedIndex.value == 2) {
-              //     mergedList = controller.userModel.value?.business ?? [];
-              //   } else if (selectedIndex.value == 3){
-              //     mergedList = controller.userModel.value?.ads ?? [];
-              //   } else if (selectedIndex.value == 4){
-              //     mergedList = controller.userModel.value?.shopping ?? [];
-              //   } else if (selectedIndex.value == 5){
-              //     mergedList = controller.userModel.value?.community ?? [];
-              //   } else if (selectedIndex.value == 6){
-              //     mergedList = controller.userModel.value?.service ?? [];
-              //   } else{
-              //     mergedList = controller.userModel.value?.entertainment ?? [];
-              //   }
-              //
-              //   return ListView.builder(
-              //     itemCount: mergedList.length,
-              //     physics: NeverScrollableScrollPhysics(),
-              //     padding: EdgeInsets.only(bottom: 20),
-              //     shrinkWrap: true,
-              //     itemBuilder: (context, index) {
-              //       var item = mergedList[index];
-              //       return Padding(
-              //         padding: const EdgeInsets.only(bottom: 12),
-              //         child: Column(
-              //           crossAxisAlignment: CrossAxisAlignment.start,
-              //           children: [
-              //             // User Info Row
-              //             Padding(
-              //               padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 15),
-              //               child: Row(
-              //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //                 children: [
-              //                   Row(
-              //                     children: [
-              //                       Container(
-              //                         height: 40,
-              //                         width: 40,
-              //                         margin: EdgeInsets.only(right: 10),
-              //                         decoration: BoxDecoration(shape: BoxShape.circle),
-              //                         child: controller.userModel.value?.user?.image == "" || controller.userModel.value?.user?.image == null
-              //                             ? ImageView(height: 40, width: 40)
-              //                             : ClipRRect(
-              //                           borderRadius: BorderRadius.circular(30),
-              //                           child: Image.network(
-              //                             "${ApiConstants.profileUrl}/${controller.userModel.value?.user?.image}",
-              //                             width: 40,
-              //                             height: 40,
-              //                             fit: BoxFit.fill,
-              //                           ),
-              //                         ),
-              //                       ),
-              //                       MyTextWidget(
-              //                         data: "${controller.userModel.value?.user?.username}",
-              //                         size: 12,
-              //                         weight: FontWeight.w500,
-              //                       )
-              //                     ],
-              //                   ),
-              //                   PopupMenuButton<int>(
-              //                     color: whiteColor,
-              //                     surfaceTintColor: whiteColor,
-              //                     icon: Icon(Icons.more_vert, color: blackColor, size: 20),
-              //                     offset: Offset(-12, 35),
-              //                     menuPadding: EdgeInsets.zero,
-              //                     itemBuilder: (context) {
-              //                       return <PopupMenuEntry<int>>[
-              //                         PopupMenuItem(value: 0, child: Text("Edit")),
-              //                         PopupMenuItem(value: 1, child: Text("Delete")),
-              //                       ];
-              //                     },
-              //                   )
-              //                 ],
-              //               ),
-              //             ),
-              //
-              //             // Content Image
-              //             Container(
-              //               height: 240,
-              //               width: Get.width,
-              //               decoration: BoxDecoration(color: Colors.grey.shade200),
-              //               child: (selectedIndex.value == 1) // For videos (Placeholder)
-              //                   ? Image.asset("assets/images/no_image.png", fit: BoxFit.fill)
-              //                   : (item.image == "" || item.image == null)
-              //                   ? Image.asset("assets/images/no_image.png", fit: BoxFit.fill)
-              //                   : ClipRRect(
-              //                 borderRadius: BorderRadius.circular(30),
-              //                 child: Image.network(
-              //                   selectedIndex.value == 2
-              //                       ? "${ApiConstants.businessImgUrl}/${item.image}"
-              //                       : selectedIndex.value == 3
-              //                       ? "${ApiConstants.postImgUrl}/${item.image}"
-              //                       : "${ApiConstants.postImgUrl}/${item.image}",
-              //                   width: 40,
-              //                   height: 40,
-              //                   fit: BoxFit.contain,
-              //                 ),
-              //               ),
-              //             ),
-              //           ],
-              //         ),
-              //       );
-              //     },
-              //   );
-              // })
-
-
+              controller.userModel.value?.post?.length==0 ||
+                  controller.userModel.value?.entertainment?.length==0 ||
+                  controller.userModel.value?.business?.length==0 ||
+                  controller.userModel.value?.ads?.length==0 ||
+                  controller.userModel.value?.fundraisers?.length==0 ||
+                  controller.userModel.value?.shopping?.length==0 ||
+                  controller.userModel.value?.community?.length==0 ||
+                  controller.userModel.value?.service?.length==0?
               Obx(()=>selectedIndex.value == 0? ListView.builder(
                   itemCount: controller.userModel.value?.post?.length,
                   physics: NeverScrollableScrollPhysics(),
@@ -1068,8 +913,11 @@ class PostProfileScreen extends StatelessWidget {
                       ),
                     );
                   })
-              )
-              // MyTextWidget(data: "No content is published yet",),
+              ):
+              Padding(
+                padding: const EdgeInsets.only(top: 50),
+                child: MyTextWidget(data: "No content is published yet",),
+              ),
             ],
           ),
         ),

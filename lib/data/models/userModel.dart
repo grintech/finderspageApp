@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'userModel.g.dart';
 
-@JsonSerializable(includeIfNull: false)
+@JsonSerializable(genericArgumentFactories: true, includeIfNull: false, explicitToJson: true)
 class UserModel {
   String? first_name;
   String? username;
@@ -10,14 +10,19 @@ class UserModel {
   String? password;
   String? image;
   String? phonenumber;
+  String? profession;
+  DateTime? dob;
+  String? address;
   String? zipcode;
   String? bio;
   String? cover_img;
   String? user_id;
+  String? is_verified;
   int? id;
   String? slug;
   int? status;
   String? createdBy;
+  DateTime? verified_at;
   String? created;
   int? firstTimeLogin;
   String? messengerColor;
@@ -46,13 +51,18 @@ class UserModel {
     this.image,
     this.phonenumber,
     this.zipcode,
+    this.profession,
+    this.dob,
     this.bio,
+    this.address,
+    this.is_verified,
     this.cover_img,
     this.user_id,
     this.id,
     this.slug,
     this.status,
     this.createdBy,
+    this.verified_at,
     this.created,
     this.firstTimeLogin,
     this.messengerColor,
@@ -83,9 +93,14 @@ class UserModel {
     phonenumber: json["phonenumber"],
     zipcode: json["zipcode"],
     bio: json["bio"],
+    profession: json["profession"],
+    dob: json["dob"],
+    verified_at: json["verified_at"],
+    is_verified: json["is_verified"],
     cover_img: json["cover_img"],
     user_id: json["user_id"],
     id: json["id"],
+    address: json["address"],
     slug: json["slug"],
     status: json["status"],
     createdBy: json["created_by"],
@@ -126,6 +141,11 @@ class UserModel {
     "phonenumber": phonenumber,
     "zipcode": zipcode,
     "bio": bio,
+    "profession": profession,
+    "dob": dob,
+    "address": address,
+    "is_verified": is_verified,
+    "verified_at": verified_at,
     "cover_img": cover_img,
     "user_id": user_id,
     "id": id,

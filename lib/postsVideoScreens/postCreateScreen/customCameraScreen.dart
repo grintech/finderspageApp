@@ -10,6 +10,7 @@ class CustomCameraScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    controller.initializeCamera();
     return Scaffold(
       backgroundColor: Colors.black,
       body: Obx(() {
@@ -58,7 +59,7 @@ class CustomCameraScreen extends StatelessWidget {
                 children: [
                   //Select Video from Gallery
                   FloatingActionButton(
-                    onPressed: controller.pickVideo,
+                    onPressed: (){},
                     backgroundColor: Colors.white,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_switch/flutter_switch.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -31,6 +32,13 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
   final titleController = TextEditingController();
   final descController = TextEditingController();
   final locController = TextEditingController();
+  final captionController = TextEditingController();
+  final donationController = TextEditingController();
+
+  var shareOn = false.obs;
+  var likesOn = false.obs;
+  var commentOn = false.obs;
+  var donationOn = false.obs;
 
   Future<void> _pickVideo() async {
     final XFile? pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
@@ -85,104 +93,26 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: Text("Upload Video"),
-        ),
-        body:Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            SingleChildScrollView(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: _pickVideo,
-                    child: _controller != null && _controller!.value.isInitialized?
-                    AspectRatio(
-                      aspectRatio: 1.5,
-                      child: VideoPlayer(_controller!),
-                    ):SizedBox(
-                        height: 300,
-                        child: Column(
-                          children: [
-                            Image.asset("assets/images/ic_upload_video.png", scale: 3,),
-                            SizedBox(height: 30,),
-                            MyTextWidget(data: "Select video    ",),
-                          ],
-                        )),
-                  ),
-                  SizedBox(height: 10),
-                  if (_controller != null && _controller!.value.isInitialized)
-                    IconButton(
-                      icon: Icon(
-                        _controller!.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                        size: 36,
-                      ),
-                      onPressed: _togglePlayPause,
-                    ),
-                  SizedBox(height: 20),
-                  CommonTextField(
-                    margin: EdgeInsets.only(top: 20, bottom: 10),
-                    hint: "Add Caption Here...",
-                    textController: titleController,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Row(
-                      children: [
-                        Flexible(
-                          child: CommonTextField(
-                            hint: "Add Location",
-                            textController: locController,
-                          ),
-                        ),
-                        SizedBox(width: 20,),
-                        Flexible(
-                          child: Container(
-                            height: 48,
-                            padding: EdgeInsets.symmetric(horizontal: 8),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                border: Border.all(width: 1.5, color: fieldBorderColor)
-                            ),
-                             child: Row(
-                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                               children: [
-                                 Center(child: MyTextWidget(
-                                     data: "Select Sub Category", size: 12,)),
-                                 Icon(Icons.keyboard_arrow_down)
-                               ],
-                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  CommonTextField(
-                    margin: EdgeInsets.only(top: 10, bottom: 20),
-                    hint: "Description",
-                    textController: descController,
-                    lines: 4,
-                  ),
-                  SizedBox(height: 80),
-                ],
-              ),
-            ),
+          actions: [
             CommonButton(
+              margin: EdgeInsets.only(right: 20),
               onPressed: ()async{
                 String imagePath = await copyAssetToFile(
                   'assets/images/thumbnail.jpg', // this is the asset path
                   'thumbnail.jpg',               // this is the filename only
                 );
-                controller.postVideo(
-                  VideoUploadModel(
-                    title: titleController.text,
-                    location: locController.text,
-                    description: descController.text,
-                    type: "video",
-                    id: controller.storageHelper.getUserModel()?.user!.id,
-                    subCategory: "5449",
-                    postVideo: _videoFile?.path,
-                    image1: imagePath
+                controller.postVideo(VideoUploadModel(
+                      title: titleController.text,
+                      location: locController.text,
+                      description: descController.text,
+                      type: "video",
+                      shares: shareOn.value == true?1:0,
+                      likesBtn: likesOn.value == true?"1":"0",
+                      commentOption: commentOn.value == true?1:0,
+                      id: controller.storageHelper.getUserModel()?.user!.id,
+                      subCategory: "5449",
+                      postVideo: _videoFile?.path,
+                      image1: imagePath
                   ),
                 );
               },
@@ -191,6 +121,128 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
               btnTxt: "Share",
             ),
           ],
+        ),
+        body:SingleChildScrollView(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: _pickVideo,
+                child: _controller != null && _controller!.value.isInitialized?
+                AspectRatio(
+                  aspectRatio: 1.5,
+                  child: VideoPlayer(_controller!),
+                ):SizedBox(
+                    height: 170,
+                    child: Column(
+                      children: [
+                        Image.asset("assets/images/ic_upload_video.png", scale: 5,),
+                        SizedBox(height: 30,),
+                        MyTextWidget(data: "Select video    ",),
+                      ],
+                    )),
+              ),
+              SizedBox(height: 10),
+              if (_controller != null && _controller!.value.isInitialized)
+                IconButton(
+                  icon: Icon(
+                    _controller!.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                    size: 36,
+                  ),
+                  onPressed: _togglePlayPause,
+                ),
+              SizedBox(height: 10),
+              CommonTextField(
+                margin: EdgeInsets.only(top: 20, bottom: 10),
+                hint: "Add Title Here...",
+                textController: titleController,
+              ),
+              CommonTextField(
+                margin: EdgeInsets.only(top: 10, bottom: 10),
+                hint: "Add Location",
+                textController: locController,
+              ),
+              CommonTextField(
+                margin: EdgeInsets.only(top: 10, bottom: 10),
+                hint: "Add Description",
+                lines: 3,
+                textController: descController,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    MyTextWidget(data: "Share",),
+                    Obx(()=>FlutterSwitch(
+                        height: 20, width: 40,
+                        toggleSize: 12,
+                        activeColor: fieldBorderColor,
+                        value: shareOn.value,
+                        onToggle:(val){
+                          shareOn.value = val;
+                        }
+                    ))
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    MyTextWidget(data: "Comment",),
+                    Obx(()=>FlutterSwitch(
+                        height: 20, width: 40,
+                        toggleSize: 12,
+                        activeColor: fieldBorderColor,
+                        value: commentOn.value,
+                        onToggle:(val){
+                          commentOn.value = val;
+                        }
+                    ))
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric( vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    MyTextWidget(data: "Likes",),
+                    Obx(()=>FlutterSwitch(
+                        height: 20, width: 40,
+                        toggleSize: 12,
+                        activeColor: fieldBorderColor,
+                        value: likesOn.value,
+                        onToggle:(val){
+                          likesOn.value = val;
+                        }
+                    ))
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric( vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    MyTextWidget(data: "Tips & Donation (Optional)",),
+                    Obx(()=>FlutterSwitch(
+                        height: 20, width: 40,
+                        toggleSize: 12,
+                        activeColor: fieldBorderColor,
+                        value: donationOn.value,
+                        onToggle:(val){
+                          donationOn.value = val;
+                        }
+                    )),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

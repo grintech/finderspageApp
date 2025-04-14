@@ -23,7 +23,7 @@ Future<void> main() async {
 Future<String> findInitialRoute() async{
   String initialRoute = Routes.welcome;
   StorageHelper storageHelper = StorageHelper();
-  if(storageHelper.getUserToken() != null){
+  if(storageHelper.getUserToken() != null && storageHelper.getUserModel()?.user?.verified_at != null){
     initialRoute = Routes.postsHome;
     print("user token -----> ${storageHelper.getUserToken()}");
   }else{

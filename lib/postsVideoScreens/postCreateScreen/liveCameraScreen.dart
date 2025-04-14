@@ -15,6 +15,7 @@ class LiveCameraScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    controller.initializeCamera();
     return Scaffold(
       body: Obx(() {
         if (!controller.isCameraInitialized.value) {

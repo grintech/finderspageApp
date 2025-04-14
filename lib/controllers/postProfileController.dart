@@ -17,6 +17,8 @@ class PostProfileController extends GetxController {
   var coverImagePath = ''.obs;
   var profileImagePath = ''.obs;
   var profileImageFile = ''.obs;
+  var dateOfBirth = ''.obs;
+  var selectedDOB = Rxn<DateTime>();
   Rxn<UserModel> userModel = Rxn();
 
   final nameController = TextEditingController();
@@ -31,10 +33,11 @@ class PostProfileController extends GetxController {
   void onInit() {
     _profileApiProvider = ProfileApiProvider();
     storageHelper = StorageHelper();
-    if(storageHelper.getUserModel()?.user?.id !=null){
-        getProfileApi();
-    }
-
+   Future.delayed(Duration(milliseconds: 200),(){
+     if(storageHelper.getUserModel()?.user?.id !=null){
+       getProfileApi();
+     }
+   });
     super.onInit();
   }
 
@@ -146,6 +149,9 @@ class PostProfileController extends GetxController {
         if (userModel.user?.zipcode != null) {
           zipController.text = userModel.user!.zipcode!;
         }
+        // if(userModel.user?.dob != null){
+        //   selectedDOB = userModel.user?.dob;
+        // }
         if (userModel.user?.bio != null) {
           String bioHtml = userModel.user!.bio!;
           String plainTxt = Utils().removeHtmlTags(bioHtml);
@@ -166,9 +172,10 @@ class PostProfileController extends GetxController {
       var dataResponse = response as DataResponse;
       if (dataResponse.success == true) {
 
-        // var userModel = dataResponse.data as UserModel;
-        Get.back();
+        var userModel = dataResponse.data as UserModel;
+        this.userModel.value = userModel;
         getProfileApi();
+        Get.back();
       } else {
         handleError(dataResponse);
       }

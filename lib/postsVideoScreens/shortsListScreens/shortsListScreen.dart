@@ -21,14 +21,10 @@ class VideoFeedScreen extends StatefulWidget {
 }
 
 class _VideoFeedScreenState extends State<VideoFeedScreen> with WidgetsBindingObserver {
-  final List<String> videoUrls = [
-    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-  ];
+  late List<VideoPlayerController> _controllers = [];
 
   final PageController _pageController = PageController();
-  late List<VideoPlayerController> _controllers;
+  final controller = Get.find<PostsHomeController>();
 
   int _currentIndex = 0; // Track current video index
 
@@ -37,16 +33,22 @@ class _VideoFeedScreenState extends State<VideoFeedScreen> with WidgetsBindingOb
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    _controllers = videoUrls
-        .map((url) => VideoPlayerController.networkUrl(Uri.parse(url)))
-        .toList();
+    ever(controller.videoUrls, (_) async {
+      for (var ctrl in _controllers) {
+        ctrl.dispose();
+      }
+      _controllers = controller.videoUrls
+          .map((url) => VideoPlayerController.networkUrl(Uri.parse("https://www.finderspage.com/upload/$url")))
+          .toList();
 
-    Future.wait(_controllers.map((controller) => controller.initialize())).then((_) {
-      if (mounted) setState(() {});
+      await Future.wait(_controllers.map((c) => c.initialize()));
+      setState(() {
+        _controllers[_currentIndex].play();
+      });
     });
 
     // Listen for tab changes
-    final controller = Get.find<PostsHomeController>();
+
     ever(controller.isVideoScreenActive, (isActive) {
       if (!isActive) {
         for (var controller in _controllers) {
@@ -81,7 +83,7 @@ class _VideoFeedScreenState extends State<VideoFeedScreen> with WidgetsBindingOb
       body: PageView.builder(
         controller: _pageController,
         scrollDirection: Axis.vertical,
-        itemCount: videoUrls.length,
+        itemCount: _controllers.length,
         onPageChanged: (index) {
           _controllers[_currentIndex].pause(); // Pause the previous video
           _currentIndex = index;

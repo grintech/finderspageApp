@@ -5,11 +5,14 @@ import 'package:camera/camera.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:projects/controllers/postsHomeController.dart';
 import 'package:projects/data/models/videoUploadModel.dart';
 import 'package:projects/utils/routes.dart';
 import 'package:projects/utils/shared/dataResponse.dart';
+import 'package:video_player/video_player.dart';
 
 import '../data/apiProvider/createPostApiProvider.dart';
+import '../postsVideoScreens/postsHomeScreens/postsNavBarScreen.dart';
 import '../utils/helper/storageHelper.dart';
 import '../utils/util.dart';
 
@@ -17,10 +20,11 @@ class CreatePostController extends GetxController {
   var selectedImagePath = ''.obs;
 
   final ImagePicker _picker = ImagePicker();
-  File? _videoFile;
+  File? videoFile;
 
   late CreatePostApiProvider createApiProvider = CreatePostApiProvider();
   late StorageHelper storageHelper = StorageHelper();
+  late VideoPlayerController? playerController;
 
   CameraController? cameraController;
   late List<CameraDescription> cameras;
@@ -44,30 +48,36 @@ class CreatePostController extends GetxController {
     if (image != null) {
       selectedImagePath.value = image.path;
     }
-    // else {
-    //   Get.snackbar("Error", "No image selected",
-    //       snackPosition: SnackPosition.BOTTOM);
-    // }
+    else {
+      Get.snackbar("Error", "No image selected",
+          snackPosition: SnackPosition.BOTTOM);
+    }
   }
 
   // open and record video
   @override
   void onInit() {
     super.onInit();
-    initializeCamera();
     createApiProvider = CreatePostApiProvider();
     storageHelper = StorageHelper();
   }
 
   /// Initialize Camera
-  Future<void> initializeCamera() async {
+  Future<bool> initializeCamera() async {
+    try{
     cameras = await availableCameras();
     cameraController = CameraController(cameras[0], ResolutionPreset.high);
     await cameraController!.initialize();
     isCameraInitialized.value = true;
     isCameraOn.value = !isCameraOn.value;
     update();
+    return true;
+    }catch(e){
+      print('Camera init failed: $e');
+      return false;
+    }
   }
+
 
 
   /// Stop Camera when not in use
@@ -120,11 +130,17 @@ class CreatePostController extends GetxController {
 
 
   ///Select gallery videos
-  Future<void> pickVideo() async {
+  Future<void> _pickVideo() async {
     final XFile? pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      _videoFile = File(pickedFile.path);
+      videoFile = File(pickedFile.path);
+
+      playerController?.dispose();
+
+      playerController = VideoPlayerController.file(videoFile!)
+        ..initialize().then((_) {// Rebuild with controller
+        });
     }
   }
 
@@ -170,22 +186,6 @@ class CreatePostController extends GetxController {
     }
   }
 
-  /// Start Video Recording
-  Future<void> startRecording() async {
-    if (cameraController == null || !cameraController!.value.isInitialized) return;
-
-    final directory = await getTemporaryDirectory();
-    final videoPath = '${directory.path}/video_${DateTime.now().millisecondsSinceEpoch}.mp4';
-
-    try {
-      await cameraController!.startVideoRecording();
-      isRecording.value = true;
-      recordedVideoPath.value = videoPath;
-    } catch (e) {
-      print("Error starting video recording: $e");
-    }
-  }
-
   /// Stop Recording
   Future<void> stopRecording() async {
     if (cameraController == null || !cameraController!.value.isRecordingVideo) return;
@@ -212,8 +212,37 @@ class CreatePostController extends GetxController {
 
       if (response.success == true) {
         if (response.data != null) {
-          final videoUpload = response.data as VideoUploadModel;
-          // Get.offAllNamed(Routes.postsHome);
+          final postsController = Get.find<PostsHomeController>();
+          postsController.postsList.clear();
+          postsController.changeTabIndex(0);
+          postsController.getPostLists();
+        } else {
+          handleError(response);
+        }
+      } else {
+        Utils.showErrorAlert(response.message ?? "Upload failed");
+      }
+    } else {
+      Utils.showErrorAlert("Please check your internet connection");
+    }
+  }
+
+
+  Future<void> uploadPost(VideoUploadModel videoModel) async {
+    if (await Utils.hasNetwork()) {
+      print("show VideoModel Data -----> ${videoModel.toJson()}");
+      Utils.showLoader();
+
+      var response = await createApiProvider.uploadPostApp(videoModel);
+
+      Utils.hideLoader();
+
+      if (response.success == true) {
+        if (response.data != null) {
+          final postsController = Get.find<PostsHomeController>();
+          postsController.postsList.clear();
+          postsController.changeTabIndex(0);
+          postsController.getPostLists();
         } else {
           handleError(response);
         }

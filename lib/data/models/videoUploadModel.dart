@@ -7,10 +7,13 @@ class VideoUploadModel {
   String? image1;
   String? location;
   String? subCategory;
+  String? caption;
+  String? categories;
   String? description;
   int? shares;
   int? commentOption;
   String? likesBtn;
+  String? donationLink;
   String? type;
   String? createdBy;
   String? postType;
@@ -19,6 +22,7 @@ class VideoUploadModel {
   String? created;
   String? modified;
   int? id;
+  VideoUploadModel? post;
 
   VideoUploadModel({
     this.title,
@@ -28,8 +32,11 @@ class VideoUploadModel {
     this.image1,
     this.location,
     this.subCategory,
+    this.caption,
+    this.categories,
     this.description,
     this.shares,
+    this.donationLink,
     this.commentOption,
     this.likesBtn,
     this.type,
@@ -40,6 +47,7 @@ class VideoUploadModel {
     this.created,
     this.modified,
     this.id,
+    this.post,
   });
   VideoUploadModel.fromJson(Map<String, dynamic> json) {
     title = json['title'];
@@ -47,10 +55,13 @@ class VideoUploadModel {
     userId = json['user_id'] is int ? json['user_id'] : int.tryParse(json['user_id']?.toString() ?? '');
     location = json['location'];
     subCategory = json['subCategory'];
+    caption = json['caption'];
+    categories = json['categories'];
     description = json['description'];
     shares = json['shares'];
-    commentOption = json['commentOption'];
-    likesBtn = json['likesBtn'];
+    donationLink = json['donation_link'];
+    commentOption = json['comment_option'];
+    likesBtn = json['likes_btn'];
     type = json['type'];
     createdBy = json['createdBy'];
     postType = json['postType'];
@@ -61,6 +72,7 @@ class VideoUploadModel {
     id = json['id'];
     postVideo = json['post_video'];
     image1 = json['image1'];
+    post = json['post'] != null ? VideoUploadModel.fromJson(json['post']) : null;
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -74,11 +86,14 @@ class VideoUploadModel {
     writeNotNull('user_id', userId);
     writeNotNull('location', location);
     writeNotNull('subCategory', subCategory);
+    writeNotNull('caption', caption);
+    writeNotNull('categories', categories);
     writeNotNull('description', description);
     writeNotNull('shares', shares);
     writeNotNull('commentOption', commentOption);
     writeNotNull('likesBtn', likesBtn);
     writeNotNull('type', type);
+    writeNotNull('donation_link', donationLink);
     writeNotNull('createdBy', createdBy);
     writeNotNull('postType', postType);
     writeNotNull('status', status);
@@ -88,6 +103,7 @@ class VideoUploadModel {
     writeNotNull('post_video', postVideo);
     writeNotNull('image1', image1);
     writeNotNull('id', id);
+    writeNotNull('post', post?.toJson());
     return data;
   }
 }

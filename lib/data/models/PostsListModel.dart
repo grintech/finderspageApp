@@ -160,6 +160,8 @@ class PostsListModel{
   dynamic health;
   dynamic houseTrained;
   dynamic paymentLinks;
+  List<String>? imageList;
+  List<String>? postList;
 
   PostsListModel({
     this.id,
@@ -316,21 +318,23 @@ class PostsListModel{
     this.adoptionFee,
     this.health,
     this.houseTrained,
-    this.paymentLinks
+    this.paymentLinks,
+    this.imageList,
+    this.postList
   });
 
-  List<String> get imageList {
-    if (image1 == null || image1!.isEmpty) return [];
-    try {
-      final decoded = jsonDecode(image1!);
-      if (decoded is List) return List<String>.from(decoded);
-    } catch (e) {
-      print("Failed to decode image1: $e");
-    }
-    return [];
-  }
 
   PostsListModel.fromJson(Map<String, dynamic>json){
+    List<String> decodedImages = [];
+    if (json['image1'] != null && json['image1'] is String) {
+      decodedImages = List<String>.from(jsonDecode(json['image1']));
+    }
+    List<String> decodedPosts = [];
+    if (json['post_video'] != null && json['post_video'] is String) {
+      decodedImages = List<String>.from(jsonDecode(json['post_video']));
+    }
+    imageList = decodedImages;
+    postList = decodedPosts;
     id = json['id'];
     title = json['title'];
     slug = json['slug'];

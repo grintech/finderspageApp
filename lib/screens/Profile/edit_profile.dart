@@ -63,7 +63,8 @@ class EditProfile extends StatelessWidget {
                             && controller.userModel.value?.user?.cover_img == ""
                             && controller.userModel.value?.user?.cover_img == null
                             ?Image.asset("assets/images/no_image.png",
-                          fit: BoxFit.fill,):controller.coverImagePath.isNotEmpty?
+                          fit: BoxFit.fill,)
+                            :controller.coverImagePath.isNotEmpty?
                         Image.file(File(controller.coverImagePath.value),
                           width: Get.width, height: 180, fit: BoxFit.contain,):
                         Image.network("${ApiConstants.profileUrl}/"
@@ -222,17 +223,17 @@ class EditProfile extends StatelessWidget {
                           ),
                         ),
                         SizedBox(width: 12,),
-                        GestureDetector(
+                        Obx(()=>GestureDetector(
                           onTap: () async {
                             DateTime? pickedDate = await showDatePicker(
                               context: context,
-                              initialDate: DateTime.now(),
+                              initialDate: DateTime(2007),
                               firstDate: DateTime(2007),
                               lastDate: DateTime(2040),
                             );
 
                             if (pickedDate != null) {
-                              selectedDOB.value = pickedDate.toUtc();
+                              selectedDOB.value = pickedDate;
                               print("Selected date: $pickedDate"); // Handle the selected date
                             }
                           },
@@ -241,21 +242,21 @@ class EditProfile extends StatelessWidget {
                               height: 48,
                               padding: EdgeInsets.symmetric(horizontal: 15),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                border: Border.all(width: 1.5, color: fieldBorderColor)
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(width: 1.5, color: fieldBorderColor)
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  MyTextWidget(data: "22-Apr-2025"),
-                                  SizedBox(width: 30,),
-                                  Image.asset("assets/images/calendar-icon.png", scale:3,)
+                                  MyTextWidget(data:DateFormat('dd-MMMM-yyyy').format(selectedDOB.value)),
+                                  SizedBox(width: 12,),
+                                  Image.asset("assets/images/calendar-icon.png", scale:4,)
                                 ],
                               ),
                             ),
                           ),
-                        )
+                        ))
                       ],
                     ),
                     CommonTextField(
@@ -406,7 +407,35 @@ class EditProfile extends StatelessWidget {
     }
     if (controller.nameController.text.trim().isNotEmpty) {
       model.first_name = controller.nameController.text.trim().toString();
+    }else{
+      model.first_name = controller.nameController.text.trim().toString();
     }
+    if(controller.coverImagePath.value.isNotEmpty){
+      model.cover_img = controller.coverImagePath.value;
+    }else{
+      model.cover_img = controller.coverImagePath.value;
+    }
+    if (controller.usernameController.text.trim().isNotEmpty) {
+      model.username = controller.usernameController.text.trim().toString();
+    }else{
+      model.username = controller.usernameController.text.trim().toString();
+    }
+    if (controller.phoneController.text.trim().isNotEmpty) {
+      model.phonenumber = controller.phoneController.text.trim().toString();
+    }else{
+      model.phonenumber = controller.phoneController.text.trim().toString();
+    }
+    if (controller.zipController.text.trim().isNotEmpty) {
+      model.zipcode = controller.zipController.text.trim().toString();
+    }else{
+      model.zipcode = controller.zipController.text.trim().toString();
+    }
+    if (controller.zipController.text.trim().isNotEmpty) {
+      model.zipcode = controller.zipController.text.trim().toString();
+    }else{
+      model.zipcode = controller.zipController.text.trim().toString();
+    }
+    // model.dob = selectedDOB.value;
     await controller.updateUserApi(model);
   }
 }

@@ -58,9 +58,21 @@ class HomeApiProvider{
   }
 
   //Post Home Apis
-  Future<PageResponse> getAllPostList() async {
+  Future<PageResponse> getAllPostList(Map<String, dynamic>? queries) async {
     try {
-      Response response = await _dio.get(ApiConstants.showAllPosts, options: Injector.getHeaderToken());
+      Response response = await _dio.get(ApiConstants.showAllPosts, queryParameters: queries,
+          options: Injector.getHeaderToken());
+      var dataResponse = PageResponse<PostsListModel>.fromJson(response.data, (data) => PostsListModel.fromJson(data as Map<String, dynamic>));
+      return dataResponse;
+    } catch (error) {
+      return PageResponse(message: error.toString());
+    }
+  }
+
+
+  Future<PageResponse> getAllVideoList() async {
+    try {
+      Response response = await _dio.get(ApiConstants.showAllVideo, options: Injector.getHeaderToken());
       var dataResponse = PageResponse<PostsListModel>.fromJson(response.data, (data) => PostsListModel.fromJson(data as Map<String, dynamic>));
       return dataResponse;
     } catch (error) {

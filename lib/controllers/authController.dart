@@ -28,13 +28,14 @@ class AuthController extends GetxController{
         var userModel = UserModel();
         if(response.data != null){
           userModel = response.data as UserModel;
-          storageHelper.saveUserModel(userModel);
-          // storageHelper.saveUserType(userModel.userType);
-          storageHelper.saveUserToken(userModel.token);
-          storageHelper.saveUserId(userModel.user?.id);
-          Future.delayed(Duration(milliseconds: 200), () {
+          if(userModel.user?.verified_at != null) {
+            storageHelper.saveUserModel(userModel);
+            storageHelper.saveUserToken(userModel.token);
+            storageHelper.saveUserId(userModel.user?.id);
             Get.offAllNamed(Routes.postsHome);
-          });
+          }else{
+            Utils.showInfoAlert("Please Verify your account. Check your email account.","");
+          }
         }
       }else{
         handleError(response);
@@ -52,11 +53,13 @@ class AuthController extends GetxController{
       Utils.hideLoader();
       var response = res as DataResponse;
       if(response.success == true){
-        var userModel = UserModel();
+        var userModel = response.data as UserModel;
         if(response.data != null){
-          userModel = response.data as UserModel;
           storageHelper.saveUserToken(userModel.token);
-          Get.offAllNamed(Routes.postsHome);
+          Utils.showSuccessAlert("${response.message}");
+          Future.delayed(const Duration(seconds: 3), () {
+            Get.offAllNamed(Routes.loginRoute);
+          });
         }
       }else{
         handleError(response);
