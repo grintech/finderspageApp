@@ -9,8 +9,11 @@ class PostsListModel{
   String? title;
   String? slug;
   int? availableNow;
+  int? total_likes;
+  int? total_comments;
   dynamic availableSince;
   String? location;
+  String? likes;
   dynamic fees;
   String? bumpPost;
   dynamic featuredImage;
@@ -160,6 +163,15 @@ class PostsListModel{
   dynamic health;
   dynamic houseTrained;
   dynamic paymentLinks;
+  int? likeId;
+  int? totalLikes;
+  int? user_id;
+  int? blog_id;
+  int? cate_id;
+  String? action;
+  String? url;
+  String? reaction;
+  Map<String, String>? likedBy;
   List<String>? imageList;
   List<String>? postList;
 
@@ -174,6 +186,7 @@ class PostsListModel{
     this.bumpPost,
     this.featuredImage,
     this.shares,
+    this.likes,
     this.likesBtn,
     this.userName,
     this.userImage,
@@ -205,6 +218,8 @@ class PostsListModel{
     this.description,
     this.userId,
     this.phone,
+    this.total_likes,
+    this.total_comments,
     this.email,
     this.website,
     this.address,
@@ -320,7 +335,16 @@ class PostsListModel{
     this.houseTrained,
     this.paymentLinks,
     this.imageList,
-    this.postList
+    this.postList,
+    this.likeId,
+    this.totalLikes,
+    this.user_id,
+    this.blog_id,
+    this.cate_id,
+    this.action,
+    this.url,
+    this.reaction,
+    this.likedBy,
   });
 
 
@@ -342,6 +366,7 @@ class PostsListModel{
     availableSince = json['available_since'];
     location = json['location'];
     fees = json['fees'];
+    likes = json['likes'];
     bumpPost = json['bumpPost'];
     featuredImage = json['featured_image'];
     shares = json['shares'];
@@ -352,6 +377,8 @@ class PostsListModel{
     serviceDate = json['service_date'];
     offerd = json['offerd'];
     type = json['type'];
+    total_likes = json['total_likes'];
+    total_comments = json['total_comments'];
     specialDiscounts = json['special_discounts'];
     workingHours = json['working_hours'];
     speakLanguage = json['speak_language'];
@@ -490,10 +517,22 @@ class PostsListModel{
     health = json['health'];
     houseTrained = json['house_trained'];
     paymentLinks = json['payment_links'];
+    likeId = json['likeId'];
+    user_id = json['user_id'];
+    blog_id = json['blog_id'];
+    cate_id = json['cate_id'];
+    action = json['action'];
+    type = json['type'];
+    url = json['url'];
+    totalLikes = json['total_likes'];
+    reaction = json['reaction'];
+    likedBy = json['liked_by'] != null && json['liked_by'] is Map
+        ? (json['liked_by'] as Map).map((key, value) => MapEntry(key.toString(), value.toString()),
+    ) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
 
     void writeNotNull(String key, dynamic value) {
       if (value != null && value
@@ -511,11 +550,14 @@ class PostsListModel{
     writeNotNull('user_name', userName);
     writeNotNull('user_image', userImage);
     writeNotNull('type', type);
+    writeNotNull('likes', likes);
     writeNotNull('description', description);
     writeNotNull('sub_category', subCategory);
     writeNotNull('post_video', postVideo);
     writeNotNull('created_by', createdBy);
     writeNotNull('post_type', postType);
+    writeNotNull('total_comments', total_comments);
+    writeNotNull('total_likes', total_likes);
     writeNotNull('draft', draft);
     writeNotNull('created', created);
     writeNotNull('modified', modified);
@@ -523,6 +565,17 @@ class PostsListModel{
     writeNotNull('shares', shares);
     writeNotNull('likes_btn', likesBtn);
     writeNotNull('status', status);
+    writeNotNull('likeId', likeId);
+    writeNotNull('user_id', user_id);
+    writeNotNull('blog_id', blog_id);
+    writeNotNull('cate_id', cate_id);
+    writeNotNull('action', action);
+    writeNotNull('type', type);
+    writeNotNull('url', url);
+    writeNotNull('reaction', reaction);
+    writeNotNull('total_likes', totalLikes);
+    writeNotNull('liked_by', likedBy);
+
     return data;
   }
 }

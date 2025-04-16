@@ -26,4 +26,6 @@ static const String updateUser = "$_baseUrl/updateProfileApp";
   static const String uploadVideo = "$_baseUrl/uploadVideoApp";
   static const String showAllPosts = "$_baseUrl/showPostApp";
   static const String showAllVideo = "$_baseUrl/showVideoApp";
+  static const String likeApi = "$_baseUrl/likes";
+  static const String commentListApi = "$_baseUrl/comment-list";
 }

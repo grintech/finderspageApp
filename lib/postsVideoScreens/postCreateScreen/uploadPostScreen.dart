@@ -1,5 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
-
+import 'package:path/path.dart' as path;
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -32,6 +33,7 @@ class UploadPostScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    imagePickerController.resetData();
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -40,31 +42,39 @@ class UploadPostScreen extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(),
-                MyTextWidget(data: "Create New Post",),
+                const SizedBox(),
+                MyTextWidget(data: "Create New Post"),
                 CommonButton(
-                  onPressed: ()async{
-                    imagePickerController.uploadPost(VideoUploadModel(
-                        description: captionController.text,
-                        location: locController.text,
-                        shares: shareOn.value == true?1:0,
-                        commentOption: commentOn.value == true?1:0,
-                        likesBtn: likesOn.value == true?"1":"0",
-                        donationLink: donationController.text,
-                        categories: "3",
-                        type: "post&video",
-                        image1: imagePickerController.selectedImagePath.value,
-                        id: imagePickerController.storageHelper.getUserModel()?.user!.id
-                    ));
+                  onPressed: () async {
+                    final files = imagePickerController.selectedFiles;
+                    final fileNames = files.map((f) => path.basename(f.path)).toList();
+
+                    final uploadModel = VideoUploadModel(
+                      description: captionController.text,
+                      location: locController.text,
+                      shares: shareOn.value ? 1 : 0,
+                      commentOption: commentOn.value ? 1 : 0,
+                      likesBtn: likesOn.value ? "1" : "0",
+                      donationLink: donationController.text,
+                      categories: "3",
+                      type: "post&video",
+                      image1: jsonEncode(fileNames),
+                      id: imagePickerController.storageHelper.getUserModel()?.user!.id,
+                      selectedFiles: files, // ✅ This sends files!
+                    );
+
+                    imagePickerController.uploadPost(uploadModel);
+
                   },
                   btnTxt: "Next",
                   radius: 6,
-                  padding: EdgeInsets.only(left: 10, right: 10, top: 3, bottom: 3),
+                  padding: const EdgeInsets.only(left: 10, right: 10, top: 3, bottom: 3),
                 )
               ],
             ),
           ),
-          Obx(()=>GestureDetector(
+
+          Obx(() => GestureDetector(
             onTap: () {
               Utils.mediaOptions();
             },
@@ -73,33 +83,71 @@ class UploadPostScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: DottedBorder(
-                    strokeWidth: 0.3,
-                    color: fieldBorderColor,
-                    child: SizedBox(
-                        width: Get.width,
-                        height: 200,
-                        child: imagePickerController.selectedImagePath.value.isEmpty
-                        // && imagePickerController.playerController != null
-                        // && imagePickerController.playerController!.value.isInitialized
-                            ?Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                  strokeWidth: 0.3,
+                  color: fieldBorderColor,
+                  child: SizedBox(
+                    width: Get.width,
+                    height: 150,
+                    child: imagePickerController.selectedFiles.isEmpty
+                        ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset("assets/images/ic_upload.png", scale: 2),
+                        MyTextWidget(data: "Upload photos or videos here"),
+                      ],
+                    )
+                        : ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.all(10),
+                      itemCount: imagePickerController.selectedFiles.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 10),
+                      itemBuilder: (context, index) {
+                        final file = imagePickerController.selectedFiles[index];
+                        return Stack(
                           children: [
-                            Image.asset("assets/images/ic_upload.png", scale: 2,),
-                            MyTextWidget(data: "Upload photos here",)],
-                        ):
-                        // :imagePickerController.selectedImagePath.value.isNotEmpty ?
-                        Image.file(File(imagePickerController.selectedImagePath.value),
-                          width: 180, height: 180,
-                          fit: BoxFit.contain,)
-                      //     :
-                      // AspectRatio(
-                      //   aspectRatio: 1.5,
-                      //   child: VideoPlayer(imagePickerController.playerController!),
-                      // ),
-                    )),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: isVideo(file.path)
+                                  ? Container(
+                                width: 100,
+                                height: 100,
+                                color: Colors.black,
+                                child: const Center(
+                                    child: Icon(Icons.videocam, color: Colors.white)),
+                              )
+                                  : Image.file(
+                                file,
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              top: 4,
+                              right: 4,
+                              child: GestureDetector(
+                                onTap: () {
+                                  imagePickerController.selectedFiles.removeAt(index);
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.red.withOpacity(0.8),
+                                  ),
+                                  padding: const EdgeInsets.all(2),
+                                  child: const Icon(Icons.close, color: Colors.white, size: 15),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),),
+          )),
           CommonTextField(margin: EdgeInsets.only(top: 20, bottom: 10, left: 20, right: 20),
             hint: "Add Caption Here...", lines: 3,
             keyboardAction: TextInputAction.newline, textController: captionController,),
@@ -193,5 +241,9 @@ class UploadPostScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+  bool isVideo(String path) {
+    final ext = path.toLowerCase();
+    return ext.endsWith(".mp4") || ext.endsWith(".mov") || ext.endsWith(".avi") || ext.endsWith(".mkv");
   }
 }

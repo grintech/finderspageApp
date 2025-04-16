@@ -93,11 +93,12 @@ class Utils{
                       Get.back();
                     },
                     child: Icon(Icons.perm_media_outlined, color: Colors.white,)),
-                // GestureDetector(
-                //     onTap:() {
-                //       Get.back();
-                //     },
-                //     child: Icon(Icons.video_camera_back_outlined, color: Colors.white,)),
+                GestureDetector(
+                    onTap:() {
+                      imagePickerController.pickVideo(ImageSource.gallery);
+                      Get.back();
+                    },
+                    child: Icon(Icons.video_camera_back_outlined, color: Colors.white,)),
               ],
             ),
           );

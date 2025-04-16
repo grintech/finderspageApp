@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:projects/data/models/PostsListModel.dart';
+import 'package:projects/data/models/commentListModel.dart';
+import 'package:projects/data/models/likeModel.dart';
 import 'package:projects/data/models/shopDetailModel.dart';
 import 'package:projects/data/models/shopModel.dart';
 
@@ -22,6 +24,8 @@ class HomeApiProvider{
       var dataResponse = PageResponse<MainHomeModel>.fromJson(response.data, (data) => MainHomeModel.fromJson(data as Map<String, dynamic>));
       return dataResponse;
     } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return PageResponse.fromJson(res?.data, (data) => null);
       return PageResponse(message: error.toString());
     }
   }
@@ -32,6 +36,8 @@ class HomeApiProvider{
       var dataResponse = PageResponse<ShopModel>.fromJson(response.data, (data) => ShopModel.fromJson(data as Map<String, dynamic>));
       return dataResponse;
     } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return PageResponse.fromJson(res?.data, (data) => null);
       return PageResponse(message: error.toString());
     }
   }
@@ -45,15 +51,15 @@ class HomeApiProvider{
 
       print("Raw API Response: ${response.data}");
 
-      var dataResponse = DataResponse<ShopDetailModel>.fromJson(response.data, (data) => ShopDetailModel.fromJson(data as Map<String, dynamic>),
+      var dataResponse = DataResponse<ShopDetailModel>.fromJson(response.data,
+            (data) => ShopDetailModel.fromJson(data as Map<String, dynamic>),
       );
-
-      print("Parsed DataResponse: ${dataResponse.toJson}");
 
       return dataResponse;
     } catch (error) {
-      print("API Error: $error");
-      return DataResponse(error: "$error");
+      final res = (error as dynamic).response;
+      if (res != null) return DataResponse.fromJson(res?.data, (data) => null);
+      return DataResponse(error: error.toString());
     }
   }
 
@@ -65,7 +71,36 @@ class HomeApiProvider{
       var dataResponse = PageResponse<PostsListModel>.fromJson(response.data, (data) => PostsListModel.fromJson(data as Map<String, dynamic>));
       return dataResponse;
     } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return PageResponse.fromJson(res?.data, (data) => null);
       return PageResponse(message: error.toString());
+    }
+  }
+
+
+  Future<PageResponse> getCommentList(int id) async {
+    try {
+      Response response = await _dio.get("${ApiConstants.commentListApi}/$id",
+          options: Injector.getHeaderToken());
+      var dataResponse = PageResponse<CommentListModel>.fromJson(response.data, (data) => CommentListModel.fromJson(data as Map<String, dynamic>));
+      return dataResponse;
+    } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return PageResponse.fromJson(res?.data, (data) => null);
+      return PageResponse(message: error.toString());
+    }
+  }
+
+
+  Future<DataResponse> likeApi(PostsListModel postModel) async {
+    try {
+      Response response = await _dio.post(ApiConstants.likeApi, options: Injector.getHeaderToken(), data: postModel);
+      var dataResponse = DataResponse<PostsListModel>.fromJson(response.data, (data) => PostsListModel.fromJson(data as Map<String, dynamic>));
+      return dataResponse;
+    } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return DataResponse.fromJson(res?.data, (data) => null);
+      return DataResponse(message: error.toString());
     }
   }
 
@@ -76,6 +111,8 @@ class HomeApiProvider{
       var dataResponse = PageResponse<PostsListModel>.fromJson(response.data, (data) => PostsListModel.fromJson(data as Map<String, dynamic>));
       return dataResponse;
     } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return PageResponse.fromJson(res?.data, (data) => null);
       return PageResponse(message: error.toString());
     }
   }

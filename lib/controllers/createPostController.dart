@@ -17,14 +17,14 @@ import '../utils/helper/storageHelper.dart';
 import '../utils/util.dart';
 
 class CreatePostController extends GetxController {
-  var selectedImagePath = ''.obs;
+  final selectedImagePath = ''.obs;
 
   final ImagePicker _picker = ImagePicker();
   File? videoFile;
 
   late CreatePostApiProvider createApiProvider = CreatePostApiProvider();
   late StorageHelper storageHelper = StorageHelper();
-  late VideoPlayerController? playerController;
+  VideoPlayerController? playerController;
 
   CameraController? cameraController;
   late List<CameraDescription> cameras;
@@ -40,17 +40,50 @@ class CreatePostController extends GetxController {
   Timer? timer;
   final int maxRecordingTime = 15;
 
+  final RxList<File> selectedFiles = <File>[].obs;
+
+  void addFile(File file) {
+    selectedFiles.add(file);
+  }
+
+  void removeFileAt(int index) {
+    selectedFiles.removeAt(index);
+  }
+
 
   Future<void> pickImage(ImageSource source) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: source);
 
     if (image != null) {
-      selectedImagePath.value = image.path;
+      // selectedImagePath.value = image.path;
+      selectedFiles.add(File(image.path));
     }
     else {
       Get.snackbar("Error", "No image selected",
           snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
+  ///Select gallery videos
+  Future<void> pickVideo(ImageSource source) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickVideo(source: source);
+
+    if (pickedFile != null) {
+      // videoFile = File(pickedFile.path);
+      selectedFiles.add(File(pickedFile.path));
+
+      // Dispose previous controller if any
+      if (playerController != null) {
+        await playerController!.dispose();
+      }
+
+      // Initialize new controller
+      // playerController = VideoPlayerController.file(videoFile!)
+      //   ..initialize().then((_) {
+      //     update(); // If you're using GetX
+      //   });
     }
   }
 
@@ -60,6 +93,12 @@ class CreatePostController extends GetxController {
     super.onInit();
     createApiProvider = CreatePostApiProvider();
     storageHelper = StorageHelper();
+    resetData();
+  }
+
+  void resetData() {
+    selectedFiles.clear();
+    selectedImagePath.value = '';
   }
 
   /// Initialize Camera
@@ -126,22 +165,6 @@ class CreatePostController extends GetxController {
         await stopRecording();
       }
     });
-  }
-
-
-  ///Select gallery videos
-  Future<void> _pickVideo() async {
-    final XFile? pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      videoFile = File(pickedFile.path);
-
-      playerController?.dispose();
-
-      playerController = VideoPlayerController.file(videoFile!)
-        ..initialize().then((_) {// Rebuild with controller
-        });
-    }
   }
 
   /// Switch between front and back camera
@@ -253,7 +276,6 @@ class CreatePostController extends GetxController {
       Utils.showErrorAlert("Please check your internet connection");
     }
   }
-
 
 
   @override

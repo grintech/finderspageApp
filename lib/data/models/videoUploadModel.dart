@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 class VideoUploadModel {
   String? title;
   String? slug;
@@ -23,6 +25,7 @@ class VideoUploadModel {
   String? modified;
   int? id;
   VideoUploadModel? post;
+  List<File>? selectedFiles;
 
   VideoUploadModel({
     this.title,
@@ -48,6 +51,7 @@ class VideoUploadModel {
     this.modified,
     this.id,
     this.post,
+    this.selectedFiles
   });
   VideoUploadModel.fromJson(Map<String, dynamic> json) {
     title = json['title'];

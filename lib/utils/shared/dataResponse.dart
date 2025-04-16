@@ -14,7 +14,6 @@ class DataResponse<TModel> {
       {this.success, this.status, this.message, this.error, this.data});
 
   factory DataResponse.fromJson(
-
       Map<String, dynamic> json,
       TModel Function(Object? json) fromJsonT,) => _$DataResponseFromJson(json, fromJsonT);
 

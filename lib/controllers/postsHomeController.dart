@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:projects/data/apiProvider/homeApiProvider.dart';
 import 'package:projects/data/models/PostsListModel.dart';
+import 'package:projects/data/models/commentListModel.dart';
+import 'package:projects/data/models/likeModel.dart';
+import 'package:projects/utils/shared/dataResponse.dart';
 import '../utils/routes.dart';
 import '../utils/util.dart';
 
@@ -16,7 +19,10 @@ class PostsHomeController extends GetxController{
   HomeApiProvider apiProvider = HomeApiProvider();
   RxList<PostsListModel> postsList=RxList();
   RxList<PostsListModel> videoList=RxList();
+  RxList<CommentListModel> commentList=RxList();
   RxList<String> videoUrls = <String>[].obs;
+
+  Rxn<PostsListModel> postModel = Rxn();
 
   var currentIndex = 0.obs;
   var isVideoScreenActive = false.obs;
@@ -37,11 +43,28 @@ class PostsHomeController extends GetxController{
   @override
   void onInit() {
     super.onInit();
-    getPostLists();
-    Future.delayed(Duration(seconds: 5),() {
+    // getPostLists();
+    Future.delayed(Duration(seconds: 10),() {
       getVideoLists();
     });
   }
+
+  Future<void> postLikeApi(PostsListModel postModel) async {
+    if (await Utils.hasNetwork()) {
+      var response = await apiProvider.likeApi(postModel);
+
+      if (response.success == true && response.data != null) {
+        var likedData = response.data as PostsListModel;
+
+        this.postModel.value = likedData;
+        this.postModel.refresh();
+        getPostLists();
+      } else {
+        print("Like response has no data.");
+      }
+    }
+  }
+
 
   Future<void> getPostLists() async {
     if (await Utils.hasNetwork()) {
@@ -65,7 +88,6 @@ class PostsHomeController extends GetxController{
     }
   }
 
-
   Future<void> getVideoLists() async {
     if (await Utils.hasNetwork()) {
       // Utils.showLoader();
@@ -75,7 +97,24 @@ class PostsHomeController extends GetxController{
         videoList.clear();
         videoList.addAll(response.data! as Iterable<PostsListModel>);
         extractFirstVideoUrls();
+      }
+      else {
+        handleError(response);
+      }
+    } else {
+      Utils.showErrorAlert("Please Check Your Internet Connection");
+    }
+  }
 
+
+  Future<void> getCommentsLists(int id) async {
+    if (await Utils.hasNetwork()) {
+      // Utils.showLoader();
+      var response = await apiProvider.getCommentList(id);
+      // Utils.hideLoader();
+      if (response.success == true) {
+        commentList.clear();
+        commentList.addAll(response.data! as Iterable<CommentListModel>);
       }
       else {
         handleError(response);

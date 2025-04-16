@@ -247,7 +247,6 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
       ),
     );
   }
-
   Future<String> copyAssetToFile(String assetPath, String fileName) async {
     final byteData = await rootBundle.load(assetPath);
     final tempDir = await getTemporaryDirectory();
@@ -256,4 +255,5 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
     await file.writeAsBytes(byteData.buffer.asUint8List());
     return file.path;
   }
+
 }

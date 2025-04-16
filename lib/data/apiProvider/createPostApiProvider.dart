@@ -58,15 +58,17 @@ class CreatePostApiProvider{
       return dataResponse;
 
     } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return DataResponse.fromJson(res?.data, (data) => null);
       return DataResponse(message: error.toString());
     }
   }
 
-  Future<DataResponse> uploadPostApp(VideoUploadModel videoUploadModel)
-  async {
+  Future<DataResponse> uploadPostApp(VideoUploadModel videoUploadModel) async {
     try {
       FormData formData = FormData();
 
+      // Add text fields
       formData.fields.addAll([
         MapEntry('description', videoUploadModel.description ?? ""),
         MapEntry('location', videoUploadModel.location ?? ''),
@@ -76,29 +78,49 @@ class CreatePostApiProvider{
         MapEntry('categories', videoUploadModel.categories ?? ''),
         MapEntry('user_id', videoUploadModel.id.toString()),
         MapEntry('type', videoUploadModel.type ?? ''),
+        MapEntry('donation_link', videoUploadModel.donationLink ?? ''),
+        MapEntry('image1', videoUploadModel.image1 ?? '[]'), // JSON string of filenames
       ]);
 
-      if (videoUploadModel.image1 != null && videoUploadModel.image1!.isNotEmpty) {
-        final file = File(videoUploadModel.image1!);
-        if (await file.exists()) {
-          formData.files.add(MapEntry(
-            'image1',
-            await MultipartFile.fromFile(file.path, filename: path.basename(file.path)),
-          ));
+      // Add media files
+      if (videoUploadModel.selectedFiles != null &&
+          videoUploadModel.selectedFiles!.isNotEmpty) {
+        for (File file in videoUploadModel.selectedFiles!) {
+          if (await file.exists()) {
+            formData.files.add(MapEntry(
+              'image1[]', // Use same key for all files
+              await MultipartFile.fromFile(
+                file.path,
+                filename: path.basename(file.path),
+              ),
+            ));
+          }
         }
       }
 
+      // Debug log
+      print("📝 FormData Fields:");
+      formData.fields.forEach((e) => print('${e.key}: ${e.value}'));
+      print("📦 FormData Files:");
+      formData.files.forEach((f) => print('${f.key}: ${f.value.filename}'));
+
       // Send request
-      Response response = await _dio.post(ApiConstants.createPost, data: formData, options: Injector.getHeaderToken(),);
-
-      var dataResponse = DataResponse<VideoUploadModel>.fromJson(response.data, (data) => VideoUploadModel.fromJson(data as Map<String, dynamic>),
+      Response response = await _dio.post(ApiConstants.createPost, data: formData, options: Injector.getHeaderToken(),
       );
-      return dataResponse;
 
+      return DataResponse<VideoUploadModel>.fromJson(
+        response.data,
+            (data) => VideoUploadModel.fromJson(data as Map<String, dynamic>),
+      );
     } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) {
+        return DataResponse.fromJson(res.data, (data) => null);
+      }
       return DataResponse(message: error.toString());
     }
   }
+
 
 
 }
