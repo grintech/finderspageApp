@@ -6,13 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:projects/controllers/postsHomeController.dart';
 import 'package:projects/data/models/PostsListModel.dart';
+import 'package:projects/data/models/comReplyModel.dart';
+import 'package:projects/data/models/commentListModel.dart';
+import 'package:projects/data/models/commentModel.dart';
 import 'package:projects/data/models/likeModel.dart';
 import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/commonWidgets/commonTextField.dart';
+import 'package:projects/utils/helper/dateHelper.dart';
 import 'package:projects/utils/helper/storageHelper.dart';
 import 'package:projects/utils/imageViewer.dart';
 import 'package:projects/utils/util.dart';
 
+import '../../controllers/postsHomeController.dart';
 import '../../data/apiConstants.dart';
 import '../../utils/commonWidgets/mediaWidget.dart';
 import '../../utils/routes.dart';
@@ -21,9 +26,11 @@ class Postshomescreen extends StatelessWidget {
   Postshomescreen({super.key});
   final controller =Get.lazyPut(() => PostsHomeController());
 
-  var like = "like".obs;
+  RxBool isLiked = RxBool(false);
 
   final commentController = TextEditingController();
+
+  var selectReply = Rx<Map<String, String?>>({});
 
   @override
   Widget build(BuildContext context) {
@@ -159,27 +166,30 @@ class Postshomescreen extends StatelessWidget {
 
                                  final post = controller.postsList[index];
 
-                                 // Ensure likedBy is not null
-                                 if (post.likedBy == null || post.likedBy is! Map<String, String>) {
-                                   post.likedBy = {};
+                                 // Decode the likedBy JSON string to Map<String, dynamic>
+                                 Map<String, dynamic> likedByMap = {};
+                                 try {
+                                   likedByMap = post.likedBy != null ? json.decode(post.likedBy!) : {};
+                                 } catch (e) {
+                                   likedByMap = {};
                                  }
 
-                                 final alreadyLiked = post.likedBy!.containsKey(currentUserId);
+                                 final alreadyLiked = likedByMap.containsKey(currentUserId);
                                  final actionToSend = alreadyLiked ? "unlike" : "like";
-
                                  int currentLikes = int.tryParse(post.likes ?? '0') ?? 0;
 
                                  if (alreadyLiked) {
-                                   // Decrement only if already liked
-                                   post.likedBy?.remove(currentUserId);
+                                   likedByMap.remove(currentUserId);
                                    currentLikes = (currentLikes - 1).clamp(0, double.infinity).toInt();
                                  } else {
-                                   // Increment only if not already liked
-                                   post.likedBy?[currentUserId] = "1";
+                                   likedByMap[currentUserId] = "1";
                                    currentLikes += 1;
                                  }
 
+                                 post.likedBy = json.encode(likedByMap); // ✅ Fix
                                  post.likes = currentLikes.toString();
+
+                                 controller.postsList[index] = post;
                                  controller.postsList.refresh();
 
                                  // Call the API
@@ -203,7 +213,7 @@ class Postshomescreen extends StatelessWidget {
                                        "assets/images/ic_like.png",
                                        height: 22,
                                        width: 22,
-                                       color: fieldBorderColor,
+                                       color:  fieldBorderColor
                                      ),
                                    ),
                                    MyTextWidget(
@@ -215,123 +225,300 @@ class Postshomescreen extends StatelessWidget {
                                  ],
                                ),
                              ),
-
-
                              GestureDetector(
                                onTap: ()async{
                                  await controller.getCommentsLists(controller.postsList[index].id!);
-
-                                   showModalBottomSheet(
-                                       isDismissible: false,
-                                       isScrollControlled: true,
-                                       backgroundColor: whiteColor,
-                                       context: Get.context!,
-                                       builder: (context){
+                                 await controller.fetchRepliesForAllComments();
+                                 showModalBottomSheet(
+                                     isDismissible: false,
+                                     isScrollControlled: true,
+                                     backgroundColor: whiteColor,
+                                     context: Get.context!,
+                                     builder: (context){
+                                       return StatefulBuilder(builder: (context,setState){
                                          return DraggableScrollableSheet(
                                              initialChildSize: 0.9, // 90% of screen height
                                              minChildSize: 0.5,
                                              maxChildSize: 0.95,
                                              expand: false,
                                              builder: (_,scrollController){
-                                           return Padding(
-                                             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                                             child: Stack(
-                                               alignment: Alignment.bottomCenter,
-                                               children: [
-                                                 Container(
-                                                   padding: EdgeInsets.only(bottom: 40),
-                                                   color: whiteColor,
-                                                   child: Column(
-                                                     children: [
-                                                       Padding(
-                                                         padding: const EdgeInsets.symmetric(vertical: 10),
-                                                         child: Row(
-                                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                           children: [
-                                                             controller.commentList.isNotEmpty?
-                                                             MyTextWidget(data: "Comments ${controller.commentList.length}", size: 14, weight: FontWeight.w600,):
-                                                             MyTextWidget(data: "Comment", size: 14, weight: FontWeight.w600,),
-                                                             GestureDetector(
-                                                                 onTap: () {
-                                                                   Get.back();
-                                                                 },
-                                                                 child: Icon(CupertinoIcons.multiply))
-                                                           ],
-                                                         ),
-                                                       ),
-                                                       controller.commentList.isNotEmpty?
-                                                       Expanded(
-                                                         child: ListView.builder(
-                                                             itemCount: controller.commentList.length,
-                                                             itemBuilder: (context, index){
-                                                               return Column(
-                                                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                                                 children: [
-                                                                   Row(
-                                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                               return Padding(
+                                                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                                 child: Stack(
+                                                   alignment: Alignment.bottomCenter,
+                                                   children: [
+                                                     Container(
+                                                       padding: EdgeInsets.only(bottom: 40),
+                                                       color: whiteColor,
+                                                       child: Column(
+                                                         children: [
+                                                           Padding(
+                                                             padding: const EdgeInsets.symmetric(vertical: 10),
+                                                             child: Row(
+                                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                               children: [
+                                                                 controller.commentList.isNotEmpty?
+                                                                 MyTextWidget(data: "Comments ${controller.commentList.length}", size: 14, weight: FontWeight.w600,):
+                                                                 MyTextWidget(data: "Comment", size: 14, weight: FontWeight.w600,),
+                                                                 GestureDetector(
+                                                                     onTap: () {
+                                                                       selectReply.value = {};
+                                                                       Get.back();
+                                                                     },
+                                                                     child: Icon(CupertinoIcons.multiply))
+                                                               ],
+                                                             ),
+                                                           ),
+                                                           controller.commentList.isNotEmpty?
+                                                           Expanded(
+                                                             child: ListView.builder(
+                                                                 itemCount: controller.commentList.length,
+                                                                 itemBuilder: (context, index){
+                                                                   final commentId = controller.commentList[index].id!;
+                                                                   final replies = controller.replyMap[commentId] ?? [];
+                                                                   return Column(
+                                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                                      children: [
                                                                        Row(
+                                                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                          children: [
-                                                                           controller.commentList[index].image!.isNotEmpty?
-                                                                           Padding(
-                                                                             padding: const EdgeInsets.only(right: 8),
-                                                                             child: ClipRRect(
-                                                                               borderRadius: BorderRadius.circular(20),
-                                                                               child: Image.network( height: 20, width: 20, fit: BoxFit.fill,
-                                                                                   "${ApiConstants.profileUrl}/${controller.commentList[index].image}"),
-                                                                             ),
-                                                                           ):
-                                                                           ImageView(
-                                                                             height: 20, width: 20,
-                                                                             margin: EdgeInsets.only(right: 8),
+                                                                           Row(
+                                                                             children: [
+                                                                               controller.commentList[index].image != null?
+                                                                               Padding(
+                                                                                 padding: const EdgeInsets.only(right: 8),
+                                                                                 child: ClipRRect(
+                                                                                   borderRadius: BorderRadius.circular(20),
+                                                                                   child: Image.network( height: 20, width: 20, fit: BoxFit.fill,
+                                                                                       "${ApiConstants.profileUrl}/${controller.commentList[index].image}"),
+                                                                                 ),
+                                                                               ):
+                                                                               ImageView(
+                                                                                 height: 20, width: 20,
+                                                                                 margin: EdgeInsets.only(right: 8),
+                                                                               ),
+                                                                               MyTextWidget(data: "@${controller.commentList[index].username}", size: 12, weight: FontWeight.w500,),
+                                                                               SizedBox(width: 8,),
+                                                                               MyTextWidget(data: DateHelper().convertToTimeAgo(controller.commentList[index].updatedAt!), size: 10, weight: FontWeight.w400,),
+                                                                             ],
                                                                            ),
-                                                                           MyTextWidget(data: "@${controller.commentList[index].username}",),
-                                                                           MyTextWidget(data: " 10 hrs ago",),
                                                                          ],
                                                                        ),
-                                                                       Icon(Icons.more_vert)
+                                                                       Padding(
+                                                                         padding: const EdgeInsets.only(left: 25, top: 6, bottom: 8),
+                                                                         child: MyTextWidget(data: "${controller.commentList[index].comment}",size: 12,),
+                                                                       ),
+                                                                       Obx(() => GestureDetector(
+                                                                         onTap: () async {
+                                                                           final currentUserId = StorageHelper().getUserModel()?.user?.id.toString();
+                                                                           if (currentUserId == null) return;
+
+                                                                           final comment = controller.commentList[index];
+                                                                           List<String> likedByList = [];
+
+                                                                           try {
+                                                                             likedByList = List<String>.from(json.decode(comment.likedBy ?? '[]'));
+                                                                           } catch (e) {
+                                                                             likedByList = [];
+                                                                           }
+
+                                                                           bool isLiked = likedByList.contains(currentUserId); // Check if the current user has liked the comment
+                                                                           int currentLikes = comment.likes ?? 0;
+
+                                                                           if (isLiked) {
+                                                                             // Unlike
+                                                                             likedByList.remove(currentUserId);
+                                                                             currentLikes = (currentLikes - 1).clamp(0, double.infinity).toInt();
+                                                                           } else {
+                                                                             // Like
+                                                                             likedByList.add(currentUserId);
+                                                                             currentLikes += 1;
+                                                                           }
+
+                                                                           // Update comment object
+                                                                           comment.likedBy = json.encode(likedByList);
+                                                                           comment.likes = currentLikes;
+
+                                                                           setState(() {
+                                                                             // Reflect the like/unlike action locally
+                                                                             controller.commentList[index] = comment;
+                                                                             controller.commentList.refresh();
+                                                                           });
+
+                                                                           // Send to API
+                                                                           await controller.likeComment(
+                                                                             CommentListModel(
+                                                                               userId: currentUserId,
+                                                                               comment_id: comment.id,
+                                                                               action: isLiked ? "unlike" : "like",
+                                                                             ),
+                                                                           );
+                                                                         },
+                                                                         child: Padding(
+                                                                           padding: const EdgeInsets.only(left: 25),
+                                                                           child: Row(
+                                                                             children: [
+                                                                               Icon(
+                                                                                 Icons.thumb_up_alt_outlined ,
+                                                                                 size: 18,
+                                                                                 color: fieldBorderColor,  // Change color when liked
+                                                                               ),
+                                                                               SizedBox(width: 6),
+                                                                               MyTextWidget(
+                                                                                 data: "${controller.commentList[index].likes}",
+                                                                               ),
+                                                                             ],
+                                                                           ),
+                                                                         ),
+                                                                       )),
+
+                                                                       Padding(
+                                                                         padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                                                         child: Column(
+                                                                           mainAxisAlignment:MainAxisAlignment.start,
+                                                                           crossAxisAlignment: CrossAxisAlignment.start,
+                                                                           children: [
+                                                                             GestureDetector(
+                                                                                 onTap:(){
+                                                                                   selectReply.value = {
+                                                                                     'commentId': controller.commentList[index].id.toString(),
+                                                                                     'username': controller.commentList[index].username
+                                                                                   };
+                                                                                 },
+                                                                                 child: MyTextWidget(data: "Reply", size: 12,)),
+                                                                             replies.isNotEmpty
+                                                                                 ? GestureDetector(
+                                                                               onTap: () {
+                                                                                 controller.getComReplyLists(commentId);
+                                                                               },
+                                                                               child: Row(
+                                                                                 children: [
+                                                                                   Container(height: 1, width: 60, color: greyColor,),
+                                                                                   SizedBox(width: 10,),
+                                                                                   MyTextWidget(data: replies.length<2?"View ${replies.length} reply"
+                                                                                       :"View ${replies.length} replies", size: 14),
+                                                                                 ],
+                                                                               ),
+                                                                             )
+                                                                                 : SizedBox(),
+                                                                             replies.isNotEmpty
+                                                                                 ? Column(
+                                                                               children: List.generate(replies.length, (replyIndex) {
+                                                                                 final reply = replies[replyIndex];
+                                                                                 return Padding(
+                                                                                   padding: const EdgeInsets.only(left: 25, top: 8),
+                                                                                   child: Row(
+                                                                                     crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                     children: [
+                                                                                       reply.image != null
+                                                                                           ? ClipRRect(
+                                                                                         borderRadius: BorderRadius.circular(20),
+                                                                                         child: Image.network(
+                                                                                           "${ApiConstants.profileUrl}/${reply.image}",
+                                                                                           height: 20,
+                                                                                           width: 20,
+                                                                                           fit: BoxFit.fill,
+                                                                                         ),
+                                                                                       )
+                                                                                           : ImageView(
+                                                                                         height: 20,
+                                                                                         width: 20,
+                                                                                       ),
+                                                                                       SizedBox(width: 8),
+                                                                                       Expanded(
+                                                                                         child: Column(
+                                                                                           crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                           children: [
+                                                                                             MyTextWidget(
+                                                                                               data: "@${reply.username}",
+                                                                                               size: 12,
+                                                                                               weight: FontWeight.w600,
+                                                                                             ),
+                                                                                             MyTextWidget(
+                                                                                               data: reply.comment ?? '',
+                                                                                               size: 12,
+                                                                                             ),
+                                                                                           ],
+                                                                                         ),
+                                                                                       ),
+                                                                                     ],
+                                                                                   ),
+                                                                                 );
+                                                                               }),
+                                                                             )
+                                                                                 : SizedBox(),
+                                                                           ],
+                                                                         ),
+                                                                       )
                                                                      ],
-                                                                   ),
-                                                                   Padding(
-                                                                     padding: const EdgeInsets.only(left: 25, top: 6, bottom: 8),
-                                                                     child: MyTextWidget(data: "${controller.commentList[index].comment}",),
-                                                                   ),
-                                                                   Padding(
-                                                                     padding: const EdgeInsets.only(left: 25),
-                                                                     child: Row(
-                                                                       children: [
-                                                                         Icon(Icons.thumb_up_alt_outlined, size: 18,),
-                                                                         SizedBox(width: 6,),
-                                                                         MyTextWidget(data: "${controller.commentList[index].likes}",),
-                                                                       ],
-                                                                     ),
-                                                                   ),
-                                                                 ],
-                                                               );
-                                                             }
-                                                         ),
-                                                       ):SizedBox(child: Text("No Comments yet"),),
-                                                     ],
-                                                   ),
+                                                                   );
+                                                                 }
+                                                             ),
+                                                           )
+                                                               :Padding(
+                                                             padding:EdgeInsets.only(top: 40),
+                                                             child: Text("No Comments yet"),),
+                                                         ],
+                                                       ),
+                                                     ),
+                                                     Obx(()=>Container(
+                                                       height: 50,
+                                                       color: whiteColor,
+                                                       child: CommonTextField(
+                                                         height: 50,
+                                                         textController: commentController,
+                                                         prefix: selectReply.value['username'] != null
+                                                             ? IntrinsicWidth(
+                                                               child: Padding(
+                                                                 padding: const EdgeInsets.only(left: 4),
+                                                                 child: Row(
+                                                               children: [
+                                                                 MyTextWidget(data:"@${selectReply.value['username']}", size: 12,),
+                                                                 SizedBox(width: 4,),
+                                                                 GestureDetector(
+                                                                     onTap: (){
+                                                                       selectReply.value = {};
+                                                                     },
+                                                                     child: Icon(Icons.close, size: 16, color: fieldBorderColor,))
+                                                               ],
+                                                                                                                          ),
+                                                                                                                        ),
+                                                             )
+                                                             :null,
+                                                         hint: "Post Comment",
+                                                         suffix: IconButton(onPressed: (){
+                                                           setState((){
+                                                             selectReply.value['username'] != null?
+                                                                 controller.replyPostApi(ComReplyModel(
+                                                                   comment_id: selectReply.value['commentId'],
+                                                                   blog_id: controller.postsList[index].id.toString(),
+                                                                   blog_user_id: controller.postsList[index].user_id.toString(),
+                                                                   user_id: StorageHelper().getUserModel()?.user?.id.toString(),
+                                                                   type: "posts",
+                                                                   blog_url: "https://www.finderspage.com/single-new/${controller.postsList[index].slug}",
+                                                                   comment: commentController.text.trim().toString()
+                                                                 )):
+                                                             controller.commentPostApi(CommentModel(
+                                                                 comment: commentController.text.trim().toString(),
+                                                                 post_id: controller.postsList[index].id.toString(),
+                                                                 post_user: controller.postsList[index].user_id.toString(),
+                                                                 user_id: StorageHelper().getUserModel()?.user?.id.toString(),
+                                                                 type: "posts"
+                                                             ));
+                                                             selectReply.value = {};
+                                                             commentController.clear();
+                                                             Get.back();
+                                                           });
+                                                         }, icon: Icon(Icons.send, size: 25, color: fieldBorderColor,)),
+                                                       ),
+                                                     ))
+                                                   ],
                                                  ),
-                                                 Container(
-                                                   height: 50,
-                                                   color: whiteColor,
-                                                   child: CommonTextField(
-                                                     height: 50,
-                                                     textController: commentController,
-                                                     hint: "Post Comment",
-                                                     suffix: IconButton(onPressed: (){
-                                                       Get.back();
-                                                     }, icon: Icon(Icons.send, size: 25, color: fieldBorderColor,)),
-                                                   ),
-                                                 )
-                                               ],
-                                             ),
-                                           );
-                                         });
-                                       }
-                                   );
+                                               );
+                                             });
+                                       });
+                                     }
+                                 );
                                },
                                child: Padding(
                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -346,7 +533,6 @@ class Postshomescreen extends StatelessWidget {
                                  ),
                                ),
                              ),
-
                              Icon(Icons.share, color: fieldBorderColor,),
                            ],
                          ),),
@@ -368,86 +554,250 @@ class Postshomescreen extends StatelessWidget {
       );
     });
   }
-  // Future<dynamic> showCommentBox(){
+  // bool _isPostLikedByCurrentUser(PostsListModel post) {
+  //   final currentUserId = StorageHelper().getUserModel()?.user?.id?.toString();
+  //   if (currentUserId == null || post.likedBy == null) return false;
+  //
+  //   try {
+  //     final likedByMap = json.decode(post.likedBy!);
+  //     return likedByMap.containsKey(currentUserId);
+  //   } catch (e) {
+  //     return false;
+  //   }
+  // }
+
+
+
+  // Future<void> showCommentBox(){
   //   return showModalBottomSheet(
   //       isDismissible: false,
+  //       isScrollControlled: true,
+  //       backgroundColor: whiteColor,
   //       context: Get.context!,
   //       builder: (context){
-  //         return Container(
-  //           height: 400,
-  //           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-  //           child: Column(
-  //             children: [
-  //               Padding(
-  //                 padding: const EdgeInsets.symmetric(vertical: 10),
-  //                 child: Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     MyTextWidget(data: "Comment ${controller.comment}", size: 14, weight: FontWeight.w600,),
-  //                     GestureDetector(
-  //                         onTap: () {
-  //                             Get.back();
-  //                         },
-  //                         child: Icon(CupertinoIcons.multiply))
-  //                   ],
-  //                 ),
-  //               ),
-  //               Expanded(
-  //                 child: ListView.builder(
-  //                     itemCount: 5,
-  //                     itemBuilder: (context, index){
-  //                       return Column(
-  //                         crossAxisAlignment: CrossAxisAlignment.start,
-  //                         children: [
-  //                           Row(
-  //                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                             children: [
-  //                               Row(
+  //         return StatefulBuilder(builder: (context,setState){
+  //           return DraggableScrollableSheet(
+  //               initialChildSize: 0.9, // 90% of screen height
+  //               minChildSize: 0.5,
+  //               maxChildSize: 0.95,
+  //               expand: false,
+  //               builder: (_,scrollController){
+  //                 return Padding(
+  //                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+  //                   child: Stack(
+  //                     alignment: Alignment.bottomCenter,
+  //                     children: [
+  //                       Container(
+  //                         padding: EdgeInsets.only(bottom: 40),
+  //                         color: whiteColor,
+  //                         child: Column(
+  //                           children: [
+  //                             Padding(
+  //                               padding: const EdgeInsets.symmetric(vertical: 10),
+  //                               child: Row(
+  //                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
   //                                 children: [
-  //                                   ImageView(
-  //                                     height: 20, width: 20,
-  //                                     margin: EdgeInsets.only(right: 8),
-  //                                   ),
-  //                                   MyTextWidget(data: "@FilmyUpdates",),
-  //                                   MyTextWidget(data: " 10 hrs ago",),
+  //                                   controller.commentList.isNotEmpty?
+  //                                   MyTextWidget(data: "Comments ${controller.commentList.length}", size: 14, weight: FontWeight.w600,):
+  //                                   MyTextWidget(data: "Comment", size: 14, weight: FontWeight.w600,),
+  //                                   GestureDetector(
+  //                                       onTap: () {
+  //                                         Get.back();
+  //                                       },
+  //                                       child: Icon(CupertinoIcons.multiply))
   //                                 ],
   //                               ),
-  //                               Icon(Icons.more_vert)
-  //                             ],
-  //                           ),
-  //                           Padding(
-  //                             padding: const EdgeInsets.only(left: 25, top: 6, bottom: 8),
-  //                             child: MyTextWidget(data: "Awesome Video",),
-  //                           ),
-  //                           Padding(
-  //                             padding: const EdgeInsets.only(left: 25),
-  //                             child: Row(
-  //                               children: [
-  //                                 Icon(Icons.thumb_up_alt_outlined, size: 18,),
-  //                                 SizedBox(width: 8,),
-  //                                 Icon(Icons.thumb_down_alt_outlined, size: 18,),
-  //                                 SizedBox(width: 8,),
-  //                                 Icon(Icons.message_outlined, size: 18,)
-  //                               ],
   //                             ),
-  //                           ),
-  //                           Padding(
-  //                             padding: const EdgeInsets.only(left: 25, top: 8, bottom: 15),
-  //                             child: Row(
-  //                               children: [
-  //                                 MyTextWidget(data: "5 Replies",),
-  //                                 Icon(Icons.keyboard_arrow_right, size: 18,)
-  //                               ],
-  //                             ),
-  //                           )
-  //                         ],
-  //                       );
-  //                     }
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         );
+  //                             controller.commentList.isNotEmpty?
+  //                             Expanded(
+  //                               child: ListView.builder(
+  //                                   itemCount: controller.commentList.length,
+  //                                   itemBuilder: (context, index){
+  //                                     final commentId = controller.commentList[index].id!;
+  //                                     final replies = controller.replyMap[commentId] ?? [];
+  //                                     return Column(
+  //                                       crossAxisAlignment: CrossAxisAlignment.start,
+  //                                       children: [
+  //                                         Row(
+  //                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                                           children: [
+  //                                             Row(
+  //                                               children: [
+  //                                                 controller.commentList[index].image != null?
+  //                                                 Padding(
+  //                                                   padding: const EdgeInsets.only(right: 8),
+  //                                                   child: ClipRRect(
+  //                                                     borderRadius: BorderRadius.circular(20),
+  //                                                     child: Image.network( height: 20, width: 20, fit: BoxFit.fill,
+  //                                                         "${ApiConstants.profileUrl}/${controller.commentList[index].image}"),
+  //                                                   ),
+  //                                                 ):
+  //                                                 ImageView(
+  //                                                   height: 20, width: 20,
+  //                                                   margin: EdgeInsets.only(right: 8),
+  //                                                 ),
+  //                                                 MyTextWidget(data: "@${controller.commentList[index].username}", size: 12,),
+  //                                                 SizedBox(width: 8,),
+  //                                                 MyTextWidget(data: "10 h",),
+  //                                               ],
+  //                                             ),
+  //                                           ],
+  //                                         ),
+  //                                         Padding(
+  //                                           padding: const EdgeInsets.only(left: 25, top: 6, bottom: 8),
+  //                                           child: MyTextWidget(data: "${controller.commentList[index].comment}",size: 12,),
+  //                                         ),
+  //                                         GestureDetector(
+  //                                           onTap:(){
+  //                                             final currentUserId = StorageHelper().getUserModel()?.user?.id.toString();
+  //                                             final comment = controller.replyList[index];
+  //
+  //                                             // Parse liked_by string into a List<String>
+  //                                             List<String> likedByList = [];
+  //                                             if (comment.liked_by != null && comment.liked_by!.isNotEmpty) {
+  //                                               likedByList = List<String>.from(json.decode(comment.liked_by!));
+  //                                             }
+  //
+  //                                             // Check if current user already liked
+  //                                             bool isLiked = likedByList.contains(currentUserId);
+  //
+  //                                             if (isLiked) {
+  //                                               // Unlike
+  //                                               likedByList.remove(currentUserId);
+  //                                               comment.likes = (comment.likes ?? 1) - 1;
+  //                                             } else {
+  //                                               // Like
+  //                                               likedByList.add(currentUserId!);
+  //                                               comment.likes = (comment.likes ?? 0) + 1;
+  //                                             }
+  //
+  //                                             // Update liked_by field as JSON string
+  //                                             comment.liked_by = json.encode(likedByList);
+  //
+  //                                             // Notify the UI
+  //                                             controller.replyList[index] = comment;
+  //                                             controller.update(); // If using GetX
+  //                                           },
+  //                                           child: Padding(
+  //                                             padding: const EdgeInsets.only(left: 25),
+  //                                             child: Row(
+  //                                               children: [
+  //                                                 Icon(Icons.thumb_up_alt_outlined, size: 18,),
+  //                                                 SizedBox(width: 6,),
+  //                                                 MyTextWidget(data: "${controller.commentList[index].likes}",),
+  //                                               ],
+  //                                             ),
+  //                                           ),
+  //                                         ),
+  //                                         Padding(
+  //                                           padding: const EdgeInsets.symmetric(vertical: 8.0),
+  //                                           child: Column(
+  //                                             mainAxisAlignment:MainAxisAlignment.start,
+  //                                             crossAxisAlignment: CrossAxisAlignment.start,
+  //                                             children: [
+  //                                               MyTextWidget(data: "Reply", size: 12,),
+  //                                               replies.isNotEmpty
+  //                                                   ? GestureDetector(
+  //                                                 onTap: () {
+  //                                                   controller.getComReplyLists(commentId);
+  //                                                 },
+  //                                                 child: Row(
+  //                                                   children: [
+  //                                                     Container(height: 1, width: 60, color: greyColor,),
+  //                                                     SizedBox(width: 10,),
+  //                                                     MyTextWidget(data: replies.length<2?"View ${replies.length} reply"
+  //                                                         :"View ${replies.length} replies", size: 14),
+  //                                                   ],
+  //                                                 ),
+  //                                               )
+  //                                                   : SizedBox(),
+  //                                               replies.isNotEmpty
+  //                                                   ? Column(
+  //                                                 children: List.generate(replies.length, (replyIndex) {
+  //                                                   final reply = replies[replyIndex];
+  //                                                   return Padding(
+  //                                                     padding: const EdgeInsets.only(left: 25, top: 8),
+  //                                                     child: Row(
+  //                                                       crossAxisAlignment: CrossAxisAlignment.start,
+  //                                                       children: [
+  //                                                         reply.image != null
+  //                                                             ? ClipRRect(
+  //                                                           borderRadius: BorderRadius.circular(20),
+  //                                                           child: Image.network(
+  //                                                             "${ApiConstants.profileUrl}/${reply.image}",
+  //                                                             height: 20,
+  //                                                             width: 20,
+  //                                                             fit: BoxFit.fill,
+  //                                                           ),
+  //                                                         )
+  //                                                             : ImageView(
+  //                                                           height: 20,
+  //                                                           width: 20,
+  //                                                           margin: EdgeInsets.only(right: 8),
+  //                                                         ),
+  //                                                         SizedBox(width: 8),
+  //                                                         Expanded(
+  //                                                           child: Column(
+  //                                                             crossAxisAlignment: CrossAxisAlignment.start,
+  //                                                             children: [
+  //                                                               MyTextWidget(
+  //                                                                 data: "@${reply.username}",
+  //                                                                 size: 12,
+  //                                                                 weight: FontWeight.w600,
+  //                                                               ),
+  //                                                               MyTextWidget(
+  //                                                                 data: reply.comment ?? '',
+  //                                                                 size: 12,
+  //                                                               ),
+  //                                                             ],
+  //                                                           ),
+  //                                                         ),
+  //                                                       ],
+  //                                                     ),
+  //                                                   );
+  //                                                 }),
+  //                                               )
+  //                                                   : SizedBox(),
+  //                                             ],
+  //                                           ),
+  //                                         )
+  //                                       ],
+  //                                     );
+  //                                   }
+  //                               ),
+  //                             )
+  //                                 :Padding(
+  //                               padding:EdgeInsets.only(top: 40),
+  //                               child: Text("No Comments yet"),),
+  //                           ],
+  //                         ),
+  //                       ),
+  //                       Container(
+  //                         height: 50,
+  //                         color: whiteColor,
+  //                         child: CommonTextField(
+  //                           height: 50,
+  //                           textController: commentController,
+  //                           hint: "Post Comment",
+  //                           suffix: IconButton(onPressed: (){
+  //                             setState((){
+  //                               controller.commentPostApi(CommentModel(
+  //                                   comment: commentController.text.trim().toString(),
+  //                                   post_id: controller.postsList[index].id.toString(),
+  //                                   post_user: controller.postsList[index].user_id.toString(),
+  //                                   user_id: StorageHelper().getUserModel()?.user?.id.toString(),
+  //                                   type: "posts"
+  //                               ));
+  //                               Get.back();
+  //                             });
+  //                           }, icon: Icon(Icons.send, size: 25, color: fieldBorderColor,)),
+  //                         ),
+  //                       )
+  //                     ],
+  //                   ),
+  //                 );
+  //               });
+  //         });
   //       }
   //   );
   // }

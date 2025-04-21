@@ -16,11 +16,12 @@ class CommonTextField extends StatelessWidget{
   final Widget? prefix;
   final EdgeInsetsGeometry? margin;
   final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? contentPadding;
   final bool? obsTxt;
   final bool? read;
   final TextEditingController? textController;
 
-  const CommonTextField({super.key, this.keyboardType, this.hint, this.suffix, this.margin, this.padding, this.height, this.width, this.obsTxt, this.textController, this.keyboardAction, this.prefix, this.lines, this.read});
+  const CommonTextField({super.key, this.keyboardType, this.hint, this.suffix, this.margin, this.padding, this.height, this.width, this.obsTxt, this.textController, this.keyboardAction, this.prefix, this.lines, this.read, this.contentPadding});
 
 
   @override
@@ -43,7 +44,7 @@ class CommonTextField extends StatelessWidget{
           hintText: hint,
           suffixIcon: suffix,
           prefixIcon: prefix,
-          contentPadding: EdgeInsets.only(left: 10, right: 10, bottom: 12),
+          contentPadding: contentPadding??EdgeInsets.only(left: 10, right: 10, bottom: 12),
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(width: 1.5, color: fieldBorderColor)

@@ -7,15 +7,17 @@ class CommentListModel{
   String? userId;
   String? blogId;
   String? comment;
+  int? comment_id;
+  String? action;
   String? type;
   int? likes;
   String? likedBy;
   int? status;
   String? pin;
-  Null? pinCreatedAt;
+  dynamic pinCreatedAt;
   String? createdAt;
   String? updatedAt;
-  Null? deletedAt;
+  dynamic deletedAt;
   String? username;
   String? image;
 
@@ -26,6 +28,8 @@ class CommentListModel{
     this.userId,
     this.blogId,
     this.comment,
+    this.comment_id,
+    this.action,
     this.type,
     this.likes,
     this.likedBy,
@@ -46,6 +50,8 @@ class CommentListModel{
     userId = json['user_id'];
     blogId = json['blog_id'];
     comment = json['comment'];
+    comment_id = json['comment_id'];
+    action = json['action'];
     type = json['type'];
     likes = json['likes'];
     likedBy = json['liked_by'];
@@ -70,17 +76,19 @@ class CommentListModel{
     }
     writeNotNull('id', id);
     writeNotNull('comId', comId);
-    writeNotNull('userId', userId);
+    writeNotNull('user_id', userId);
     writeNotNull('blogId', blogId);
     writeNotNull('comment', comment);
+    writeNotNull('action', action);
+    writeNotNull('comment_id', comment_id);
     writeNotNull('type', type);
     writeNotNull('likes', likes);
-    writeNotNull('likedBy', likedBy);
+    writeNotNull('liked_by', likedBy);
     writeNotNull('status', status);
     writeNotNull('pin', pin);
     writeNotNull('pinCreatedAt', pinCreatedAt);
-    writeNotNull('createdAt', createdAt);
-    writeNotNull('updatedAt', updatedAt);
+    writeNotNull('created_at', createdAt);
+    writeNotNull('updated_at', updatedAt);
     writeNotNull('deletedAt', deletedAt);
     writeNotNull('username', username);
     writeNotNull('image', image);

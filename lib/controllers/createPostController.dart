@@ -265,7 +265,7 @@ class CreatePostController extends GetxController {
           final postsController = Get.find<PostsHomeController>();
           postsController.postsList.clear();
           postsController.changeTabIndex(0);
-          postsController.getPostLists();
+            postsController.getPostLists();
         } else {
           handleError(response);
         }

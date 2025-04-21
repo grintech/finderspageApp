@@ -296,20 +296,23 @@ class _MiniWidgetState extends State<MiniWidget> {
 }
 
 
-Column iconDetail(IconData icon, String number) {
-  return Column(
-    children: [
-      Icon(icon, size: 33, color: Colors.white,
-      ),
-      Text(
-        number,
-        style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.normal,
-            color: Colors.white
+Padding iconDetail(IconData icon, String number) {
+  return Padding(
+    padding: const EdgeInsets.only(right: 10),
+    child: Column(
+      children: [
+        Icon(icon, size: 33, color: Colors.white,
         ),
-      ),
-    ],
+        Text(
+          number,
+          style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.normal,
+              color: Colors.white
+          ),
+        ),
+      ],
+    ),
   );
 }
 Container circleImage(String networkImage, double size) {

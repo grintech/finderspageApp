@@ -5,8 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:projects/controllers/postsHomeController.dart';
 import 'package:projects/data/apiConstants.dart';
+import 'package:projects/data/models/PostsListModel.dart';
+import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/commonWidgets/mediaWidget.dart';
 
+import '../../utils/helper/dateHelper.dart';
+import '../../utils/helper/storageHelper.dart';
 import '../../utils/imageViewer.dart';
 import '../../utils/util.dart';
 import '../shortsListScreens/shortsListScreen.dart';
@@ -17,8 +21,6 @@ class PostVideoScreen extends StatelessWidget {
   final controller = Get.put(PostsHomeController());
   final PageController _pageController = PageController();
 
-  var like = true.obs;
-  var disLike = true.obs;
   var comment = true.obs;
   var share = true.obs;
 
@@ -47,19 +49,117 @@ class PostVideoScreen extends StatelessWidget {
 
         final mediaUrl = "${ApiConstants.postImgUrl}/${videos.first}";
         return Stack(
+          alignment: Alignment.bottomRight,
           children: [
-            MediaWidget(mediaUrl: mediaUrl, screenRatio:0.9,),
-            buildPosLikeComment()
+            MediaWidget(mediaUrl: mediaUrl, screenRatio: 0.9,),
+            SingleChildScrollView(
+              child: Obx(()=>Column(
+                children: [
+                  GestureDetector(
+                      onTap: () async {
+                        final currentUserId = StorageHelper().getUserModel()?.user?.id?.toString();
+                        if (currentUserId == null) return;
+
+                        final post = controller.videoList[index];
+
+                        // Decode the likedBy JSON string to Map<String, dynamic>
+                        Map<String, dynamic> likedByMap = {};
+                        try {
+                          likedByMap = post.likedBy != null ? json.decode(post.likedBy!) : {};
+                        } catch (e) {
+                          likedByMap = {};
+                        }
+
+                        final alreadyLiked = likedByMap.containsKey(currentUserId);
+                        final actionToSend = alreadyLiked ? "unlike" : "like";
+                        int currentLikes = int.tryParse(post.likes ?? '0') ?? 0;
+
+                        if (alreadyLiked) {
+                          likedByMap.remove(currentUserId);
+                          currentLikes = (currentLikes - 1).clamp(0, double.infinity).toInt();
+                        } else {
+                          likedByMap[currentUserId] = "1";
+                          currentLikes += 1;
+                        }
+
+                        post.likedBy = json.encode(likedByMap); // ✅ Fix
+                        post.likes = currentLikes.toString();
+
+                        controller.videoList[index] = post;
+                        controller.videoList.refresh();
+                        controller.postLikeApi(PostsListModel(
+                          user_id: int.parse(currentUserId),
+                          blog_id: post.id,
+                          cate_id: 3,
+                          action: actionToSend,
+                          type: "Blogs-Feed",
+                          url: "https://www.finderspage.com/single-new/${post.slug}",
+                          reaction: "1",
+                        ));
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: Column(
+                          children: [
+                            Icon(CupertinoIcons.hand_thumbsup, size: 33,
+                              color: Colors.white,
+                            ),
+                            MyTextWidget(
+                              data: "${controller.videoList[index].likes}",
+                              color: whiteColor,
+                            ),
+                          ],
+                        ),
+                      )),
+                  const SizedBox(height: 25),
+                  GestureDetector(
+                      onTap: () async {
+                        await controller.getCommentsLists(controller.videoList[index].id!);
+                        showCommentBox();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: Column(
+                          children: [
+                            Icon(CupertinoIcons.chat_bubble_text, size: 33,
+                              color: Colors.white,
+                            ),
+                            MyTextWidget(
+                              data: "${controller.videoList[index].total_comments}",
+                              color: whiteColor,
+                            ),
+                          ],
+                        ),
+                      )),
+                  const SizedBox(height: 25),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: Column(
+                      children: [
+                        Icon(CupertinoIcons.arrow_turn_up_right, size: 33,
+                          color: Colors.white,
+                        ),
+                        MyTextWidget(
+                          data: "Share", color: whiteColor,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 35),
+                ],
+              ),)
+            )
           ],
         );
       },
     );
   }
-  Future<dynamic> showCommentBox(){
+
+  Future<dynamic> showCommentBox() {
     return showModalBottomSheet(
         isDismissible: false,
         context: Get.context!,
-        builder: (context){
+        builder: (context) {
           return Container(
             height: 400,
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -70,19 +170,22 @@ class PostVideoScreen extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      MyTextWidget(data: "Comment 5", size: 14, weight: FontWeight.w600,),
+                      controller.commentList.isNotEmpty?
+                      MyTextWidget(data: "Comments ${controller.commentList.length}", size: 14, weight: FontWeight.w600,):
+                      MyTextWidget(data: "Comment", size: 14, weight: FontWeight.w600,),
                       GestureDetector(
                           onTap: () {
-                              Get.back();
+                            Get.back();
                           },
                           child: Icon(CupertinoIcons.multiply))
                     ],
                   ),
                 ),
+                controller.commentList.isNotEmpty?
                 Expanded(
                   child: ListView.builder(
-                      itemCount: 5,
-                      itemBuilder: (context, index){
+                      itemCount: controller.commentList.length,
+                      itemBuilder: (context, index) {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -91,12 +194,22 @@ class PostVideoScreen extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
+                                    controller.commentList[index].image != null?
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 8),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: Image.network( height: 20, width: 20, fit: BoxFit.fill,
+                                            "${ApiConstants.profileUrl}/${controller.commentList[index].image}"),
+                                      ),
+                                    ):
                                     ImageView(
                                       height: 20, width: 20,
                                       margin: EdgeInsets.only(right: 8),
                                     ),
-                                    MyTextWidget(data: "@FilmyUpdates",),
-                                    MyTextWidget(data: " 10 hrs ago",),
+                                    MyTextWidget(data: "@${controller.commentList[index].username}", size: 12, weight: FontWeight.w500,),
+                                    SizedBox(width: 8,),
+                                    MyTextWidget(data: DateHelper().convertToTimeAgo(controller.commentList[index].updatedAt!), size: 10, weight: FontWeight.w400,),
                                   ],
                                 ),
                                 Icon(Icons.more_vert)
@@ -104,7 +217,7 @@ class PostVideoScreen extends StatelessWidget {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(left: 25, top: 6, bottom: 8),
-                              child: MyTextWidget(data: "Awesome Video",),
+                              child: MyTextWidget(data: "${controller.commentList[index].comment}",size: 12,),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(left: 25),
@@ -112,14 +225,16 @@ class PostVideoScreen extends StatelessWidget {
                                 children: [
                                   Icon(Icons.thumb_up_alt_outlined, size: 18,),
                                   SizedBox(width: 8,),
-                                  Icon(Icons.thumb_down_alt_outlined, size: 18,),
+                                  Icon(
+                                    Icons.thumb_down_alt_outlined, size: 18,),
                                   SizedBox(width: 8,),
                                   Icon(Icons.message_outlined, size: 18,)
                                 ],
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(left: 25, top: 8, bottom: 15),
+                              padding: const EdgeInsets.only(
+                                  left: 25, top: 8, bottom: 15),
                               child: Row(
                                 children: [
                                   MyTextWidget(data: "5 Replies",),
@@ -131,52 +246,13 @@ class PostVideoScreen extends StatelessWidget {
                         );
                       }
                   ),
-                ),
+                ):Padding(
+                  padding:EdgeInsets.only(top: 40),
+          child: Text("No Comments yet"),),
               ],
             ),
           );
         }
     );
-  }
-
-  Positioned buildPosLikeComment() {
-    return Positioned(
-        bottom: 0,
-        right: 10,
-        width: 50,
-        height: 360,
-        child: likeShareCommentSave());
-  }
-  Obx likeShareCommentSave() {
-
-    return Obx(()=>Column(
-      children: [
-        GestureDetector(
-            onTap: () {
-              like.value = !like.value;
-              disLike.value = true;
-            },
-            child: like.value
-                ?iconDetail(CupertinoIcons.hand_thumbsup, '354k')
-                :iconDetail(CupertinoIcons.hand_thumbsup_fill, "355k")),
-        const SizedBox(height: 25),
-        GestureDetector(
-            onTap: () {
-              disLike.value = !disLike.value;
-              like.value = true;
-            },
-            child: disLike.value?iconDetail(CupertinoIcons.hand_thumbsdown, 'Dislike')
-                :iconDetail(CupertinoIcons.hand_thumbsdown_fill, 'Dislike')),
-        const SizedBox(height: 25),
-        GestureDetector(
-            onTap: () {
-              comment.value = false;
-              showCommentBox();
-            },
-            child: iconDetail(CupertinoIcons.chat_bubble_text, '872')),
-        const SizedBox(height: 25),
-        iconDetail(CupertinoIcons.arrow_turn_up_right, 'Share'),
-      ],
-    ));
   }
 }

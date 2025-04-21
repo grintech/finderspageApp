@@ -113,17 +113,19 @@ class DateHelper {
       if(timeDifference.inSeconds == 0){
         return 'now';
       }else{
-        return '${timeDifference.inSeconds} seconds ago';
+        return '${timeDifference.inSeconds} sec';
       }
     } else if (timeDifference.inMinutes < 60) {
-      return '${timeDifference.inMinutes} minutes ago';
+      return '${timeDifference.inMinutes} min';
     } else if (timeDifference.inHours < 24) {
-      return '${timeDifference.inHours} hours ago';
+      return '${timeDifference.inHours} h';
     } else if (timeDifference.inDays < 30) {
-      return '${timeDifference.inDays} days ago';
-    } else {
-      DateFormat format = DateFormat('yyyy-MM-dd HH:mm:ss');
-      return format.format(dateTime);
+      return '${timeDifference.inDays} days';
+    }else if (timeDifference.inDays < 365) {
+      return '${(timeDifference.inDays / 30).floor()}m';
+    }
+    else {
+      return '${(timeDifference.inDays / 365).floor()}y';
     }
   }
 

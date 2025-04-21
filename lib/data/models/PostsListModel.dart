@@ -13,7 +13,7 @@ class PostsListModel{
   int? total_comments;
   dynamic availableSince;
   String? location;
-  String? likes;
+  dynamic likes;
   dynamic fees;
   String? bumpPost;
   dynamic featuredImage;
@@ -171,7 +171,8 @@ class PostsListModel{
   String? action;
   String? url;
   String? reaction;
-  Map<String, String>? likedBy;
+  String? likedBy;
+  // Map<String, String>? likedBy;
   List<String>? imageList;
   List<String>? postList;
 
@@ -526,9 +527,10 @@ class PostsListModel{
     url = json['url'];
     totalLikes = json['total_likes'];
     reaction = json['reaction'];
-    likedBy = json['liked_by'] != null && json['liked_by'] is Map
-        ? (json['liked_by'] as Map).map((key, value) => MapEntry(key.toString(), value.toString()),
-    ) : null;
+    likedBy = json['liked_by'];
+    // likedBy = json['liked_by'] != null && json['liked_by'] is Map
+    //     ? (json['liked_by'] as Map).map((key, value) => MapEntry(key.toString(), value.toString()),
+    // ) : null;
   }
 
   Map<String, dynamic> toJson() {
