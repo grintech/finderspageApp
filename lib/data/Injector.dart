@@ -29,7 +29,7 @@ class Injector {
       return client;
     };
     _dio.interceptors.clear();
-    // _dio.interceptors.add(LoggingInterceptors());
+    _dio.interceptors.add(LoggingInterceptors());
     return _dio;
   }
 

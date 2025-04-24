@@ -26,6 +26,7 @@ class PostsHomeController extends GetxController{
   RxSet<int> expandedReplies = <int>{}.obs;
   RxList<String> videoUrls = <String>[].obs;
 
+
   var commentLikeStates = <int, RxBool>{};
   var commentLikesCount = <int, RxInt>{};
 
@@ -97,9 +98,9 @@ class PostsHomeController extends GetxController{
   void onInit() {
     super.onInit();
     // getPostLists();
-    Future.delayed(Duration(seconds: 10),() {
-      getVideoLists();
-    });
+    // Future.delayed(Duration(milliseconds: 200),() {
+    //   getVideoLists();
+    // });
   }
 
   Future<void> postLikeApi(PostsListModel postModel) async {
@@ -118,20 +119,50 @@ class PostsHomeController extends GetxController{
     }
   }
 
+  Future<void> deletePostApi(int id) async {
+    if (await Utils.hasNetwork()) {
+      var response = await apiProvider.deletePost(id);
+
+      if (response.success == true) {
+        Utils.error(response.message);
+        getPostLists();
+      } else {
+        print("Like response has no data.");
+      }
+    }
+  }
+
+  Future<void> videoLikeApi(PostsListModel postModel) async {
+    if (await Utils.hasNetwork()) {
+      var response = await apiProvider.likeApi(postModel);
+
+
+      if (response.success == true && response.data != null) {
+        var likedData = response.data as PostsListModel;
+
+        this.postModel.value = likedData;
+        this.postModel.refresh();
+        getVideoLists();
+      } else {
+        print("Like response has no data.");
+      }
+    }
+  }
+
 
   Future<void> getPostLists() async {
     if (await Utils.hasNetwork()) {
       Map<String, dynamic> queries = HashMap();
       //queries['filter'] = 'inReview';
       queries['page'] = 1;
-      queries['per_page'] = 10;
+      queries['per_page'] = 20;
       // Utils.showLoader();
       var response = await apiProvider.getAllPostList(queries);
       // Utils.hideLoader();
-      if (response.success == true) {
+      if (response.success == true && response.data != null) {
         postsList.clear();
         postsList.addAll(response.data! as Iterable<PostsListModel>);
-
+        getVideoLists();
       }
       else {
         handleError(response);
@@ -213,6 +244,34 @@ class PostsHomeController extends GetxController{
     }
   }
 
+
+  Future<void> getDeleteComment(int id) async {
+    if (await Utils.hasNetwork()) {
+      var response = await apiProvider.deleteComment(id);
+      if (response.success == true && response.data != null) {
+        // await getCommentsLists(postId);
+      } else {
+        Utils.error(response.message);
+      }
+    } else {
+      Utils.showErrorAlert("Please Check Your Internet Connection");
+    }
+  }
+  Future<void> getDeleteVideoComment(int id, int postId) async {
+    if (await Utils.hasNetwork()) {
+      var response = await apiProvider.deleteComment(id);
+      if (response.success == true && response.data != null) {
+        Future.delayed(Duration(seconds: 1),(){
+          getVideoLists();
+        });
+      } else {
+        Utils.error(response.message);
+      }
+    } else {
+      Utils.showErrorAlert("Please Check Your Internet Connection");
+    }
+  }
+
   Future<void> fetchRepliesForAllComments() async {
     for (var comment in commentList) {
       int commentId = comment.id!;
@@ -226,8 +285,26 @@ class PostsHomeController extends GetxController{
     if(await Utils.hasNetwork()){
       var response = await apiProvider.uploadCommentApi(commentModel);
       if(response.success = true){
+        Future.delayed(Duration(seconds: 1),(){
+          getPostLists();
+        });
+        Future.delayed(Duration(seconds: 2),(){
+          getVideoLists();
+        });
+
+      }else{
+        handleError(response);
+      }
+    }
+  }
+
+  Future<void> commentEditApi(int id, CommentModel commentModel) async {
+    if(await Utils.hasNetwork()){
+      var response = await apiProvider.editCommentApi(id, commentModel);
+      if(response.success = true){
 
         getPostLists();
+
       }else{
         handleError(response);
       }

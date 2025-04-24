@@ -126,7 +126,7 @@ class CommunityListScreen extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4),
                               child: MyTextWidget(data: "Welcome to Community", size: 15,
-                                weight: FontWeight.w600, overflow: TextOverflow.ellipsis,),
+                                weight: FontWeight.w600,),
                             ),
                             MyTextWidget(data: "15 Days ago", size: 10, weight: FontWeight.w500,)
                           ],

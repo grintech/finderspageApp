@@ -155,9 +155,9 @@ class PostProfileScreen extends StatelessWidget {
                          width: Get.width,
                          child: controller.userModel.value?.user?.cover_img == ""
                              || controller.userModel.value?.user?.cover_img == null
-                             ?Image.asset("assets/images/no_image.png", fit: BoxFit.fill,):
+                             ?Image.asset("assets/images/no_image.png", fit: BoxFit.contain,):
                          Image.network("${ApiConstants.profileUrl}/"
-                             "${controller.userModel.value?.user?.cover_img}",fit: BoxFit.fill,)
+                             "${controller.userModel.value?.user?.cover_img}",fit: BoxFit.cover,)
                      ),
                    ],
                  ),

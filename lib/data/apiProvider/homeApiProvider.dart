@@ -109,9 +109,35 @@ class HomeApiProvider{
     }
   }
 
+  Future<DataResponse> deleteComment(int id) async {
+    try {
+      Response response = await _dio.get("${ApiConstants.deleteCommentApi}/$id", options: Injector.getHeaderToken());
+      var dataResponse = DataResponse<CommentModel>.fromJson(
+          response.data,
+              (data) => CommentModel.fromJson(data as Map<String, dynamic>)
+      );      return dataResponse;
+    } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return DataResponse.fromJson(res?.data, (data) => null);
+      return DataResponse(message: error.toString());
+    }
+  }
+
   Future<DataResponse> uploadCommentApi(CommentModel commentModel) async {
     try {
       Response response = await _dio.post(ApiConstants.commentPostApi, options: Injector.getHeaderToken(), data: commentModel);
+      var dataResponse = DataResponse<CommentModel>.fromJson(response.data, (data) => CommentModel.fromJson(data as Map<String, dynamic>));
+      return dataResponse;
+    } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return DataResponse.fromJson(res?.data, (data) => null);
+      return DataResponse(message: error.toString());
+    }
+  }
+
+  Future<DataResponse> editCommentApi(int id, CommentModel commentModel) async {
+    try {
+      Response response = await _dio.post("${ApiConstants.updateCommentApi}/$id", options: Injector.getHeaderToken(), data: commentModel);
       var dataResponse = DataResponse<CommentModel>.fromJson(response.data, (data) => CommentModel.fromJson(data as Map<String, dynamic>));
       return dataResponse;
     } catch (error) {
@@ -170,6 +196,18 @@ class HomeApiProvider{
       final res = (error as dynamic).response;
       if (res != null) return PageResponse.fromJson(res?.data, (data) => null);
       return PageResponse(message: error.toString());
+    }
+  }
+
+  Future<DataResponse> deletePost(int id) async {
+    try {
+      Response response = await _dio.post("${ApiConstants.deletePostApi}/$id", options: Injector.getHeaderToken());
+      var dataResponse = DataResponse<PostsListModel>.fromJson(response.data, (data) => PostsListModel.fromJson(data as Map<String, dynamic>));
+      return dataResponse;
+    } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return DataResponse.fromJson(res?.data, (data) => null);
+      return DataResponse(message: error.toString());
     }
   }
 

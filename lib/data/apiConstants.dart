@@ -23,7 +23,9 @@ static const String updateUser = "$_baseUrl/updateProfileApp";
 
 // create post apis
   static const String createPost = "$_baseUrl/createPostApp";
+  static const String updatePost = "$_baseUrl/updatePostApp";
   static const String uploadVideo = "$_baseUrl/uploadVideoApp";
+  static const String deletePostApi = "$_baseUrl/deletePostApp";
 
 // posts home list apis
   static const String showAllPosts = "$_baseUrl/showPostApp";
@@ -32,6 +34,9 @@ static const String updateUser = "$_baseUrl/updateProfileApp";
   static const String commentListApi = "$_baseUrl/comment-list";
   static const String replyListApi = "$_baseUrl/comment-list-reply";
   static const String commentPostApi = "$_baseUrl/comment-save";
+  static const String updateCommentApi = "$_baseUrl/comment-update";
+  static const String deleteCommentApi = "$_baseUrl/comment-delete";
   static const String commentLikeApi = "$_baseUrl/comment-like";
   static const String replyPostApi = "$_baseUrl/comment-reply";
+  static const String savePostApi = "$_baseUrl/saved-data";
 }

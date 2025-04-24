@@ -51,40 +51,56 @@ class _MediaWidgetState extends State<MediaWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: Get.width,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: isVideo
-            ? (_controller != null && _controller!.value.isInitialized
-            ? GestureDetector(
-          onTap: () => _handleVideoTap(),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                      height: _controller?.value.size.height,
-                      width: _controller?.value.size.width,
-                      child: VideoPlayer(_controller!)),
-                  if (!_controller!.value.isPlaying)
-                    const Icon(
-                      Icons.play_arrow,
-                      size: 64,
-                      color: Colors.white70,
-                    ),
-                ],
-              ),
-            )
-            : Center(child: CircularProgressIndicator()))
-            : Image.network(
-          widget.mediaUrl,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => Image.asset(
-            "assets/images/no_image.png",
-            fit: BoxFit.cover,
-          ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: isVideo
+          ? (_controller != null && _controller!.value.isInitialized
+          ? _buildVideoPlayer()
+          : Center(child: CircularProgressIndicator()))
+          : Image.network(
+        widget.mediaUrl,
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => Image.asset(
+          "assets/images/no_image.png", height: 20, width: 20,
         ),
       ),
     );
   }
+
+  Widget _buildVideoPlayer() {
+    final videoSize = _controller!.value.size;
+    final isPortrait = videoSize.height > videoSize.width;
+
+    return GestureDetector(
+      onTap: _handleVideoTap,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          isPortrait
+              ? SizedBox(
+            width: Get.width,
+            height: Get.width * (videoSize.height / videoSize.width),
+            child: VideoPlayer(_controller!),
+          )
+              : Center(
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: SizedBox(
+                width: videoSize.width,
+                height: videoSize.height,
+                child: VideoPlayer(_controller!),
+              ),
+            ),
+          ),
+          if (!_controller!.value.isPlaying)
+            const Icon(
+              Icons.play_arrow,
+              size: 64,
+              color: Colors.white70,
+            ),
+        ],
+      ),
+    );
+  }
+
 }

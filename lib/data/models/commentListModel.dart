@@ -7,6 +7,7 @@ class CommentListModel{
   String? userId;
   String? blogId;
   String? comment;
+  String? editedComment;
   int? comment_id;
   String? action;
   String? type;
@@ -28,6 +29,7 @@ class CommentListModel{
     this.userId,
     this.blogId,
     this.comment,
+    this.editedComment,
     this.comment_id,
     this.action,
     this.type,
@@ -50,6 +52,7 @@ class CommentListModel{
     userId = json['user_id'];
     blogId = json['blog_id'];
     comment = json['comment'];
+    editedComment = json['editedComment'];
     comment_id = json['comment_id'];
     action = json['action'];
     type = json['type'];
@@ -79,6 +82,7 @@ class CommentListModel{
     writeNotNull('user_id', userId);
     writeNotNull('blogId', blogId);
     writeNotNull('comment', comment);
+    writeNotNull('editedComment', editedComment);
     writeNotNull('action', action);
     writeNotNull('comment_id', comment_id);
     writeNotNull('type', type);

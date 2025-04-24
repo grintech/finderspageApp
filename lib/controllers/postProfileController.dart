@@ -185,7 +185,7 @@ class PostProfileController extends GetxController {
   }
 
   Future<void> logOut()async{
-    if(await Utils.hasNetwork()){
+    // if(await Utils.hasNetwork()){
       // Utils.showLoader();
       // var res = await _profileApiProvider.logOut();
       // Utils.hideLoader();
@@ -194,7 +194,7 @@ class PostProfileController extends GetxController {
         storageHelper.clearAll();
         Get.offAllNamed(Routes.loginRoute);
       // }
-    }
+    // }
     // else{
     //   handleError(response);
     // }

@@ -169,10 +169,11 @@ class PostsListModel{
   int? blog_id;
   int? cate_id;
   String? action;
+  String? blog_user_id;
   String? url;
   String? reaction;
-  String? likedBy;
-  // Map<String, String>? likedBy;
+  // String? likedBy;
+  Map<String, String>? liked_by;
   List<String>? imageList;
   List<String>? postList;
 
@@ -341,11 +342,12 @@ class PostsListModel{
     this.totalLikes,
     this.user_id,
     this.blog_id,
+    this.blog_user_id,
     this.cate_id,
     this.action,
     this.url,
     this.reaction,
-    this.likedBy,
+    this.liked_by,
   });
 
 
@@ -521,16 +523,24 @@ class PostsListModel{
     likeId = json['likeId'];
     user_id = json['user_id'];
     blog_id = json['blog_id'];
+    blog_user_id = json['blog_user_id'];
     cate_id = json['cate_id'];
     action = json['action'];
     type = json['type'];
     url = json['url'];
     totalLikes = json['total_likes'];
     reaction = json['reaction'];
-    likedBy = json['liked_by'];
-    // likedBy = json['liked_by'] != null && json['liked_by'] is Map
-    //     ? (json['liked_by'] as Map).map((key, value) => MapEntry(key.toString(), value.toString()),
-    // ) : null;
+    // likedBy = json['liked_by'];
+    if (json['liked_by'] != null) {
+      if (json['liked_by'] is String) {
+        final decoded = jsonDecode(json['liked_by']);
+        if (decoded is Map) {
+          liked_by = decoded.map((key, value) => MapEntry(key.toString(), value.toString()));
+        }
+      } else if (json['liked_by'] is Map) {
+        liked_by = (json['liked_by'] as Map).map((key, value) => MapEntry(key.toString(), value.toString()));
+      }
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -570,13 +580,14 @@ class PostsListModel{
     writeNotNull('likeId', likeId);
     writeNotNull('user_id', user_id);
     writeNotNull('blog_id', blog_id);
+    writeNotNull('blog_user_id', blog_user_id);
     writeNotNull('cate_id', cate_id);
     writeNotNull('action', action);
     writeNotNull('type', type);
     writeNotNull('url', url);
     writeNotNull('reaction', reaction);
     writeNotNull('total_likes', totalLikes);
-    writeNotNull('liked_by', likedBy);
+    writeNotNull('liked_by', liked_by);
 
     return data;
   }

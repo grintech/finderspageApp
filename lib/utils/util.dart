@@ -18,6 +18,7 @@ class MyTextWidget extends StatelessWidget {
   final Color? color;
   final TextOverflow? overflow;
 
+
   const MyTextWidget({super.key, this.data, this.size, this.color, this.weight, this.overflow});
 
   @override
@@ -70,40 +71,45 @@ class Utils{
     );
   }
 
-  static mediaOptions(){
+  static mediaOptions() {
     showModalBottomSheet(
-        isDismissible: true,
-        context: Get.context!,
-        builder: (context){
-          return Container(
-            height: 100,
-            color: Colors.black,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                GestureDetector(
-                    onTap:() {
-                      imagePickerController.pickImage(ImageSource.camera);
-                      Get.back();
-                    },
-                    child: Icon(Icons.camera, color: Colors.white,)),
-                GestureDetector(
-                    onTap:() {
-                      imagePickerController.pickImage(ImageSource.gallery);
-                      Get.back();
-                    },
-                    child: Icon(Icons.perm_media_outlined, color: Colors.white,)),
-                GestureDetector(
-                    onTap:() {
-                      imagePickerController.pickVideo(ImageSource.gallery);
-                      Get.back();
-                    },
-                    child: Icon(Icons.video_camera_back_outlined, color: Colors.white,)),
-              ],
-            ),
-          );
-        });
+      isDismissible: true,
+      context: Get.context!,
+      builder: (context) {
+        return Container(
+          height: 100,
+          color: Colors.black,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  await imagePickerController.pickImage(ImageSource.camera);
+                  Get.back();
+                },
+                child: Icon(Icons.camera, color: Colors.white),
+              ),
+              GestureDetector(
+                onTap: () async {
+                  await imagePickerController.pickImage(ImageSource.gallery);
+                  Get.back();
+                },
+                child: Icon(Icons.perm_media_outlined, color: Colors.white),
+              ),
+              GestureDetector(
+                onTap: () async {
+                  await imagePickerController.pickVideo(ImageSource.gallery);
+                  Get.back();
+                },
+                child: Icon(Icons.video_camera_back_outlined, color: Colors.white),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
+
 
   static showLog(String? log) {
     print("findersPage-log $log");

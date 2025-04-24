@@ -3,6 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 @JsonSerializable(includeIfNull: false, explicitToJson: true)
 class CommentModel{
   String? comment;
+  String? editedComment;
   String? post_id;
   String? post_user;
   String? user_id;
@@ -14,6 +15,7 @@ class CommentModel{
 
   CommentModel({
     this.comment,
+    this.editedComment,
     this.post_id,
     this.post_user,
     this.user_id,
@@ -26,6 +28,7 @@ class CommentModel{
 
   CommentModel.fromJson(Map<String, dynamic> json) {
     comment = json['comment'];
+    editedComment = json['editedComment'];
     user_id = json['user_id'];
     blog_id = json['blog_id'];
     post_id = json['post_id'];
@@ -47,6 +50,7 @@ class CommentModel{
       }
     }
     writeNotNull('comment', comment);
+    writeNotNull('editedComment', editedComment);
     writeNotNull('user_id', user_id);
     writeNotNull('blog_id', blog_id);
     writeNotNull('post_id', post_id);

@@ -128,7 +128,7 @@ class TrendingScreen extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4),
                               child: MyTextWidget(data: "Remote Senior Financial Analyst Houston", size: 15,
-                                weight: FontWeight.w600, overflow: TextOverflow.ellipsis,),
+                                weight: FontWeight.w600,),
                             ),
                             MyTextWidget(data: "15 Days ago", size: 10, weight: FontWeight.w500,)
                           ],

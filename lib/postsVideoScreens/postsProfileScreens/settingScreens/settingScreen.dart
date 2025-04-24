@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:projects/controllers/postProfileController.dart';
 import 'package:projects/utils/commonWidgets/CommonAppBar.dart';
+import 'package:projects/utils/helper/storageHelper.dart';
 import 'package:projects/utils/util.dart';
 
 import '../../../utils/routes.dart';
@@ -29,11 +30,11 @@ class PostsSettingScreen extends StatelessWidget {
           ),
           ListTile(
             onTap: (){
-              controller.logOut();
+              // controller.logOut();
               // Utils.showLoader();
-              // controller.storageHelper.clearAll();
+              StorageHelper().clearAll();
               // Utils.hideLoader();
-              // Get.offAllNamed(Routes.loginRoute);
+              Get.offAllNamed(Routes.loginRoute);
             },
             title: MyTextWidget(data: "Log Out",),
           ),

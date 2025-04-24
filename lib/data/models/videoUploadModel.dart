@@ -4,7 +4,7 @@ import 'dart:io';
 class VideoUploadModel {
   String? title;
   String? slug;
-  int? userId;
+  dynamic userId;
   String? postVideo;
   String? image1;
   String? location;
@@ -12,18 +12,18 @@ class VideoUploadModel {
   String? caption;
   String? categories;
   String? description;
-  int? shares;
-  int? commentOption;
+  dynamic shares;
+  dynamic commentOption;
   String? likesBtn;
   String? donationLink;
   String? type;
   String? createdBy;
   String? postType;
-  int? status;
-  int? draft;
+  dynamic status;
+  dynamic draft;
   String? created;
   String? modified;
-  int? id;
+  dynamic id;
   VideoUploadModel? post;
   List<File>? selectedFiles;
 

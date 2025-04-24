@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -12,6 +13,7 @@ import 'package:projects/utils/shared/dataResponse.dart';
 import 'package:video_player/video_player.dart';
 
 import '../data/apiProvider/createPostApiProvider.dart';
+import '../data/models/PostsListModel.dart';
 import '../postsVideoScreens/postsHomeScreens/postsNavBarScreen.dart';
 import '../utils/helper/storageHelper.dart';
 import '../utils/util.dart';
@@ -25,6 +27,11 @@ class CreatePostController extends GetxController {
   late CreatePostApiProvider createApiProvider = CreatePostApiProvider();
   late StorageHelper storageHelper = StorageHelper();
   VideoPlayerController? playerController;
+
+  final captionController = TextEditingController();
+
+  var isLimitReached = false.obs;
+  Rxn<VideoUploadModel> postModel = Rxn();
 
   CameraController? cameraController;
   late List<CameraDescription> cameras;
@@ -41,6 +48,10 @@ class CreatePostController extends GetxController {
   final int maxRecordingTime = 15;
 
   final RxList<File> selectedFiles = <File>[].obs;
+  RxList<String> existingNetworkMedia = <String>[].obs;
+  final descController = TextEditingController();
+  final locController = TextEditingController();
+  final donationController = TextEditingController();
 
   void addFile(File file) {
     selectedFiles.add(file);
@@ -50,6 +61,14 @@ class CreatePostController extends GetxController {
     selectedFiles.removeAt(index);
   }
 
+  void prefillFields(String? caption, String? location) {
+    captionController.text = caption ?? '';
+    locController.text = location ?? '';
+  }
+
+  void setEditMedia(List<String> urls) {
+    existingNetworkMedia.value = urls;
+  }
 
   Future<void> pickImage(ImageSource source) async {
     final ImagePicker picker = ImagePicker();
@@ -90,14 +109,18 @@ class CreatePostController extends GetxController {
   // open and record video
   @override
   void onInit() {
-    super.onInit();
     createApiProvider = CreatePostApiProvider();
     storageHelper = StorageHelper();
+    captionController.addListener(() {
+      isLimitReached.value = captionController.text.length >= 150;
+    });
     resetData();
+    super.onInit();
   }
 
   void resetData() {
     selectedFiles.clear();
+    captionController.clear();
     selectedImagePath.value = '';
   }
 
@@ -265,6 +288,33 @@ class CreatePostController extends GetxController {
           final postsController = Get.find<PostsHomeController>();
           postsController.postsList.clear();
           postsController.changeTabIndex(0);
+            postsController.getPostLists();
+        } else {
+          handleError(response);
+        }
+      } else {
+        Utils.showErrorAlert(response.message ?? "Upload failed");
+      }
+    } else {
+      Utils.showErrorAlert("Please check your internet connection");
+    }
+  }
+
+  Future<void> editPostApi(VideoUploadModel videoModel, int id) async {
+    if (await Utils.hasNetwork()) {
+      print("show VideoModel Data -----> ${videoModel.toJson()}");
+      Utils.showLoader();
+
+      var response = await createApiProvider.editPost(videoModel, id);
+
+      Utils.hideLoader();
+
+      if (response.success == true) {
+        if (response.data != null) {
+          Get.offAllNamed(Routes.postsHome);
+          final postsController = Get.find<PostsHomeController>();
+          // postsController.postsList.clear();
+          // postsController.changeTabIndex(0);
             postsController.getPostLists();
         } else {
           handleError(response);

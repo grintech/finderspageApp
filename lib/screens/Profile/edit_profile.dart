@@ -55,21 +55,48 @@ class EditProfile extends StatelessWidget {
                 children: [
                   Stack(
                     children: [
-                      Obx(()=>Container(
-                        margin: EdgeInsets.only(bottom: 40),
-                        height: 220,
-                        width: Get.width,
-                        child: controller.coverImagePath.isEmpty
-                            && controller.userModel.value?.user?.cover_img == ""
-                            && controller.userModel.value?.user?.cover_img == null
-                            ?Image.asset("assets/images/no_image.png",
-                          fit: BoxFit.fill,)
-                            :controller.coverImagePath.isNotEmpty?
-                        Image.file(File(controller.coverImagePath.value),
-                          width: Get.width, height: 180, fit: BoxFit.contain,):
-                        Image.network("${ApiConstants.profileUrl}/"
-                            "${controller.userModel.value?.user?.cover_img}",fit: BoxFit.fill,),
-                      ),),
+                      Obx(() {
+                        final coverImagePath = controller.coverImagePath.value;
+                        final coverImg = controller.userModel.value?.user?.cover_img;
+
+                        Widget imageWidget;
+
+                        if (coverImagePath.isNotEmpty && File(coverImagePath).existsSync()) {
+                          // Local file exists
+                          imageWidget = Image.file(
+                            File(coverImagePath),
+                            width: Get.width,
+                            height: 200,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Image.asset("assets/images/no_image.png", fit: BoxFit.contain),
+                          );
+                        } else if (coverImg != null && coverImg.isNotEmpty) {
+                          // Load from network
+                          imageWidget = Image.network(
+                            "${ApiConstants.profileUrl}/$coverImg",
+                            width: Get.width,
+                            height: 200,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Image.asset("assets/images/no_image.png", fit: BoxFit.contain),
+                          );
+                        } else {
+                          // Fallback image
+                          imageWidget = Image.asset(
+                            "assets/images/no_image.png",
+                            width: Get.width,
+                            height: 200,
+                            fit: BoxFit.contain,
+                          );
+                        }
+
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 40),
+                          height: 200,
+                          width: Get.width,
+                          child: imageWidget,
+                        );
+                      }),
+
                       Positioned(
                         right: 12, bottom: 50,
                         child: GestureDetector(
@@ -106,29 +133,50 @@ class EditProfile extends StatelessWidget {
                       },
                       child: Stack(
                         children: [
-                          Obx(()=>Container(
-                            height: 70, width: 70,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                            ),
-                            child: controller.profileImagePath.isEmpty
-                                && controller.userModel.value?.user?.image == ""
-                                && controller.userModel.value?.user?.image == null
-                                ?ImageView(height: 80, width: 70,)
-                                :controller.profileImagePath.isNotEmpty?
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(100),
-                              child: Image.file(
-                                File(controller.profileImagePath.value),
-                                width: 80,
-                                height: 80,
-                                fit: BoxFit.fill,
+                          Obx(() {
+                            final profileImagePath = controller.profileImagePath.value;
+                            final userImage = controller.userModel.value?.user?.image;
+
+                            Widget imageWidget;
+
+                            if (profileImagePath.isNotEmpty && File(profileImagePath).existsSync()) {
+                              // Use local file if it exists
+                              imageWidget = ClipRRect(
+                                borderRadius: BorderRadius.circular(100),
+                                child: Image.file(
+                                  File(profileImagePath),
+                                  width: 80,
+                                  height: 80,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) =>ImageView(height: 80, width: 80,),
+                                ),
+                              );
+                            } else if (userImage != null && userImage.isNotEmpty) {
+                              // Load from network if URL is valid
+                              imageWidget = ClipRRect(
+                                borderRadius: BorderRadius.circular(100),
+                                child: Image.network(
+                                  "${ApiConstants.profileUrl}/$userImage",
+                                  width: 80,
+                                  height: 80,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => ImageView(height: 80, width: 80,),
+                                ),
+                              );
+                            } else {
+                              // Fallback
+                              imageWidget = ImageView(height: 80, width: 80,);
+                            }
+
+                            return Container(
+                              height: 70,
+                              width: 70,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
                               ),
-                            )
-                                :ClipRRect(borderRadius: BorderRadius.circular(50),
-                                child: Image.network("${ApiConstants.profileUrl}/${controller.userModel.value?.user?.image}",
-                                  width: 80, height: 80,fit: BoxFit.fill,)),
-                          ),),
+                              child: imageWidget,
+                            );
+                          }),
                           Positioned(
                             bottom: 2,
                             right: 0,
@@ -237,23 +285,21 @@ class EditProfile extends StatelessWidget {
                               print("Selected date: $pickedDate"); // Handle the selected date
                             }
                           },
-                          child: Flexible(
-                            child: Container(
-                              height: 48,
-                              padding: EdgeInsets.symmetric(horizontal: 15),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  border: Border.all(width: 1.5, color: fieldBorderColor)
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  MyTextWidget(data:DateFormat('dd-MMMM-yyyy').format(selectedDOB.value)),
-                                  SizedBox(width: 12,),
-                                  Image.asset("assets/images/calendar-icon.png", scale:4,)
-                                ],
-                              ),
+                          child: Container(
+                            height: 48,
+                            padding: EdgeInsets.symmetric(horizontal: 15),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(width: 1.5, color: fieldBorderColor)
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                MyTextWidget(data:DateFormat('dd-MMMM-yy').format(selectedDOB.value)),
+                                SizedBox(width: 12,),
+                                Image.asset("assets/images/calendar-icon.png", scale:4,)
+                              ],
                             ),
                           ),
                         ))

@@ -118,7 +118,7 @@ class DateHelper {
     } else if (timeDifference.inMinutes < 60) {
       return '${timeDifference.inMinutes} min';
     } else if (timeDifference.inHours < 24) {
-      return '${timeDifference.inHours} h';
+      return '${timeDifference.inHours} hr';
     } else if (timeDifference.inDays < 30) {
       return '${timeDifference.inDays} days';
     }else if (timeDifference.inDays < 365) {

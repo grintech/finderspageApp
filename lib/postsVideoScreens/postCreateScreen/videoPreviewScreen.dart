@@ -11,10 +11,30 @@ import 'package:projects/utils/commonWidgets/commonTextField.dart';
 import 'package:projects/utils/util.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:io';
-
+import 'package:http/http.dart' as http;
 import '../../utils/colorConstants.dart';
 
 class VideoPickerScreen extends StatefulWidget {
+  final String from;
+  final String? videoId;
+  final String? caption;
+  final String? location;
+  final String? description;
+  final String? media;
+  final String? title;
+  final String? mediaUrl;
+
+  const VideoPickerScreen({
+    super.key,
+    required this.from,
+    this.caption,
+    this.location,
+    this.media,
+    this.videoId,
+    this.description,
+    this.title,
+    this.mediaUrl,
+  });
   @override
   _VideoPickerScreenState createState() => _VideoPickerScreenState();
 }
@@ -25,20 +45,30 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
   File? imageFile;
   VideoPlayerController? _controller;
 
+
+
   final controller = Get.put(CreatePostController());
+  bool _isLoading = true;
 
 
-
-  final titleController = TextEditingController();
-  final descController = TextEditingController();
-  final locController = TextEditingController();
-  final captionController = TextEditingController();
-  final donationController = TextEditingController();
+  late var titleController = TextEditingController();
+  late var descController = TextEditingController();
+  late var locController = TextEditingController();
+  late var captionController = TextEditingController();
+  late var donationController = TextEditingController();
 
   var shareOn = false.obs;
   var likesOn = false.obs;
   var commentOn = false.obs;
   var donationOn = false.obs;
+
+  void prefillFields(String? caption, String? location, String? title, String? description) {
+    captionController.text = caption ?? '';
+    locController.text = location ?? '';
+    titleController.text = title ?? '';
+    descController.text = description ?? '';
+  }
+
 
   Future<void> _pickVideo() async {
     final XFile? pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
@@ -55,26 +85,7 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
     }
   }
 
-  Future<void> _pickImage() async {
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
 
-    if (pickedFile != null) {
-      imageFile = File(pickedFile.path);
-
-      _controller?.dispose();
-
-      // _controller = VideoPlayerController.file(imageFile!)
-      //   ..initialize().then((_) {
-      //     setState(() {}); // Rebuild with controller
-      //   });
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
-  }
 
   void _togglePlayPause() {
     if (_controller == null) return;
@@ -84,64 +95,128 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    captionController = TextEditingController(text: widget.caption ?? '');
+    locController = TextEditingController(text: widget.location ?? '');
+    descController = TextEditingController(text: widget.description ?? '');
+    titleController = TextEditingController(text: widget.title ?? '');
+    if (widget.from == "edit" && widget.mediaUrl != null) {
+      _loadVideoFromNetwork(widget.mediaUrl!);
+    }
+  }
+
+  Future<void> _loadVideoFromNetwork(String url) async {
+    setState(() => _isLoading = true);
+
+    final response = await http.get(Uri.parse(url));
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/${url.split('/').last}');
+    await file.writeAsBytes(response.bodyBytes);
+
+    _videoFile = file;
+    await _initializeVideoPlayer();
+
+    setState(() => _isLoading = false);
+  }
+
+
+  Future<void> _initializeVideoPlayer() async {
+    if (_videoFile != null) {
+      _controller = VideoPlayerController.file(_videoFile!);
+      await _controller!.initialize();
+      // _controller!.play(); // optional
+    }
+  }
+
+
+  @override
   Widget build(BuildContext context) {
+    final videoSize = _controller?.value.isInitialized == true
+        ? _controller!.value.size
+        : null;
+    // final isPortrait = videoSize!.height > videoSize.width;
     return GestureDetector(
       onTap: () {
-        // Optional: you can call _pickVideo here if you want tap to trigger video picking.
       },
       child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: Text("Upload Video"),
-          actions: [
-            CommonButton(
-              margin: EdgeInsets.only(right: 20),
-              onPressed: ()async{
-                String imagePath = await copyAssetToFile(
-                  'assets/images/thumbnail.jpg', // this is the asset path
-                  'thumbnail.jpg',               // this is the filename only
-                );
-                controller.postVideo(VideoUploadModel(
-                      title: titleController.text,
-                      location: locController.text,
-                      description: descController.text,
-                      type: "video",
-                      shares: shareOn.value == true?1:0,
-                      likesBtn: likesOn.value == true?"1":"0",
-                      commentOption: commentOn.value == true?1:0,
-                      id: controller.storageHelper.getUserModel()?.user!.id,
-                      subCategory: "5449",
-                      postVideo: _videoFile?.path,
-                      image1: imagePath
-                  ),
-                );
-              },
-              radius: 12,
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              btnTxt: "Share",
-            ),
-          ],
-        ),
         body:SingleChildScrollView(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.only(top: 20, left: 16, right: 16, bottom: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Padding(
+                padding: EdgeInsets.only(left: widget.from == "edit"?10:70, bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    widget.from == "edit"?GestureDetector(
+                        onTap: () => Get.back(),
+                        child: Icon(Icons.arrow_back_ios, color: fieldBorderColor,)):
+                    const SizedBox(),
+                    MyTextWidget(data: widget.from == "edit"?"Edit Video":"Upload Video", size: 16,),
+                    CommonButton(
+                      margin: EdgeInsets.only(right: 20),
+                      onPressed: ()async{
+                        String imagePath = await copyAssetToFile(
+                          'assets/images/thumbnail.jpg', // this is the asset path
+                          'thumbnail.jpg',               // this is the filename only
+                        );
+                        widget.from == "edit"?
+                            controller.editPostApi(VideoUploadModel(
+                                title: captionController.text,
+                                location: locController.text,
+                                description: descController.text,
+                                type: "video",
+                                shares: shareOn.value == true?1:0,
+                                likesBtn: likesOn.value == true?"1":"0",
+                                commentOption: commentOn.value == true?1:0,
+                                id: controller.storageHelper.getUserModel()?.user!.id,
+                                subCategory: "5449",
+                                postVideo: _videoFile?.path,
+                                image1: imagePath
+                            ), int.parse("${widget.videoId}")):
+                        controller.postVideo(VideoUploadModel(
+                            title: captionController.text,
+                            location: locController.text,
+                            description: descController.text,
+                            type: "video",
+                            shares: shareOn.value == true?1:0,
+                            likesBtn: likesOn.value == true?"1":"0",
+                            commentOption: commentOn.value == true?1:0,
+                            id: controller.storageHelper.getUserModel()?.user!.id,
+                            subCategory: "5449",
+                            postVideo: _videoFile?.path,
+                            image1: imagePath
+                        ),
+                        );
+                      },
+                      radius: 12,
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      btnTxt: "Share",
+                    ),
+                  ],
+                ),
+              ),
               GestureDetector(
                 onTap: _pickVideo,
-                child: _controller != null && _controller!.value.isInitialized?
-                AspectRatio(
-                  aspectRatio: 1.5,
-                  child: VideoPlayer(_controller!),
-                ):SizedBox(
-                    height: 170,
-                    child: Column(
-                      children: [
-                        Image.asset("assets/images/ic_upload_video.png", scale: 5,),
-                        SizedBox(height: 30,),
-                        MyTextWidget(data: "Select video    ",),
-                      ],
-                    )),
+                child: _isLoading || _controller == null
+                    ? const Center(child: CircularProgressIndicator())
+                    : _controller != null && _controller!.value.isInitialized
+                    ? Container(
+                  margin: EdgeInsets.only(top: 70),
+                  constraints: const BoxConstraints(
+                    maxHeight: 200, // 👈 Set a reasonable height cap
+                  ),
+                  width: Get.width,
+                  child: SizedBox(
+                    height: 200,
+                    child: VideoPlayer(_controller!),
+                  ),
+                )
+                    : const Center(child: Text("Failed to load video")),
+
               ),
               SizedBox(height: 10),
               if (_controller != null && _controller!.value.isInitialized)
@@ -156,7 +231,7 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
               CommonTextField(
                 margin: EdgeInsets.only(top: 20, bottom: 10),
                 hint: "Add Title Here...",
-                textController: titleController,
+                textController: captionController,
               ),
               CommonTextField(
                 margin: EdgeInsets.only(top: 10, bottom: 10),
@@ -169,78 +244,78 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
                 lines: 3,
                 textController: descController,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    MyTextWidget(data: "Share",),
-                    Obx(()=>FlutterSwitch(
-                        height: 20, width: 40,
-                        toggleSize: 12,
-                        activeColor: fieldBorderColor,
-                        value: shareOn.value,
-                        onToggle:(val){
-                          shareOn.value = val;
-                        }
-                    ))
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      MyTextWidget(data: "Share",),
+                      Obx(()=>FlutterSwitch(
+                          height: 20, width: 40,
+                          toggleSize: 12,
+                          activeColor: fieldBorderColor,
+                          value: shareOn.value,
+                          onToggle:(val){
+                            shareOn.value = val;
+                          }
+                      ))
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    MyTextWidget(data: "Comment",),
-                    Obx(()=>FlutterSwitch(
-                        height: 20, width: 40,
-                        toggleSize: 12,
-                        activeColor: fieldBorderColor,
-                        value: commentOn.value,
-                        onToggle:(val){
-                          commentOn.value = val;
-                        }
-                    ))
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      MyTextWidget(data: "Comment",),
+                      Obx(()=>FlutterSwitch(
+                          height: 20, width: 40,
+                          toggleSize: 12,
+                          activeColor: fieldBorderColor,
+                          value: commentOn.value,
+                          onToggle:(val){
+                            commentOn.value = val;
+                          }
+                      ))
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric( vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    MyTextWidget(data: "Likes",),
-                    Obx(()=>FlutterSwitch(
-                        height: 20, width: 40,
-                        toggleSize: 12,
-                        activeColor: fieldBorderColor,
-                        value: likesOn.value,
-                        onToggle:(val){
-                          likesOn.value = val;
-                        }
-                    ))
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric( vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      MyTextWidget(data: "Likes",),
+                      Obx(()=>FlutterSwitch(
+                          height: 20, width: 40,
+                          toggleSize: 12,
+                          activeColor: fieldBorderColor,
+                          value: likesOn.value,
+                          onToggle:(val){
+                            likesOn.value = val;
+                          }
+                      ))
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric( vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    MyTextWidget(data: "Tips & Donation (Optional)",),
-                    Obx(()=>FlutterSwitch(
-                        height: 20, width: 40,
-                        toggleSize: 12,
-                        activeColor: fieldBorderColor,
-                        value: donationOn.value,
-                        onToggle:(val){
-                          donationOn.value = val;
-                        }
-                    )),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric( vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      MyTextWidget(data: "Tips & Donation (Optional)",),
+                      Obx(()=>FlutterSwitch(
+                          height: 20, width: 40,
+                          toggleSize: 12,
+                          activeColor: fieldBorderColor,
+                          value: donationOn.value,
+                          onToggle:(val){
+                            donationOn.value = val;
+                          }
+                      )),
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -256,4 +331,12 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
     return file.path;
   }
 
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
 }
+
+

@@ -16,10 +16,14 @@ import '../../utils/colorConstants.dart';
 import '../../utils/commonWidgets/commonButton.dart';
 import '../../utils/commonWidgets/commonTextField.dart';
 
-class PostCreateScreen extends StatelessWidget{
-  PostCreateScreen({super.key});
+class PostCreateScreen extends StatefulWidget {
+  const PostCreateScreen({super.key});
 
-  // late CameraHelper cameraHelper;
+  @override
+  State<PostCreateScreen> createState() => _PostCreateScreenState();
+}
+
+class _PostCreateScreenState extends State<PostCreateScreen> {
   final ImagePicker _picker = ImagePicker();
   File? _videoFile;
   RxnString imgUrl = RxnString();
@@ -32,7 +36,6 @@ class PostCreateScreen extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    // cameraHelper = CameraHelper(this);
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 0,
@@ -40,9 +43,13 @@ class PostCreateScreen extends StatelessWidget{
       body: Column(
         children: [
           Expanded(
-            child:Obx(()=> selected.value == 0? VideoPickerScreen()
-                :selected.value == 1?CustomCameraScreen()
-                :selected.value == 2?LiveCameraScreen() :UploadPostScreen(),)
+            child: Obx(() => selected.value == 0
+                ? VideoPickerScreen(from: "upload",)
+                : selected.value == 1
+                ? CustomCameraScreen()
+                : selected.value == 2
+                ? LiveCameraScreen()
+                : UploadPostScreen(from: "create",)),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -50,27 +57,26 @@ class PostCreateScreen extends StatelessWidget{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
-                    onTap:() {
+                    onTap: () {
                       selected.value = 0;
-                      // _pickVideo();
                     },
-                    child: MyTextWidget(data: "Video",)),
+                    child: MyTextWidget(data: "Video")),
                 GestureDetector(
                     onTap: () {
                       selected.value = 1;
                     },
-                    child: MyTextWidget(data: "Short",)),
+                    child: MyTextWidget(data: "Short")),
                 GestureDetector(
                     onTap: () {
                       selected.value = 2;
-                      // _recordVideo();
                     },
-                    child: MyTextWidget(data: "Live",)),
+                    child: MyTextWidget(data: "Live")),
                 GestureDetector(
                     onTap: () {
                       selected.value = 3;
+                      Get.delete<CreatePostController>();
                     },
-                    child: MyTextWidget(data: "Post",)),
+                    child: MyTextWidget(data: "Post")),
               ],
             ),
           )
@@ -79,3 +85,4 @@ class PostCreateScreen extends StatelessWidget{
     );
   }
 }
+

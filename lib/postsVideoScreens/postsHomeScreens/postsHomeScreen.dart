@@ -10,12 +10,14 @@ import 'package:projects/data/models/comReplyModel.dart';
 import 'package:projects/data/models/commentListModel.dart';
 import 'package:projects/data/models/commentModel.dart';
 import 'package:projects/data/models/likeModel.dart';
+import 'package:projects/postsVideoScreens/postCreateScreen/uploadPostScreen.dart';
 import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/commonWidgets/commonTextField.dart';
 import 'package:projects/utils/helper/dateHelper.dart';
 import 'package:projects/utils/helper/storageHelper.dart';
 import 'package:projects/utils/imageViewer.dart';
 import 'package:projects/utils/util.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../controllers/postsHomeController.dart';
 import '../../data/apiConstants.dart';
@@ -31,6 +33,8 @@ class Postshomescreen extends StatelessWidget {
   final commentController = TextEditingController();
 
   var selectReply = Rx<Map<String, String?>>({});
+
+  var more = true.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +116,49 @@ class Postshomescreen extends StatelessWidget {
                               )
                             ],
                           ),
-                          Icon(Icons.more_vert, color: whiteColor,)
+                          // StorageHelper().getUserModel()?.user?.id != controller.postsList[index].user_id?
+                          // PopupMenuButton<int>(
+                          //     color: whiteColor,
+                          //     surfaceTintColor: whiteColor,
+                          //     icon: Icon(Icons.more_vert, color: whiteColor, size: 20,),
+                          //     offset: Offset(-12, 35),
+                          //     menuPadding: EdgeInsets.zero,
+                          //     itemBuilder: (context){
+                          //       return <PopupMenuEntry<int>>[
+                          //         PopupMenuItem(value: 0,child: Text("Report"),),
+                          //       ];
+                          //     }) :
+                          PopupMenuButton<int>(
+                              color: whiteColor,
+                              surfaceTintColor: whiteColor,
+                              icon: Icon(Icons.more_vert, color: whiteColor, size: 20,),
+                              offset: Offset(-12, 35),
+                              menuPadding: EdgeInsets.zero,
+                              itemBuilder: (context){
+                                return <PopupMenuEntry<int>>[
+                                  PopupMenuItem(
+                                    onTap: (){
+                                      final post = controller.postsList[index];
+                                      Get.to(UploadPostScreen(
+                                        from: "edit",
+                                        postId: post.id.toString(),
+                                        caption: post.description,
+                                        location: post.location,
+                                        existingMedia: post.imageList,
+                                      )
+                                      );
+                                    },
+                                    value: 0,
+                                    child: Text("Edit"),),
+                                  PopupMenuItem(
+                                    onTap: (){
+                                      controller.deletePostApi(controller.postsList[index].id!);
+                                    },
+                                    value: 1,
+                                    child: Text("Delete"),
+                                  ),
+                                ];
+                              })
                         ],
                       ),
                     ),
@@ -120,7 +166,7 @@ class Postshomescreen extends StatelessWidget {
                       children: [
                         CarouselSlider(
                           options: CarouselOptions(
-                            height: 500,
+                            height: 400,
                             enableInfiniteScroll: imageData.length > 1,
                             scrollPhysics: imageData.length > 1
                                 ? const BouncingScrollPhysics()
@@ -132,13 +178,14 @@ class Postshomescreen extends StatelessWidget {
                           ),
                           items: controller.postsList[index].imageList!.map((fileName) {
                             final mediaUrl = "${ApiConstants.postImgUrl}/$fileName";
-                            return MediaWidget(mediaUrl: mediaUrl, screenRatio: 0.8,);
+                            return MediaWidget(mediaUrl: mediaUrl, screenRatio: 0.7,);
                           }).toList(),
                         ),
                         imageList!.length>1?
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children:  List.generate(imageList.length, (index) {
+                          children:  List.generate(
+                              imageList.length, (index) {
                             return Obx(() => Container(
                               width: 10,
                               height: 10,
@@ -169,13 +216,25 @@ class Postshomescreen extends StatelessWidget {
                                  // Decode the likedBy JSON string to Map<String, dynamic>
                                  Map<String, dynamic> likedByMap = {};
                                  try {
-                                   likedByMap = post.likedBy != null ? json.decode(post.likedBy!) : {};
+                                   if (post.liked_by is String) {
+                                     final likedByString = post.liked_by as String;
+                                     if (likedByString.trim().startsWith('{')) {
+                                       final decoded = json.decode(likedByString);
+                                       if (decoded is Map<String, dynamic>) {
+                                         likedByMap = decoded;
+                                       }
+                                     }
+                                   } else if (post.liked_by is Map) {
+                                     likedByMap = Map<String, dynamic>.from(post.liked_by as Map);
+                                   }
                                  } catch (e) {
                                    likedByMap = {};
                                  }
 
+
                                  final alreadyLiked = likedByMap.containsKey(currentUserId);
                                  final actionToSend = alreadyLiked ? "unlike" : "like";
+
                                  int currentLikes = int.tryParse(post.likes ?? '0') ?? 0;
 
                                  if (alreadyLiked) {
@@ -186,7 +245,8 @@ class Postshomescreen extends StatelessWidget {
                                    currentLikes += 1;
                                  }
 
-                                 post.likedBy = json.encode(likedByMap); // ✅ Fix
+                                 // Update local post data
+                                 post.liked_by = likedByMap.map((key, value) => MapEntry(key, value.toString()));
                                  post.likes = currentLikes.toString();
 
                                  controller.postsList[index] = post;
@@ -199,6 +259,7 @@ class Postshomescreen extends StatelessWidget {
                                      blog_id: post.id,
                                      cate_id: 3,
                                      action: actionToSend,
+                                     blog_user_id: post.user_id.toString(),
                                      type: "Blogs-Feed",
                                      url: "https://www.finderspage.com/single-new/${post.slug}",
                                      reaction: "1",
@@ -213,11 +274,11 @@ class Postshomescreen extends StatelessWidget {
                                        "assets/images/ic_like.png",
                                        height: 22,
                                        width: 22,
-                                       color:  fieldBorderColor
+                                       color: fieldBorderColor,
                                      ),
                                    ),
                                    MyTextWidget(
-                                     data: controller.postsList[index].likes ?? "0",
+                                     data: controller.postsList[index].likes ?? "",
                                      size: 18,
                                      weight: FontWeight.w500,
                                      color: fieldBorderColor,
@@ -225,6 +286,7 @@ class Postshomescreen extends StatelessWidget {
                                  ],
                                ),
                              ),
+
                              GestureDetector(
                                onTap: ()async{
                                  await controller.getCommentsLists(controller.postsList[index].id!);
@@ -276,181 +338,245 @@ class Postshomescreen extends StatelessWidget {
                                                                  itemBuilder: (context, index){
                                                                    final commentId = controller.commentList[index].id!;
                                                                    final replies = controller.replyMap[commentId] ?? [];
-                                                                   return Column(
-                                                                     crossAxisAlignment: CrossAxisAlignment.start,
-                                                                     children: [
-                                                                       Row(
-                                                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                         children: [
-                                                                           Row(
-                                                                             children: [
-                                                                               controller.commentList[index].image != null?
-                                                                               Padding(
-                                                                                 padding: const EdgeInsets.only(right: 8),
-                                                                                 child: ClipRRect(
-                                                                                   borderRadius: BorderRadius.circular(20),
-                                                                                   child: Image.network( height: 20, width: 20, fit: BoxFit.fill,
-                                                                                       "${ApiConstants.profileUrl}/${controller.commentList[index].image}"),
+                                                                   return SizedBox(
+                                                                     child: Column(
+                                                                       crossAxisAlignment: CrossAxisAlignment.start,
+                                                                       children: [
+                                                                         GestureDetector(
+                                                                           onTapDown: (TapDownDetails details) async {
+                                                                             final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+                                                                             await showMenu(
+                                                                               context: context,
+                                                                               position: RelativeRect.fromLTRB(
+                                                                                 details.globalPosition.dx, // horizontal
+                                                                                 details.globalPosition.dy, // vertical (top of the tap)
+                                                                                 overlay.size.width - details.globalPosition.dx,
+                                                                                 overlay.size.height - details.globalPosition.dy,
+                                                                               ),
+                                                                               color: whiteColor,
+                                                                               items: [
+                                                                                 // PopupMenuItem(
+                                                                                 //   height: 30,
+                                                                                 //   value: 0,
+                                                                                 //   onTap: (){
+                                                                                 //     commentController.text = controller.commentList[index].comment!;
+                                                                                 //     controller.commentEditApi(commentId,
+                                                                                 //         CommentModel(
+                                                                                 //           editedComment: commentController.text.trim().toString()
+                                                                                 //         ));
+                                                                                 //   },
+                                                                                 //   child: SizedBox(
+                                                                                 //     width: 120,
+                                                                                 //     child: Row(
+                                                                                 //       children: [
+                                                                                 //         Image.asset("assets/images/ic_edit.png", scale: 25, color: fieldBorderColor,),
+                                                                                 //         SizedBox(width: 10),
+                                                                                 //         MyTextWidget(data: "Edit", size: 12,),
+                                                                                 //       ],
+                                                                                 //     ),
+                                                                                 //   ),
+                                                                                 // ),
+                                                                                 PopupMenuItem(
+                                                                                   height: 30,
+                                                                                   value: 0,
+                                                                                   onTap: (){
+                                                                                     controller.getDeleteComment(controller.commentList[index].id!);
+                                                                                     Get.back();
+                                                                                   },
+                                                                                   child: SizedBox(
+                                                                                     width: 120,
+                                                                                     child: Row(
+                                                                                       children: [
+                                                                                         Icon(CupertinoIcons.delete, color: Colors.red, size: 22,),
+                                                                                         SizedBox(width: 8),
+                                                                                         MyTextWidget(data: "Delete", size: 12,),
+                                                                                       ],
+                                                                                     ),
+                                                                                   ),
                                                                                  ),
-                                                                               ):
-                                                                               ImageView(
-                                                                                 height: 20, width: 20,
-                                                                                 margin: EdgeInsets.only(right: 8),
-                                                                               ),
-                                                                               MyTextWidget(data: "@${controller.commentList[index].username}", size: 12, weight: FontWeight.w500,),
-                                                                               SizedBox(width: 8,),
-                                                                               MyTextWidget(data: DateHelper().convertToTimeAgo(controller.commentList[index].updatedAt!), size: 10, weight: FontWeight.w400,),
-                                                                             ],
-                                                                           ),
-                                                                         ],
-                                                                       ),
-                                                                       Padding(
-                                                                         padding: const EdgeInsets.only(left: 25, top: 6, bottom: 8),
-                                                                         child: MyTextWidget(data: "${controller.commentList[index].comment}",size: 12,),
-                                                                       ),
-                                                                       Obx(() => GestureDetector(
-                                                                         onTap: () async {
-                                                                           final currentUserId = StorageHelper().getUserModel()?.user?.id.toString();
-                                                                           if (currentUserId == null) return;
-
-                                                                           final comment = controller.commentList[index];
-                                                                           List<String> likedByList = [];
-
-                                                                           try {
-                                                                             likedByList = List<String>.from(json.decode(comment.likedBy ?? '[]'));
-                                                                           } catch (e) {
-                                                                             likedByList = [];
-                                                                           }
-
-                                                                           bool isLiked = likedByList.contains(currentUserId); // Check if the current user has liked the comment
-                                                                           int currentLikes = comment.likes ?? 0;
-
-                                                                           if (isLiked) {
-                                                                             // Unlike
-                                                                             likedByList.remove(currentUserId);
-                                                                             currentLikes = (currentLikes - 1).clamp(0, double.infinity).toInt();
-                                                                           } else {
-                                                                             // Like
-                                                                             likedByList.add(currentUserId);
-                                                                             currentLikes += 1;
-                                                                           }
-
-                                                                           // Update comment object
-                                                                           comment.likedBy = json.encode(likedByList);
-                                                                           comment.likes = currentLikes;
-
-                                                                           setState(() {
-                                                                             // Reflect the like/unlike action locally
-                                                                             controller.commentList[index] = comment;
-                                                                             controller.commentList.refresh();
-                                                                           });
-
-                                                                           // Send to API
-                                                                           await controller.likeComment(
-                                                                             CommentListModel(
-                                                                               userId: currentUserId,
-                                                                               comment_id: comment.id,
-                                                                               action: isLiked ? "unlike" : "like",
+                                                                               ],
+                                                                             );
+                                                                           },
+                                                                           child: SizedBox(
+                                                                             child: Column(
+                                                                               crossAxisAlignment: CrossAxisAlignment.start,
+                                                                               children: [
+                                                                                 Row(
+                                                                                   children: [
+                                                                                     controller.commentList[index].image != null?
+                                                                                     Padding(
+                                                                                       padding: const EdgeInsets.only(right: 8),
+                                                                                       child: ClipRRect(
+                                                                                         borderRadius: BorderRadius.circular(20),
+                                                                                         child: Image.network( height: 20, width: 20, fit: BoxFit.fill,
+                                                                                             "${ApiConstants.profileUrl}/${controller.commentList[index].image}"),
+                                                                                       ),
+                                                                                     ):
+                                                                                     ImageView(
+                                                                                       height: 20, width: 20,
+                                                                                       margin: EdgeInsets.only(right: 8),
+                                                                                     ),
+                                                                                     MyTextWidget(data: "@${controller.commentList[index].username}", size: 12, weight: FontWeight.w500,),
+                                                                                     SizedBox(width: 8,),
+                                                                                     MyTextWidget(data: DateHelper().convertToTimeAgo(controller.commentList[index].updatedAt!), size: 10, weight: FontWeight.w400,),
+                                                                                   ],
+                                                                                 ),
+                                                                                 Padding(
+                                                                                   padding: const EdgeInsets.only(left: 25, top: 6, bottom: 8),
+                                                                                   child: MyTextWidget(data: "${controller.commentList[index].comment}",size: 12,),
+                                                                                 ),
+                                                                               ],
                                                                              ),
-                                                                           );
-                                                                         },
-                                                                         child: Padding(
-                                                                           padding: const EdgeInsets.only(left: 25),
-                                                                           child: Row(
-                                                                             children: [
-                                                                               Icon(
-                                                                                 Icons.thumb_up_alt_outlined ,
-                                                                                 size: 18,
-                                                                                 color: fieldBorderColor,  // Change color when liked
-                                                                               ),
-                                                                               SizedBox(width: 6),
-                                                                               MyTextWidget(
-                                                                                 data: "${controller.commentList[index].likes}",
-                                                                               ),
-                                                                             ],
                                                                            ),
                                                                          ),
-                                                                       )),
 
-                                                                       Padding(
-                                                                         padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                                                         child: Column(
-                                                                           mainAxisAlignment:MainAxisAlignment.start,
-                                                                           crossAxisAlignment: CrossAxisAlignment.start,
-                                                                           children: [
-                                                                             GestureDetector(
-                                                                                 onTap:(){
-                                                                                   selectReply.value = {
-                                                                                     'commentId': controller.commentList[index].id.toString(),
-                                                                                     'username': controller.commentList[index].username
-                                                                                   };
-                                                                                 },
-                                                                                 child: MyTextWidget(data: "Reply", size: 12,)),
-                                                                             replies.isNotEmpty
-                                                                                 ? GestureDetector(
-                                                                               onTap: () {
-                                                                                 controller.getComReplyLists(commentId);
-                                                                               },
-                                                                               child: Row(
-                                                                                 children: [
-                                                                                   Container(height: 1, width: 60, color: greyColor,),
-                                                                                   SizedBox(width: 10,),
-                                                                                   MyTextWidget(data: replies.length<2?"View ${replies.length} reply"
-                                                                                       :"View ${replies.length} replies", size: 14),
-                                                                                 ],
+                                                                         //Like Comment
+                                                                         Obx(() => GestureDetector(
+                                                                           onTap: () async {
+                                                                             final currentUserId = StorageHelper().getUserModel()?.user?.id.toString();
+                                                                             if (currentUserId == null) return;
+
+                                                                             final comment = controller.commentList[index];
+                                                                             List<String> likedByList = [];
+
+                                                                             try {
+                                                                               likedByList = List<String>.from(json.decode(comment.likedBy ?? '[]'));
+                                                                             } catch (e) {
+                                                                               likedByList = [];
+                                                                             }
+
+                                                                             bool isLiked = likedByList.contains(currentUserId); // Check if the current user has liked the comment
+                                                                             int currentLikes = comment.likes ?? 0;
+
+                                                                             if (isLiked) {
+                                                                               // Unlike
+                                                                               likedByList.remove(currentUserId);
+                                                                               currentLikes = (currentLikes - 1).clamp(0, double.infinity).toInt();
+                                                                             } else {
+                                                                               // Like
+                                                                               likedByList.add(currentUserId);
+                                                                               currentLikes += 1;
+                                                                             }
+
+                                                                             // Update comment object
+                                                                             comment.likedBy = json.encode(likedByList);
+                                                                             comment.likes = currentLikes;
+
+                                                                             setState(() {
+                                                                               // Reflect the like/unlike action locally
+                                                                               controller.commentList[index] = comment;
+                                                                               controller.commentList.refresh();
+                                                                             });
+
+                                                                             // Send to API
+                                                                             await controller.likeComment(
+                                                                               CommentListModel(
+                                                                                 userId: currentUserId,
+                                                                                 comment_id: comment.id,
+                                                                                 action: isLiked ? "unlike" : "like",
                                                                                ),
-                                                                             )
-                                                                                 : SizedBox(),
-                                                                             replies.isNotEmpty
-                                                                                 ? Column(
-                                                                               children: List.generate(replies.length, (replyIndex) {
-                                                                                 final reply = replies[replyIndex];
-                                                                                 return Padding(
-                                                                                   padding: const EdgeInsets.only(left: 25, top: 8),
-                                                                                   child: Row(
-                                                                                     crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                     children: [
-                                                                                       reply.image != null
-                                                                                           ? ClipRRect(
-                                                                                         borderRadius: BorderRadius.circular(20),
-                                                                                         child: Image.network(
-                                                                                           "${ApiConstants.profileUrl}/${reply.image}",
+                                                                             );
+                                                                           },
+                                                                           child: Padding(
+                                                                             padding: const EdgeInsets.only(left: 25),
+                                                                             child: Row(
+                                                                               children: [
+                                                                                 Icon(
+                                                                                   Icons.thumb_up_alt_outlined ,
+                                                                                   size: 18,
+                                                                                   color: fieldBorderColor,  // Change color when liked
+                                                                                 ),
+                                                                                 SizedBox(width: 6),
+                                                                                 MyTextWidget(
+                                                                                   data: "${controller.commentList[index].likes}",
+                                                                                 ),
+                                                                               ],
+                                                                             ),
+                                                                           ),
+                                                                         )),
+
+                                                                         //Reply UI
+                                                                         Padding(
+                                                                           padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                                                           child: Column(
+                                                                             mainAxisAlignment:MainAxisAlignment.start,
+                                                                             crossAxisAlignment: CrossAxisAlignment.start,
+                                                                             children: [
+                                                                               GestureDetector(
+                                                                                   onTap:(){
+                                                                                     selectReply.value = {
+                                                                                       'commentId': controller.commentList[index].id.toString(),
+                                                                                       'username': controller.commentList[index].username
+                                                                                     };
+                                                                                   },
+                                                                                   child: MyTextWidget(data: "Reply", size: 12,)),
+                                                                               replies.isNotEmpty
+                                                                                   ? GestureDetector(
+                                                                                 onTap: () {
+                                                                                   controller.getComReplyLists(commentId);
+                                                                                 },
+                                                                                 child: Row(
+                                                                                   children: [
+                                                                                     Container(height: 1, width: 60, color: greyColor,),
+                                                                                     SizedBox(width: 10,),
+                                                                                     MyTextWidget(data: replies.length<2?"View ${replies.length} reply"
+                                                                                         :"View ${replies.length} replies", size: 14),
+                                                                                   ],
+                                                                                 ),
+                                                                               )
+                                                                                   : SizedBox(),
+                                                                               replies.isNotEmpty
+                                                                                   ? Column(
+                                                                                 children: List.generate(replies.length, (replyIndex) {
+                                                                                   final reply = replies[replyIndex];
+                                                                                   return Padding(
+                                                                                     padding: const EdgeInsets.only(left: 25, top: 8),
+                                                                                     child: Row(
+                                                                                       crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                       children: [
+                                                                                         reply.image != null
+                                                                                             ? ClipRRect(
+                                                                                           borderRadius: BorderRadius.circular(20),
+                                                                                           child: Image.network(
+                                                                                             "${ApiConstants.profileUrl}/${reply.image}",
+                                                                                             height: 20,
+                                                                                             width: 20,
+                                                                                             fit: BoxFit.fill,
+                                                                                           ),
+                                                                                         )
+                                                                                             : ImageView(
                                                                                            height: 20,
                                                                                            width: 20,
-                                                                                           fit: BoxFit.fill,
                                                                                          ),
-                                                                                       )
-                                                                                           : ImageView(
-                                                                                         height: 20,
-                                                                                         width: 20,
-                                                                                       ),
-                                                                                       SizedBox(width: 8),
-                                                                                       Expanded(
-                                                                                         child: Column(
-                                                                                           crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                           children: [
-                                                                                             MyTextWidget(
-                                                                                               data: "@${reply.username}",
-                                                                                               size: 12,
-                                                                                               weight: FontWeight.w600,
-                                                                                             ),
-                                                                                             MyTextWidget(
-                                                                                               data: reply.comment ?? '',
-                                                                                               size: 12,
-                                                                                             ),
-                                                                                           ],
+                                                                                         SizedBox(width: 8),
+                                                                                         Expanded(
+                                                                                           child: Column(
+                                                                                             crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                             children: [
+                                                                                               MyTextWidget(
+                                                                                                 data: "@${reply.username}",
+                                                                                                 size: 12,
+                                                                                                 weight: FontWeight.w600,
+                                                                                               ),
+                                                                                               MyTextWidget(
+                                                                                                 data: reply.comment ?? '',
+                                                                                                 size: 12,
+                                                                                               ),
+                                                                                             ],
+                                                                                           ),
                                                                                          ),
-                                                                                       ),
-                                                                                     ],
-                                                                                   ),
-                                                                                 );
-                                                                               }),
-                                                                             )
-                                                                                 : SizedBox(),
-                                                                           ],
-                                                                         ),
-                                                                       )
-                                                                     ],
+                                                                                       ],
+                                                                                     ),
+                                                                                   );
+                                                                                 }),
+                                                                               )
+                                                                                   : SizedBox(),
+                                                                             ],
+                                                                           ),
+                                                                         )
+                                                                       ],
+                                                                     ),
                                                                    );
                                                                  }
                                                              ),
@@ -509,7 +635,9 @@ class Postshomescreen extends StatelessWidget {
                                                              commentController.clear();
                                                              Get.back();
                                                            });
-                                                         }, icon: Icon(Icons.send, size: 25, color: fieldBorderColor,)),
+                                                         },
+                                                             icon: Icon(Icons.send, size: 25,
+                                                               color: fieldBorderColor,)),
                                                        ),
                                                      ))
                                                    ],
@@ -528,25 +656,52 @@ class Postshomescreen extends StatelessWidget {
                                        padding: const EdgeInsets.only(right: 5),
                                        child: Image.asset("assets/images/ic_message.png", height: 20, width: 20, color: fieldBorderColor),
                                      ),
-                                     MyTextWidget(data: "${controller.postsList[index].total_comments}", size: 18, weight: FontWeight.w500, color: fieldBorderColor,)
+                                     MyTextWidget(data: controller.postsList[index].total_comments != 0
+                                         ?"${controller.postsList[index].total_comments}":"", size: 18, weight: FontWeight.w500, color: fieldBorderColor,)
                                    ],
                                  ),
                                ),
                              ),
-                             Icon(Icons.share, color: fieldBorderColor,),
+                             GestureDetector(
+                                 onTap: () {
+                                   Share.share("https://www.finderspage.com/single-new/${controller.postsList[index].slug}");
+                                 },
+                                 child: Icon(Icons.share, color: fieldBorderColor,)),
                            ],
                          ),),
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(right: 5),
-                                child: Icon(Icons.bookmark, color: whiteColor,),
-                              ),
-                              MyTextWidget(data: "2", size: 18, weight: FontWeight.w500, color: whiteColor,)
-                            ],
-                          )
+                          // Icon(Icons.bookmark, color: whiteColor,),
+                          // GestureDetector(
+                          //
+                          //     child: Icon(Icons.bookmark_outline, color: fieldBorderColor, size: 25,))
                         ],
                       ),
+                    ),
+                    controller.postsList[index].description != null && controller.postsList[index].description!.isNotEmpty?
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          MyTextWidget(data: "${controller.postsList[index].userName}", size: 12, color: whiteColor, weight: FontWeight.w600,),
+                          SizedBox(width: 12,),
+                          Flexible(child: Obx(()=>GestureDetector(
+                            onTap: () {
+                              more.value = !more.value;
+                            },
+                            child: more.value?MyTextWidget(data: "${controller.postsList[index].description}", size: 12,
+                              color: whiteColor, weight: FontWeight.w400, overflow: TextOverflow.ellipsis,):MyTextWidget(data: "${controller.postsList[index].description}", size: 12,
+                                color: whiteColor, weight: FontWeight.w400),
+                          ))),
+                        ],
+                      ),
+                    ):SizedBox(),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: MyTextWidget(
+                            size: 12, color: whiteColor, weight: FontWeight.w400,
+                            data: "${DateHelper().convertToTimeAgo(controller.postsList[index].modified!)} ago",)),
                     )
                   ],
                 );
@@ -554,6 +709,8 @@ class Postshomescreen extends StatelessWidget {
       );
     });
   }
+
+
   // bool _isPostLikedByCurrentUser(PostsListModel post) {
   //   final currentUserId = StorageHelper().getUserModel()?.user?.id?.toString();
   //   if (currentUserId == null || post.likedBy == null) return false;

@@ -56,6 +56,7 @@ dependencies:
   mime: ^2.0.0
   http_parser: ^4.1.2
   flutter_switch: ^0.3.2
+  share_plus: ^11.0.0
 #  flare_flutter: ^3.0.2  #error on flare flutter
 #  video_trimmer: ^4.0.2
 #  video_compress: ^3.1.4
