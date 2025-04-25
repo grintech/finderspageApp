@@ -150,14 +150,54 @@ class PostProfileScreen extends StatelessWidget {
                  Stack(
                    children: [
                      Container(
-                         margin: EdgeInsets.only(bottom: 40),
-                         height: 180,
-                         width: Get.width,
-                         child: controller.userModel.value?.user?.cover_img == ""
-                             || controller.userModel.value?.user?.cover_img == null
-                             ?Image.asset("assets/images/no_image.png", fit: BoxFit.contain,):
-                         Image.network("${ApiConstants.profileUrl}/"
-                             "${controller.userModel.value?.user?.cover_img}",fit: BoxFit.cover,)
+                       margin: const EdgeInsets.only(bottom: 40),
+                       height: 180,
+                       width: Get.width,
+                       child: Obx(() {
+                         final user = controller.userModel.value?.user;
+
+                         if (user == null) {
+                           return const Center(child: CircularProgressIndicator()); // Optional: while data loads
+                         }
+
+                         final coverImg = user.cover_img;
+
+                         // Check if coverImg is null, empty, or literally "null" (string)
+                         final isValidImage = coverImg != null &&
+                             coverImg.trim().isNotEmpty &&
+                             coverImg.trim().toLowerCase() != 'null';
+
+                         if (!isValidImage) {
+                           return Image.asset(
+                             "assets/images/no_image.png",
+                             fit: BoxFit.contain,
+                           );
+                         }
+
+                         final url = Uri.tryParse("${ApiConstants.profileUrl}/$coverImg");
+
+                         if (url == null || !url.hasAbsolutePath || !url.isAbsolute) {
+                           return Image.asset(
+                             "assets/images/no_image.png",
+                             fit: BoxFit.contain,
+                           );
+                         }
+
+                         return Image.network(
+                           url.toString(),
+                           fit: BoxFit.cover,
+                           loadingBuilder: (context, child, loadingProgress) {
+                             if (loadingProgress == null) return child;
+                             return const Center(child: CircularProgressIndicator());
+                           },
+                           errorBuilder: (context, error, stackTrace) {
+                             return Image.asset(
+                               "assets/images/no_image.png",
+                               fit: BoxFit.contain,
+                             );
+                           },
+                         );
+                       }),
                      ),
                    ],
                  ),

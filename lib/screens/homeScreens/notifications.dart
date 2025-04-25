@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:projects/utils/colorConstants.dart';
 
 class Notifications extends StatelessWidget {
-  const Notifications({super.key});
+  const Notifications({super.key,});
+
+
 
   @override
   Widget build(BuildContext context) {

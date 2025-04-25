@@ -50,15 +50,22 @@ class Injector {
 
 class LoggingInterceptors extends Interceptor {
 
-  String showLogObject(Object object) {
-    // Encode your object and then decode your object to Map variable
-    Map jsonMapped = json.decode(json.encode(object));
-    // Using JsonEncoder for spacing
-    JsonEncoder encoder = const JsonEncoder.withIndent('  ');
-    // encode it to string
-    String prettyPrint = encoder.convert(jsonMapped);
-    return prettyPrint;
+  String showLogObject(Object? object) {
+    try {
+      final jsonStr = json.encode(object);
+      final decoded = json.decode(jsonStr);
+
+      if (decoded is Map || decoded is List) {
+        JsonEncoder encoder = const JsonEncoder.withIndent('  ');
+        return encoder.convert(decoded);
+      } else {
+        return decoded.toString();
+      }
+    } catch (e) {
+      return object.toString();
+    }
   }
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     Utils.showLog("--> ${options.method.toUpperCase()} ${"" + (options.baseUrl) + (options.path)}");
@@ -69,13 +76,18 @@ class LoggingInterceptors extends Interceptor {
     if (options.data != null) {
       try{
         // showLog("Body: ${showLogObject(options.data)}");
-        FormData formData = options.data as FormData;
-        Utils.showLog("Body:");
-        var buffer = [];
-        for(MapEntry<String, String> pair in formData.fields){
-          buffer.add(pair.key+ ':' + pair.value);
+        if (options.data is FormData) {
+          FormData formData = options.data as FormData;
+          Utils.showLog("Body:");
+          var buffer = [];
+          for (MapEntry<String, String> pair in formData.fields) {
+            buffer.add(pair.key + ':' + pair.value);
+          }
+          Utils.showLog("Body:{${buffer.join(', ')}}");
+        } else {
+          Utils.showLog("Body: ${showLogObject(options.data)}");
         }
-        Utils.showLog("Body:{${buffer.join(', ')}}");
+
       }catch(e){
         Utils.showLog("Body: ${showLogObject(options.data)}");
       }

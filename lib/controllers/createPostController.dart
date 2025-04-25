@@ -121,6 +121,7 @@ class CreatePostController extends GetxController {
   void resetData() {
     selectedFiles.clear();
     captionController.clear();
+    locController.clear();
     selectedImagePath.value = '';
   }
 

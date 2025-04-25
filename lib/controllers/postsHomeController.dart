@@ -26,6 +26,13 @@ class PostsHomeController extends GetxController{
   RxSet<int> expandedReplies = <int>{}.obs;
   RxList<String> videoUrls = <String>[].obs;
 
+  int _currentPage = 1;
+  var _isLoadingMore = false.obs;
+  var hasMoreData = true.obs;
+  final int _perPage = 10;
+
+  final ScrollController scrollController = ScrollController();
+
 
   var commentLikeStates = <int, RxBool>{};
   var commentLikesCount = <int, RxInt>{};
@@ -45,6 +52,16 @@ class PostsHomeController extends GetxController{
   void changeTabIndex(int index) {
     isVideoScreenActive.value = (index == 1); // Check if VideoFeedScreen is active
     tabIndex.value = index;
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Future.delayed(Duration(seconds: 2), (){
+    //   getVideoLists();
+    // });
+    // getPostLists(isInitial: true);
+    setupScrollListener();
   }
 
   // void toggleLike(int? commentId, String currentUserId, String likedByJson) {
@@ -92,16 +109,18 @@ class PostsHomeController extends GetxController{
   //   return commentLikeStates[commentId]!;
   // }
 
-
-
-  @override
-  void onInit() {
-    super.onInit();
-    // getPostLists();
-    // Future.delayed(Duration(milliseconds: 200),() {
-    //   getVideoLists();
-    // });
+  void setupScrollListener() {
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200) {
+        if (hasMoreData.value && !_isLoadingMore.value) {
+          getPostLists();
+        }
+      }
+    });
   }
+
+
+
 
   Future<void> postLikeApi(PostsListModel postModel) async {
     if (await Utils.hasNetwork()) {
@@ -149,7 +168,6 @@ class PostsHomeController extends GetxController{
     }
   }
 
-
   Future<void> getPostLists() async {
     if (await Utils.hasNetwork()) {
       Map<String, dynamic> queries = HashMap();
@@ -190,7 +208,6 @@ class PostsHomeController extends GetxController{
     }
   }
 
-
   Future<void> getCommentsLists(int id) async {
     if (await Utils.hasNetwork()) {
       // Utils.showLoader();
@@ -221,7 +238,6 @@ class PostsHomeController extends GetxController{
     }
   }
 
-
   Future<List<ComReplyModel>> getComReplyLists(int id) async {
     if (await Utils.hasNetwork()) {
       var response = await apiProvider.getReplyList(id);
@@ -244,7 +260,6 @@ class PostsHomeController extends GetxController{
     }
   }
 
-
   Future<void> getDeleteComment(int id) async {
     if (await Utils.hasNetwork()) {
       var response = await apiProvider.deleteComment(id);
@@ -257,6 +272,7 @@ class PostsHomeController extends GetxController{
       Utils.showErrorAlert("Please Check Your Internet Connection");
     }
   }
+
   Future<void> getDeleteVideoComment(int id, int postId) async {
     if (await Utils.hasNetwork()) {
       var response = await apiProvider.deleteComment(id);
@@ -311,7 +327,6 @@ class PostsHomeController extends GetxController{
     }
   }
 
-
   Future<void> replyPostApi(ComReplyModel replyModel) async {
     if(await Utils.hasNetwork()){
       var response = await apiProvider.replyComApi(replyModel);
@@ -342,7 +357,11 @@ class PostsHomeController extends GetxController{
     }
   }
 
-
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
 
   void handleError(dynamic response) {
     if (response.message != null) {

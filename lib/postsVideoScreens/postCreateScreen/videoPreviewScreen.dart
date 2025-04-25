@@ -61,6 +61,9 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
   var likesOn = false.obs;
   var commentOn = false.obs;
   var donationOn = false.obs;
+  var sameScreen = false.obs;
+
+
 
   void prefillFields(String? caption, String? location, String? title, String? description) {
     captionController.text = caption ?? '';
@@ -71,21 +74,29 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
 
 
   Future<void> _pickVideo() async {
-    final XFile? pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
+    setState(() {
+      _isLoading = true;
+    });
+
+    final pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       _videoFile = File(pickedFile.path);
+      print("Video file picked: ${_videoFile!.path}");  // Check the file path
 
-      _controller?.dispose();
+      _controller = VideoPlayerController.file(_videoFile!);
+      await _controller!.initialize();
 
-      _controller = VideoPlayerController.file(_videoFile!)
-        ..initialize().then((_) {
-          setState(() {}); // Rebuild with controller
-        });
+      setState(() {
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      print("No video selected");
     }
   }
-
-
 
   void _togglePlayPause() {
     if (_controller == null) return;
@@ -107,19 +118,37 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
     }
   }
 
+
+
   Future<void> _loadVideoFromNetwork(String url) async {
     setState(() => _isLoading = true);
 
-    final response = await http.get(Uri.parse(url));
-    final tempDir = await getTemporaryDirectory();
-    final file = File('${tempDir.path}/${url.split('/').last}');
-    await file.writeAsBytes(response.bodyBytes);
+    try {
+      final response = await http.get(Uri.parse(url));
 
-    _videoFile = file;
-    await _initializeVideoPlayer();
+      if (response.statusCode == 200) {
+        final tempDir = await getTemporaryDirectory();
+        final file = File('${tempDir.path}/${url.split('/').last}');
+        await file.writeAsBytes(response.bodyBytes);
 
-    setState(() => _isLoading = false);
+        _videoFile = file;
+        _controller = VideoPlayerController.file(_videoFile!);
+        await _controller!.initialize();
+
+        setState(() {
+          _isLoading = false;
+        });
+      } else {
+        print("Failed to load video from network.");
+        setState(() => _isLoading = false);
+      }
+    } catch (e) {
+      print("Error loading video: $e");
+      setState(() => _isLoading = false);
+    }
   }
+
+
 
 
   Future<void> _initializeVideoPlayer() async {
@@ -133,10 +162,9 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final videoSize = _controller?.value.isInitialized == true
-        ? _controller!.value.size
-        : null;
-    // final isPortrait = videoSize!.height > videoSize.width;
+    final isPortrait = (_controller?.value.isInitialized == true)
+        ? _controller!.value.size.height > _controller!.value.size.width
+        : true;
     return GestureDetector(
       onTap: () {
       },
@@ -159,38 +187,7 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
                     CommonButton(
                       margin: EdgeInsets.only(right: 20),
                       onPressed: ()async{
-                        String imagePath = await copyAssetToFile(
-                          'assets/images/thumbnail.jpg', // this is the asset path
-                          'thumbnail.jpg',               // this is the filename only
-                        );
-                        widget.from == "edit"?
-                            controller.editPostApi(VideoUploadModel(
-                                title: captionController.text,
-                                location: locController.text,
-                                description: descController.text,
-                                type: "video",
-                                shares: shareOn.value == true?1:0,
-                                likesBtn: likesOn.value == true?"1":"0",
-                                commentOption: commentOn.value == true?1:0,
-                                id: controller.storageHelper.getUserModel()?.user!.id,
-                                subCategory: "5449",
-                                postVideo: _videoFile?.path,
-                                image1: imagePath
-                            ), int.parse("${widget.videoId}")):
-                        controller.postVideo(VideoUploadModel(
-                            title: captionController.text,
-                            location: locController.text,
-                            description: descController.text,
-                            type: "video",
-                            shares: shareOn.value == true?1:0,
-                            likesBtn: likesOn.value == true?"1":"0",
-                            commentOption: commentOn.value == true?1:0,
-                            id: controller.storageHelper.getUserModel()?.user!.id,
-                            subCategory: "5449",
-                            postVideo: _videoFile?.path,
-                            image1: imagePath
-                        ),
-                        );
+                        validate();
                       },
                       radius: 12,
                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -201,36 +198,39 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
               ),
               GestureDetector(
                 onTap: _pickVideo,
-                child: _isLoading || _controller == null
-                    ? const Center(child: CircularProgressIndicator())
-                    : _controller != null && _controller!.value.isInitialized
-                    ? Container(
-                  margin: EdgeInsets.only(top: 70),
-                  constraints: const BoxConstraints(
-                    maxHeight: 200, // 👈 Set a reasonable height cap
-                  ),
-                  width: Get.width,
-                  child: SizedBox(
-                    height: 200,
-                    child: VideoPlayer(_controller!),
-                  ),
-                )
-                    : const Center(child: Text("Failed to load video")),
+                  child: _isLoading && widget.from == "edit"
+                      ? const Center(child: CircularProgressIndicator())
+                      : _controller == null
+                      ? Center(child: Column(
+                    children: [
+                      Image.asset("assets/images/ic_upload_video.png", height: 140, width: 140),
+                      SizedBox(height: 10),
+                      Text("Upload video"),
+                    ],
+                  ))
+                      : _controller!.value.isInitialized
+                      ?  Container(
+                    // margin: const EdgeInsets.symmetric(horizontal: 70),
+                    width: Get.width,
+                    child: SizedBox(
+                      height:isPortrait? 450:200,
+                      width: 100,
+                      child: VideoPlayer(_controller!),
+                    ),
+                  )
+                      : const Center(child: Text("Video is not initialized, failed to load video"))),
 
-              ),
-              SizedBox(height: 10),
               if (_controller != null && _controller!.value.isInitialized)
-                IconButton(
-                  icon: Icon(
-                    _controller!.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                    size: 36,
+                GestureDetector(
+                  onTap: _togglePlayPause,
+                  child: Icon(
+                    _controller!.value.isPlaying ? Icons.pause_circle : Icons.play_circle,
+                    size: 45,
                   ),
-                  onPressed: _togglePlayPause,
                 ),
-              SizedBox(height: 10),
               CommonTextField(
-                margin: EdgeInsets.only(top: 20, bottom: 10),
-                hint: "Add Title Here...",
+                margin: EdgeInsets.only(top: 10, bottom: 10),
+                hint: "Add Caption Here...",
                 textController: captionController,
               ),
               CommonTextField(
@@ -329,6 +329,55 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
     final file = File(filePath);
     await file.writeAsBytes(byteData.buffer.asUint8List());
     return file.path;
+  }
+
+  validate()async{
+    if(captionController.text.isEmpty){
+      Utils.error("Please add Caption");
+      return;
+    }
+    if(locController.text.isEmpty){
+      Utils.error("Please add Location");
+      return;
+    }
+    if(descController.text.isEmpty){
+      Utils.error("Please add Description");
+      return;
+    }
+
+
+    String imagePath = await copyAssetToFile(
+      'assets/images/thumbnail.jpg', // this is the asset path
+      'thumbnail.jpg',               // this is the filename only
+    );
+    widget.from == "edit"?
+    controller.editPostApi(VideoUploadModel(
+        title: captionController.text,
+        location: locController.text,
+        description: descController.text,
+        type: "video",
+        shares: shareOn.value == true?1:0,
+        likesBtn: likesOn.value == true?"1":"0",
+        commentOption: commentOn.value == true?1:0,
+        id: controller.storageHelper.getUserModel()?.user!.id,
+        subCategory: "5449",
+        postVideo: _videoFile?.path,
+        image1: imagePath
+    ), int.parse("${widget.videoId}")):
+    controller.postVideo(VideoUploadModel(
+        title: captionController.text.trim().toString(),
+        location: locController.text,
+        description: descController.text,
+        type: "video",
+        shares: shareOn.value == true?1:0,
+        likesBtn: likesOn.value == true?"1":"0",
+        commentOption: commentOn.value == true?1:0,
+        id: controller.storageHelper.getUserModel()?.user!.id,
+        subCategory: "5449",
+        postVideo: _videoFile?.path,
+        image1: imagePath
+    ),
+    );
   }
 
   @override

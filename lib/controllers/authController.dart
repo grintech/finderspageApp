@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:projects/data/apiProvider/authApiProvider.dart';
 import 'package:projects/data/models/userModel.dart';
+import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/helper/storageHelper.dart';
 import 'package:projects/utils/shared/dataResponse.dart';
 import '../utils/routes.dart';
@@ -34,7 +36,50 @@ class AuthController extends GetxController{
             storageHelper.saveUserId(userModel.user?.id);
             Get.offAllNamed(Routes.postsHome);
           }else{
-            Utils.showInfoAlert("Please Verify your account. Check your email account.","");
+            Get.dialog(
+              Center(
+                child: Container(
+                  height: 200,
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      MyTextWidget(data: "Confirm Your Email", weight: FontWeight.w600, size: 18,),
+                      SizedBox(height: 10,),
+                      MyTextWidget(data: "We’ve emailed you a verification link to complete your sign-up.", txtAlign: TextAlign.center, size: 14, weight: FontWeight.w400,),
+                      SizedBox(height: 20,),
+                      GestureDetector(
+                        onTap: (){},
+                        child: RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                          children: [
+                            TextSpan(text: "If the link expired or you didn’t get the email, you can "
+                                "request a new one. ",style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w300,
+                              color: blackColor,
+                            ),),
+                            TextSpan(
+                              text: "Resend Verification Link",style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w300,
+                              color: fieldBorderColor,
+                            ),)
+                          ]
+                        )),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            );
           }
         }
       }else{
