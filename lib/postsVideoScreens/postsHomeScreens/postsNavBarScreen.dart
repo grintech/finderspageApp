@@ -69,13 +69,13 @@ class _PostsNavBarScreenState extends State<PostsNavBarScreen> with TickerProvid
                 onTap: () {
                   controller.changeTabIndex(0);
                 },
-                child: Icon(Icons.home, color: whiteColor,size: 30,)
+                child: Icon(Icons.home, color: whiteColor,size: 25,)
               ),
 
               GestureDetector(
                   onTap: () => controller.changeTabIndex(1),
                   child: Image.asset("assets/images/ic_mini.png",
-                    color: whiteColor, height: 30, width: 30,)),
+                    color: whiteColor, height: 30, width: 25,)),
 
               GestureDetector(
                 onTap: () {
@@ -85,13 +85,13 @@ class _PostsNavBarScreenState extends State<PostsNavBarScreen> with TickerProvid
                     decoration: BoxDecoration(
                       color: Colors.white
                     ),
-                    child: Icon(Icons.add, color: blackColor,))
+                    child: Icon(Icons.add, color: blackColor, size: 22,))
               ),
               GestureDetector(
                 onTap: () {
                   controller.changeTabIndex(3);
                 },
-                child: Icon(Icons.search, color: fieldBorderColor, size: 30,)
+                child: Icon(Icons.search, color: fieldBorderColor, size: 25,)
               ),
 
               GestureDetector(

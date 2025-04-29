@@ -20,7 +20,7 @@ class Injector {
 
   Dio getDio(){
     BaseOptions options =
-    BaseOptions(receiveTimeout: Duration(milliseconds: 180000), connectTimeout: Duration(milliseconds: 180000));
+    BaseOptions(receiveTimeout: Duration(seconds: 5), connectTimeout: Duration(milliseconds: 180000));
     _dio.options = options;
     _dio.options.followRedirects = false;
     _dio.options.headers["Content-Type"] = "application/json";

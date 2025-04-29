@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:projects/controllers/createPostController.dart';
 import 'package:projects/utils/util.dart';
 
@@ -51,7 +52,7 @@ class CustomCameraScreen extends StatelessWidget {
 
             // Recording & Switch Camera Buttons
             Positioned(
-              bottom: 50,
+              bottom: 60,
               left: 0,
               right: 0,
               child: Row(
@@ -59,7 +60,9 @@ class CustomCameraScreen extends StatelessWidget {
                 children: [
                   //Select Video from Gallery
                   FloatingActionButton(
-                    onPressed: (){},
+                    onPressed: (){
+                      controller.pickVideo(ImageSource.gallery);
+                    },
                     backgroundColor: Colors.white,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,

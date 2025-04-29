@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:projects/controllers/createPostController.dart';
+import 'package:projects/data/apiConstants.dart';
 import 'package:projects/data/models/videoUploadModel.dart';
 import 'package:projects/utils/commonWidgets/commonButton.dart';
 import 'package:projects/utils/commonWidgets/commonTextField.dart';
@@ -114,14 +115,22 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
     descController = TextEditingController(text: widget.description ?? '');
     titleController = TextEditingController(text: widget.title ?? '');
     if (widget.from == "edit" && widget.mediaUrl != null) {
-      _loadVideoFromNetwork(widget.mediaUrl!);
+      String mediaUrl = widget.mediaUrl ?? '';  // Assuming this is the mediaUrl received
+
+// Remove square brackets and quotes if the mediaUrl is an array in string format
+      mediaUrl = mediaUrl.replaceAll(RegExp(r'[\[\]"]'), '');
+
+// Now construct the full URL
+      String fullUrl = 'https://www.finderspage.com/public/images_blog_img/$mediaUrl';
+
+          _loadVideoFromNetwork(fullUrl);
     }
   }
 
 
 
   Future<void> _loadVideoFromNetwork(String url) async {
-    setState(() => _isLoading = true);
+    setState(() => _isLoading = true);  // Start loading
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -132,30 +141,19 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
         await file.writeAsBytes(response.bodyBytes);
 
         _videoFile = file;
-        _controller = VideoPlayerController.file(_videoFile!);
-        await _controller!.initialize();
-
-        setState(() {
-          _isLoading = false;
-        });
+        _controller = VideoPlayerController.file(_videoFile!)
+          ..initialize().then((_) {
+            setState(() {
+              _isLoading = false;
+            });
+          });
       } else {
         print("Failed to load video from network.");
-        setState(() => _isLoading = false);
+        setState(() => _isLoading = false);  // Stop loading
       }
     } catch (e) {
       print("Error loading video: $e");
-      setState(() => _isLoading = false);
-    }
-  }
-
-
-
-
-  Future<void> _initializeVideoPlayer() async {
-    if (_videoFile != null) {
-      _controller = VideoPlayerController.file(_videoFile!);
-      await _controller!.initialize();
-      // _controller!.play(); // optional
+      setState(() => _isLoading = false);  // Stop loading
     }
   }
 
@@ -166,32 +164,40 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
         ? _controller!.value.size.height > _controller!.value.size.width
         : true;
     return GestureDetector(
+      behavior: HitTestBehavior.translucent,
       onTap: () {
+        FocusScope.of(context).requestFocus(FocusScopeNode());
       },
       child: Scaffold(
+        appBar: AppBar(
+            automaticallyImplyLeading: false,
+            toolbarHeight: 0,
+            backgroundColor: whiteColor,
+            elevation: 0),
         body:SingleChildScrollView(
-          padding: EdgeInsets.only(top: 20, left: 16, right: 16, bottom: 16),
+          padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: EdgeInsets.only(left: widget.from == "edit"?10:70, bottom: 10),
+                padding: EdgeInsets.only(left: widget.from == "edit"?10:70, bottom: 10, top: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    widget.from == "edit"?GestureDetector(
+                    widget.from == "edit"?
+                    GestureDetector(
                         onTap: () => Get.back(),
                         child: Icon(Icons.arrow_back_ios, color: fieldBorderColor,)):
                     const SizedBox(),
-                    MyTextWidget(data: widget.from == "edit"?"Edit Video":"Upload Video", size: 16,),
+                    MyTextWidget(data: widget.from == "edit"?"        Edit Video"
+                        :"Upload Video  ", size: 18, weight: FontWeight.w600,),
                     CommonButton(
-                      margin: EdgeInsets.only(right: 20),
                       onPressed: ()async{
                         validate();
                       },
                       radius: 12,
                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      btnTxt: "Share",
+                      btnTxt:widget.from == "edit"?"Update":"Share",
                     ),
                   ],
                 ),
@@ -201,25 +207,22 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
                   child: _isLoading && widget.from == "edit"
                       ? const Center(child: CircularProgressIndicator())
                       : _controller == null
-                      ? Center(child: Column(
+                      ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Image.asset("assets/images/ic_upload_video.png", height: 140, width: 140),
-                      SizedBox(height: 10),
-                      Text("Upload video"),
-                    ],
-                  ))
+                      SizedBox(height: 10),],)
                       : _controller!.value.isInitialized
-                      ?  Container(
-                    // margin: const EdgeInsets.symmetric(horizontal: 70),
+                      ? Container(
+                    margin: EdgeInsets.only(top: widget.from == "edit"?60:10, bottom: widget.from == "edit"?70:10),
                     width: Get.width,
                     child: SizedBox(
-                      height:isPortrait? 450:200,
-                      width: 100,
+                      height: isPortrait ? 450 : 200,
                       child: VideoPlayer(_controller!),
                     ),
                   )
                       : const Center(child: Text("Video is not initialized, failed to load video"))),
-
               if (_controller != null && _controller!.value.isInitialized)
                 GestureDetector(
                   onTap: _togglePlayPause,
@@ -299,7 +302,7 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric( vertical: 8),
+                  padding: const EdgeInsets.only(top: 8, bottom: 50),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -351,7 +354,7 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
       'thumbnail.jpg',               // this is the filename only
     );
     widget.from == "edit"?
-    controller.editPostApi(VideoUploadModel(
+    controller.editVideoApi(VideoUploadModel(
         title: captionController.text,
         location: locController.text,
         description: descController.text,

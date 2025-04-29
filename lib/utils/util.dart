@@ -16,11 +16,13 @@ class MyTextWidget extends StatelessWidget {
   final double? size;
   final FontWeight? weight;
   final TextAlign? txtAlign;
+  final TextDecoration? txtDecoration;
   final Color? color;
+  final Color? decoColor;
   final TextOverflow? overflow;
 
 
-  const MyTextWidget({super.key, this.data, this.size, this.color, this.weight, this.overflow, this.txtAlign});
+  const MyTextWidget({super.key, this.data, this.size, this.color, this.weight, this.overflow, this.txtAlign, this.txtDecoration, this.decoColor});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,8 @@ class MyTextWidget extends StatelessWidget {
       data??"",
       textAlign: txtAlign,
       style: TextStyle(
+        decoration: txtDecoration,
+          decorationColor: decoColor,
           color: color ?? blackColor,
           overflow: overflow,
           fontSize: size ?? 14.0,

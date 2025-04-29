@@ -86,6 +86,17 @@ class ProfileApiProvider{
     }
   }
 
+  Future<dynamic> resetPassword(UserModel userModel) async {
+    try {
+      Response response = await _dio.post(ApiConstants.changePassword, data: userModel);
+      var dataResponse = DataResponse<UserModel>.fromJson(response.data, (data) => UserModel.fromJson(data as Map<String, dynamic>));
+      return dataResponse;
+    } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return DataResponse.fromJson(res?.data, (data) => null);
+      return DataResponse(message: error.toString());
+    }
+  }
 
   Future<dynamic> logOut() async {
     try {

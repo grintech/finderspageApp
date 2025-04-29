@@ -12,6 +12,7 @@ import 'package:projects/utils/routes.dart';
 import 'package:projects/utils/shared/dataResponse.dart';
 import 'package:video_player/video_player.dart';
 
+import '../data/apiConstants.dart';
 import '../data/apiProvider/createPostApiProvider.dart';
 import '../data/models/PostsListModel.dart';
 import '../postsVideoScreens/postsHomeScreens/postsNavBarScreen.dart';
@@ -66,8 +67,24 @@ class CreatePostController extends GetxController {
     locController.text = location ?? '';
   }
 
-  void setEditMedia(List<String> urls) {
+  Future<void> preloadExistingMedia() async {
+    for (String mediaUrl in existingNetworkMedia) {
+      try {
+        await precacheImage(
+          NetworkImage('${ApiConstants.postImgUrl}/$mediaUrl'),
+          Get.context!,
+        );
+      } catch (e) {
+        print('Failed to preload image: $mediaUrl, error: $e');
+      }
+    }
+  }
+
+
+  void setEditMedia(List<String> urls) async {
     existingNetworkMedia.value = urls;
+    await preloadExistingMedia();
+    existingNetworkMedia.refresh();
   }
 
   Future<void> pickImage(ImageSource source) async {
@@ -77,6 +94,8 @@ class CreatePostController extends GetxController {
     if (image != null) {
       // selectedImagePath.value = image.path;
       selectedFiles.add(File(image.path));
+      selectedFiles.refresh();
+      print("this is image ===== >$selectedFiles");
     }
     else {
       Get.snackbar("Error", "No image selected",
@@ -119,6 +138,13 @@ class CreatePostController extends GetxController {
   }
 
   void resetData() {
+    selectedFiles.clear();
+    captionController.clear();
+    locController.clear();
+    existingNetworkMedia.clear();
+    selectedImagePath.value = '';
+  }
+  void resetSelectedFiles(){
     selectedFiles.clear();
     captionController.clear();
     locController.clear();
@@ -260,9 +286,9 @@ class CreatePostController extends GetxController {
       if (response.success == true) {
         if (response.data != null) {
           final postsController = Get.find<PostsHomeController>();
-          postsController.postsList.clear();
-          postsController.changeTabIndex(0);
-          postsController.getPostLists();
+          postsController.videoList.clear();
+          postsController.changeTabIndex(1);
+          postsController.getVideoLists();
         } else {
           handleError(response);
         }
@@ -317,6 +343,34 @@ class CreatePostController extends GetxController {
           // postsController.postsList.clear();
           // postsController.changeTabIndex(0);
             postsController.getPostLists();
+        } else {
+          handleError(response);
+        }
+      } else {
+        Utils.showErrorAlert(response.message ?? "Upload failed");
+      }
+    } else {
+      Utils.showErrorAlert("Please check your internet connection");
+    }
+  }
+
+
+  Future<void> editVideoApi(VideoUploadModel videoModel, int id) async {
+    if (await Utils.hasNetwork()) {
+      print("show VideoModel Data -----> ${videoModel.toJson()}");
+      Utils.showLoader();
+
+      var response = await createApiProvider.editVideo(videoModel, id);
+
+      Utils.hideLoader();
+
+      if (response.success == true) {
+        if (response.data != null) {
+          Get.offAllNamed(Routes.postsHome);
+          final postsController = Get.find<PostsHomeController>();
+          postsController.videoList.clear();
+          postsController.changeTabIndex(1);
+            postsController.getVideoLists();
         } else {
           handleError(response);
         }

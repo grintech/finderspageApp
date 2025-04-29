@@ -29,6 +29,9 @@ class UserModel {
   String? modified;
   int? completed;
   String? userFrom;
+  String? current_password;
+  String? new_password;
+  String? confirm_password;
   UserModel? user;
   String? token;
   List<UserModel>? followerDetails;
@@ -74,6 +77,9 @@ class UserModel {
     this.post,
     this.business,
     this.job,
+    this.current_password,
+    this.new_password,
+    this.confirm_password,
     this.real_estate,
     this.community,
     this.shopping,
@@ -95,6 +101,9 @@ class UserModel {
     bio: json["bio"],
     profession: json["profession"],
     dob: json["dob"],
+    current_password: json["current_password"],
+    new_password: json["new_password"],
+    confirm_password: json["confirm_password"],
     verified_at: json["verified_at"],
     is_verified: json["is_verified"],
     cover_img: json["cover_img"],
@@ -149,6 +158,9 @@ class UserModel {
     "cover_img": cover_img,
     "user_id": user_id,
     "id": id,
+    "current_password": current_password,
+    "new_password": new_password,
+    "confirm_password": confirm_password,
     "slug": slug,
     "status": status,
     "created_by": createdBy,

@@ -184,6 +184,25 @@ class PostProfileController extends GetxController {
     }
   }
 
+  Future<void> resetPassword(UserModel model) async {
+    if (await Utils.hasNetwork()) {
+      Utils.showLoader();
+      var response = await _profileApiProvider.resetPassword(model);
+      Utils.hideLoader();
+
+      var dataResponse = response as DataResponse;
+      if (dataResponse.success == true) {
+        Get.back();
+        Utils.showSuccessAlert(
+            "Your Password Has Been Changed. Please Use New Password To Login Next Time.");
+      } else {
+        handleError(dataResponse);
+      }
+    } else {
+      Utils.showErrorAlert("Please Check Your Internet Connection");
+    }
+  }
+
   Future<void> logOut()async{
     // if(await Utils.hasNetwork()){
       // Utils.showLoader();

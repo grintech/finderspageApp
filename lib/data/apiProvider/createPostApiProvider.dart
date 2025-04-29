@@ -135,22 +135,24 @@ class CreatePostApiProvider{
         MapEntry('categories', videoUploadModel.categories ?? ''),
         MapEntry('user_id', videoUploadModel.id.toString()),
         MapEntry('type', videoUploadModel.type ?? ''),
-        MapEntry('donation_link', videoUploadModel.donationLink ?? ''),
-        MapEntry('image1', videoUploadModel.image1 ?? '[]'), // JSON string of filenames
+        MapEntry('donation_link', videoUploadModel.donationLink ?? ''), // JSON string of filenames
       ]);
 
       // Add media files
       if (videoUploadModel.selectedFiles != null &&
           videoUploadModel.selectedFiles!.isNotEmpty) {
         for (File file in videoUploadModel.selectedFiles!) {
+          print("📤 Uploading file: ${file.path}");
           if (await file.exists()) {
             formData.files.add(MapEntry(
-              'image1[]', // Use same key for all files
+              'image1[]', // Keep this consistent
               await MultipartFile.fromFile(
                 file.path,
                 filename: path.basename(file.path),
               ),
             ));
+          } else {
+            print("⚠️ File missing: ${file.path}");
           }
         }
       }
@@ -163,6 +165,54 @@ class CreatePostApiProvider{
 
       // Send request
       Response response = await _dio.post("${ApiConstants.updatePost}/$id", data: formData, options: Injector.getHeaderToken(),
+      );
+
+      return DataResponse<VideoUploadModel>.fromJson(response.data, (data) => VideoUploadModel.fromJson(data as Map<String, dynamic>),);
+    } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) {
+        return DataResponse.fromJson(res.data, (data) => null);
+      }
+      return DataResponse(message: error.toString());
+    }
+  }
+
+
+  Future<DataResponse> editVideo(VideoUploadModel videoUploadModel, int id) async {
+    try {
+      FormData formData = FormData();
+
+      formData.fields.addAll([
+        MapEntry('title', videoUploadModel.title ?? ""),
+        MapEntry('location', videoUploadModel.location ?? ''),
+        MapEntry('sub_category', videoUploadModel.subCategory ?? ''),
+        MapEntry('description', videoUploadModel.description ?? ''),
+        MapEntry('user_id', videoUploadModel.id.toString()),
+        MapEntry('type', videoUploadModel.type ?? ''),
+      ]);
+
+      if (videoUploadModel.postVideo != null && videoUploadModel.postVideo!.isNotEmpty) {
+        final file = File(videoUploadModel.postVideo!);
+        if (await file.exists()) {
+          formData.files.add(MapEntry(
+            'post_video',
+            await MultipartFile.fromFile(file.path, filename: path.basename(file.path)),
+          ));
+        }
+      }
+
+      if (videoUploadModel.image1 != null && videoUploadModel.image1!.isNotEmpty) {
+        final file = File(videoUploadModel.image1!);
+        if (await file.exists()) {
+          formData.files.add(MapEntry(
+            'image1',
+            await MultipartFile.fromFile(file.path, filename: path.basename(file.path)),
+          ));
+        }
+      }
+
+      // Send request
+      Response response = await _dio.post("${ApiConstants.updateVideo}/$id", data: formData, options: Injector.getHeaderToken(),
       );
 
       return DataResponse<VideoUploadModel>.fromJson(response.data, (data) => VideoUploadModel.fromJson(data as Map<String, dynamic>),);

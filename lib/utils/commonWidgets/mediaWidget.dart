@@ -3,6 +3,55 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
+import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
+import 'package:get/get.dart';
+
+// class MediaWidget extends StatelessWidget {
+//   final VideoPlayerController controller;
+//
+//   const MediaWidget({super.key, required this.controller});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final isPortrait = controller.value.size.height > controller.value.size.width;
+//
+//     return GestureDetector(
+//       onTap: () {
+//         if (controller.value.isPlaying) {
+//           controller.pause();
+//         } else {
+//           controller.play();
+//         }
+//       },
+//       child: Stack(
+//         alignment: Alignment.center,
+//         children: [
+//           isPortrait
+//               ? SizedBox(
+//             width: Get.width,
+//             height: Get.width * controller.value.aspectRatio,
+//             child: VideoPlayer(controller),
+//           )
+//               : Center(
+//             child: FittedBox(
+//               fit: BoxFit.contain,
+//               child: SizedBox(
+//                 width: controller.value.size.width,
+//                 height: controller.value.size.height,
+//                 child: VideoPlayer(controller),
+//               ),
+//             ),
+//           ),
+//           if (!controller.value.isPlaying)
+//             const Icon(Icons.play_arrow, size: 64, color: Colors.white70),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+
 class MediaWidget extends StatefulWidget {
   final String mediaUrl;
   final double screenRatio;

@@ -76,7 +76,7 @@ class LiveCameraScreen extends StatelessWidget {
 
             // Recording & Switch Camera Buttons
             Positioned(
-              bottom: 50,
+              bottom: 60,
               left: 0,
               right: 0,
               child: Row(

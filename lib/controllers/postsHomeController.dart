@@ -10,6 +10,8 @@ import 'package:projects/data/models/commentListModel.dart';
 import 'package:projects/data/models/commentModel.dart';
 import 'package:projects/data/models/likeModel.dart';
 import 'package:projects/utils/shared/dataResponse.dart';
+import 'package:video_player/video_player.dart';
+import '../data/apiConstants.dart';
 import '../utils/routes.dart';
 import '../utils/util.dart';
 
@@ -26,6 +28,8 @@ class PostsHomeController extends GetxController{
   RxSet<int> expandedReplies = <int>{}.obs;
   RxList<String> videoUrls = <String>[].obs;
 
+
+
   int _currentPage = 1;
   var _isLoadingMore = false.obs;
   var hasMoreData = true.obs;
@@ -33,7 +37,7 @@ class PostsHomeController extends GetxController{
 
   final ScrollController scrollController = ScrollController();
 
-
+  final Map<int, VideoPlayerController> videoControllers = {};
   var commentLikeStates = <int, RxBool>{};
   var commentLikesCount = <int, RxInt>{};
 
@@ -60,8 +64,8 @@ class PostsHomeController extends GetxController{
     // Future.delayed(Duration(seconds: 2), (){
     //   getVideoLists();
     // });
-    // getPostLists(isInitial: true);
-    setupScrollListener();
+    getPostLists();
+    // setupScrollListener();
   }
 
   // void toggleLike(int? commentId, String currentUserId, String likedByJson) {
@@ -109,18 +113,44 @@ class PostsHomeController extends GetxController{
   //   return commentLikeStates[commentId]!;
   // }
 
-  void setupScrollListener() {
-    scrollController.addListener(() {
-      if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200) {
-        if (hasMoreData.value && !_isLoadingMore.value) {
-          getPostLists();
-        }
-      }
-    });
+  // void setupScrollListener() {
+  //   scrollController.addListener(() {
+  //     if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200) {
+  //       if (hasMoreData.value && !_isLoadingMore.value) {
+  //         getPostLists();
+  //       }
+  //     }
+  //   });
+  // }
+
+  Future<void> preloadController(int index) async {
+    if (videoControllers.containsKey(index)) return;
+
+    final post = videoList[index];
+    final videoUrl = _getFirstVideoUrl(post);
+    if (videoUrl.isEmpty) return;
+
+    final controller = VideoPlayerController.network(videoUrl);
+    try {
+      await controller.initialize();
+      controller.setLooping(true);
+      videoControllers[index] = controller;
+      update(); // to trigger UI update
+    } catch (e) {
+      print("Video load failed at $index: $e");
+    }
   }
 
+  String _getFirstVideoUrl(PostsListModel post) {
+    try {
+      final List<String> videos = List<String>.from(jsonDecode(post.postVideo));
+      return videos.isNotEmpty ? "${ApiConstants.postImgUrl}/${videos.first}" : "";
+    } catch (e) {
+      return "";
+    }
+  }
 
-
+  VideoPlayerController? getController(int index) => videoControllers[index];
 
   Future<void> postLikeApi(PostsListModel postModel) async {
     if (await Utils.hasNetwork()) {
@@ -162,6 +192,7 @@ class PostsHomeController extends GetxController{
         this.postModel.value = likedData;
         this.postModel.refresh();
         getVideoLists();
+        commentList.refresh();
       } else {
         print("Like response has no data.");
       }
@@ -170,12 +201,12 @@ class PostsHomeController extends GetxController{
 
   Future<void> getPostLists() async {
     if (await Utils.hasNetwork()) {
-      Map<String, dynamic> queries = HashMap();
-      //queries['filter'] = 'inReview';
-      queries['page'] = 1;
-      queries['per_page'] = 20;
+      // Map<String, dynamic> queries = HashMap();
+      // //queries['filter'] = 'inReview';
+      // queries['page'] = 1;
+      // queries['per_page'] = 20;
       // Utils.showLoader();
-      var response = await apiProvider.getAllPostList(queries);
+      var response = await apiProvider.getAllPostList();
       // Utils.hideLoader();
       if (response.success == true && response.data != null) {
         postsList.clear();
@@ -208,7 +239,7 @@ class PostsHomeController extends GetxController{
     }
   }
 
-  Future<void> getCommentsLists(int id) async {
+  Future<void>  getCommentsLists(int id) async {
     if (await Utils.hasNetwork()) {
       // Utils.showLoader();
       var response = await apiProvider.getCommentList(id);

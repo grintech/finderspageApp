@@ -24,15 +24,36 @@ class PostCreateScreen extends StatefulWidget {
 }
 
 class _PostCreateScreenState extends State<PostCreateScreen> {
+  final ScrollController _scrollController = ScrollController();
   final ImagePicker _picker = ImagePicker();
   File? _videoFile;
   RxnString imgUrl = RxnString();
   final selected = 0.obs;
-  final CreatePostController imagePickerController = Get.put(CreatePostController());
+  late CreatePostController imagePickerController;
+
+  List<String> tabs = ["Video", "Short", "Live", "Post"];
 
   final captionController = TextEditingController();
   final descController = TextEditingController();
   final locController = TextEditingController();
+
+  void _scrollToSelected(int index) {
+    double itemWidth = 80; // Approx width for each item (adjust if needed)
+
+    _scrollController.animateTo(
+      (itemWidth + 20) * index - (200 / 2) + (itemWidth / 2),
+      // 200 is container width
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controller on screen load
+    imagePickerController = Get.put(CreatePostController());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,46 +61,56 @@ class _PostCreateScreenState extends State<PostCreateScreen> {
       appBar: AppBar(
         toolbarHeight: 0,
       ),
-      body: Column(
+      body: Stack(
+        alignment: Alignment.bottomCenter,
         children: [
-          Expanded(
-            child: Obx(() => selected.value == 0
-                ? VideoPickerScreen(from: "upload",)
-                : selected.value == 1
-                ? CustomCameraScreen()
-                : selected.value == 2
-                ? LiveCameraScreen()
-                : UploadPostScreen(from: "create",)),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                    onTap: () {
-                      selected.value = 0;
-                    },
-                    child: MyTextWidget(data: "Video")),
-                GestureDetector(
-                    onTap: () {
-                      selected.value = 1;
-                    },
-                    child: MyTextWidget(data: "Short")),
-                GestureDetector(
-                    onTap: () {
-                      selected.value = 2;
-                    },
-                    child: MyTextWidget(data: "Live")),
-                GestureDetector(
-                    onTap: () {
-                      selected.value = 3;
-                      Get.delete<CreatePostController>();
-                    },
-                    child: MyTextWidget(data: "Post")),
-              ],
+          Obx(() => selected.value == 0
+              ? VideoPickerScreen(from: "upload",)
+              : selected.value == 1
+              ? CustomCameraScreen()
+              : selected.value == 2
+              ? LiveCameraScreen()
+              : UploadPostScreen(from: "create",)),
+          Container(
+            width: 170,
+            height: 40,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: fieldBorderColor, width: 2),
+              color: Colors.grey[200]
             ),
-          )
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            margin: EdgeInsets.only(bottom: 10),
+            child: ListView.builder(
+              controller: _scrollController,
+              scrollDirection: Axis.horizontal,
+              itemCount: tabs.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    selected.value = index;
+                    _scrollToSelected(index);
+
+                    if (index == 3) {
+                      imagePickerController = Get.put(CreatePostController());
+                      imagePickerController.resetData();
+                    }
+                  },
+                  child: Obx(()=>Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    alignment: Alignment.center,
+                    child: MyTextWidget(
+                      data: tabs[index],
+                      size: 15,
+                      weight: FontWeight.w600,
+                      color: selected.value == index
+                          ? fieldBorderColor
+                          : blackColor,
+                    ),
+                  ),)
+                );
+              },
+            )),
         ],
       ),
     );

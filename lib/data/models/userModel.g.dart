@@ -55,6 +55,9 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       (json['job'] as List<dynamic>?)
           ?.map((e) => UserModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+  current_password: json['current_password'] as String?,
+  new_password: json['new_password'] as String?,
+  confirm_password: json['confirm_password'] as String?,
   real_estate:
       (json['real_estate'] as List<dynamic>?)
           ?.map((e) => UserModel.fromJson(e as Map<String, dynamic>))
@@ -113,6 +116,9 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
   if (instance.modified case final value?) 'modified': value,
   if (instance.completed case final value?) 'completed': value,
   if (instance.userFrom case final value?) 'userFrom': value,
+  if (instance.current_password case final value?) 'current_password': value,
+  if (instance.new_password case final value?) 'new_password': value,
+  if (instance.confirm_password case final value?) 'confirm_password': value,
   if (instance.user?.toJson() case final value?) 'user': value,
   if (instance.token case final value?) 'token': value,
   if (instance.followerDetails?.map((e) => e.toJson()).toList()

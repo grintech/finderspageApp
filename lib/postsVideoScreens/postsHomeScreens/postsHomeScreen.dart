@@ -11,6 +11,7 @@ import 'package:projects/data/models/commentListModel.dart';
 import 'package:projects/data/models/commentModel.dart';
 import 'package:projects/data/models/likeModel.dart';
 import 'package:projects/postsVideoScreens/postCreateScreen/uploadPostScreen.dart';
+import 'package:projects/postsVideoScreens/postCreateScreen/videoPreviewScreen.dart';
 import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/commonWidgets/commonTextField.dart';
 import 'package:projects/utils/helper/dateHelper.dart';
@@ -148,7 +149,15 @@ class Postshomescreen extends StatelessWidget {
                                     onTap: (){
                                       final post = controller.postsList[index];
                                       controller.postsList[index].type == "video"?
-                                          Get.back():
+                                      Get.to(()=>VideoPickerScreen(
+                                        from: "edit",
+                                        videoId: post.id.toString(),
+                                        caption: post.title,
+                                        description: post.description,
+                                        location: post.location,
+                                        mediaUrl: post.postVideo,
+                                      )
+                                      ):
                                       Get.to(UploadPostScreen(
                                         from: "edit",
                                         postId: post.id.toString(),
@@ -296,7 +305,6 @@ class Postshomescreen extends StatelessWidget {
                                  ],
                                ),
                              ),
-
                              GestureDetector(
                                onTap: ()async{
                                  await controller.getCommentsLists(controller.postsList[index].id!);
@@ -308,6 +316,7 @@ class Postshomescreen extends StatelessWidget {
                                      context: Get.context!,
                                      builder: (context){
                                        return StatefulBuilder(builder: (context,setState){
+                                         final ScrollController _scrollController = ScrollController();
                                          return Padding(
                                            padding: EdgeInsets.only(left: 20, right:20, top: 12, bottom: MediaQuery.of(context).viewInsets.bottom),
                                            child: Stack(
@@ -319,26 +328,28 @@ class Postshomescreen extends StatelessWidget {
                                                  color: whiteColor,
                                                  child: Column(
                                                    children: [
-                                                     Padding(
-                                                       padding: const EdgeInsets.symmetric(vertical: 10),
-                                                       child: Row(
-                                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                         children: [
-                                                           controller.commentList.isNotEmpty?
-                                                           MyTextWidget(data: "Comments ${controller.commentList.length}", size: 14, weight: FontWeight.w600,):
-                                                           MyTextWidget(data: "Comment", size: 14, weight: FontWeight.w600,),
-                                                           GestureDetector(
-                                                               onTap: () {
-                                                                 selectReply.value = {};
-                                                                 Get.back();
-                                                               },
-                                                               child: Icon(CupertinoIcons.multiply, size: 30,))
-                                                         ],
-                                                       ),
-                                                     ),
-                                                     controller.commentList.isNotEmpty?
+                                                    Obx(()=> Padding(
+                                                      padding: const EdgeInsets.symmetric(vertical: 10),
+                                                      child: Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          controller.commentList.isNotEmpty?
+                                                          MyTextWidget(data: "Comments ${controller.commentList.length}", size: 14, weight: FontWeight.w600,):
+                                                          MyTextWidget(data: "Comment", size: 14, weight: FontWeight.w600,),
+                                                          GestureDetector(
+                                                              onTap: () {
+                                                                selectReply.value = {};
+                                                                Get.back();
+                                                              },
+                                                              child: Icon(CupertinoIcons.multiply, size: 30,))
+                                                        ],
+                                                      ),
+                                                    ),),
+                                                     Obx(()=>controller.commentList.isNotEmpty?
                                                      Expanded(
                                                        child: ListView.builder(
+                                                           reverse: true,
+                                                           controller: _scrollController,
                                                            itemCount: controller.commentList.length,
                                                            itemBuilder: (context, index){
                                                              final commentId = controller.commentList[index].id!;
@@ -588,7 +599,7 @@ class Postshomescreen extends StatelessWidget {
                                                      )
                                                          :Padding(
                                                        padding:EdgeInsets.only(top: 40),
-                                                       child: Text("No Comments yet"),),
+                                                       child: Text("No Comments yet"),),),
                                                    ],
                                                  ),
                                                ),
@@ -608,39 +619,49 @@ class Postshomescreen extends StatelessWidget {
                                                            MyTextWidget(data:"@${selectReply.value['username']}", size: 12,),
                                                            SizedBox(width: 4,),
                                                            GestureDetector(
-                                                               onTap: (){
-                                                                 selectReply.value = {};
+                                                               onTap: (){selectReply.value = {};
                                                                },
                                                                child: Icon(Icons.close, size: 16, color: fieldBorderColor,))
                                                          ],
-                                                                                                                    ),
-                                                                                                                  ),
+                                                           ),
+                                                         ),
                                                        )
                                                        :null,
                                                    hint: "Post Comment",
-                                                   suffix: IconButton(onPressed: (){
-                                                     setState((){
-                                                       selectReply.value['username'] != null?
-                                                           controller.replyPostApi(ComReplyModel(
-                                                             comment_id: selectReply.value['commentId'],
-                                                             blog_id: controller.postsList[index].id.toString(),
-                                                             blog_user_id: controller.postsList[index].user_id.toString(),
-                                                             user_id: StorageHelper().getUserModel()?.user?.id.toString(),
-                                                             type: "posts",
-                                                             blog_url: "https://www.finderspage.com/single-new/${controller.postsList[index].slug}",
-                                                             comment: commentController.text.trim().toString()
-                                                           )):
-                                                       controller.commentPostApi(CommentModel(
-                                                           comment: commentController.text.trim().toString(),
-                                                           post_id: controller.postsList[index].id.toString(),
-                                                           post_user: controller.postsList[index].user_id.toString(),
-                                                           user_id: StorageHelper().getUserModel()?.user?.id.toString(),
-                                                           type: "posts"
+                                                   suffix: IconButton(onPressed: ()async{
+                                                     if (commentController.text.trim().isEmpty) return;
+
+                                                     if (selectReply.value['username'] != null) {
+                                                       await controller.replyPostApi(ComReplyModel(
+                                                         comment_id: selectReply.value['commentId'],
+                                                         blog_id: controller.postsList[index].id.toString(),
+                                                         blog_user_id: controller.postsList[index].user_id.toString(),
+                                                         user_id: StorageHelper().getUserModel()?.user?.id.toString(),
+                                                         type: controller.postsList[index].type,
+                                                         blog_url: "https://www.finderspage.com/single-new/${controller.postsList[index].slug}",
+                                                         comment: commentController.text.trim(),
                                                        ));
-                                                       selectReply.value = {};
-                                                       commentController.clear();
-                                                       controller.commentList.refresh();
-                                                       Get.back();
+                                                     } else {
+                                                       await controller.commentPostApi(CommentModel(
+                                                         comment: commentController.text.trim(),
+                                                         post_id: controller.postsList[index].id.toString(),
+                                                         post_user: controller.postsList[index].user_id.toString(),
+                                                         user_id: StorageHelper().getUserModel()?.user?.id.toString(),
+                                                         type: controller.postsList[index].type=="video"?"video":"posts",
+                                                       ));
+                                                     }
+
+                                                     // ✅ Clear inputs, update list
+                                                     commentController.clear();
+                                                     selectReply.value = {};
+                                                     await controller.getCommentsLists(controller.postsList[index].id!);  // <--- Fetch updated comments
+                                                     controller.commentList.refresh();// 🚫 Don't call Get.back() here! (Don't close the bottom sheet)
+                                                     WidgetsBinding.instance.addPostFrameCallback((_) {
+                                                       _scrollController.animateTo(
+                                                         double.parse("${controller.postsList[index]}"),
+                                                         duration: Duration(milliseconds: 300),
+                                                         curve: Curves.easeOut,
+                                                       );
                                                      });
                                                    },
                                                        icon: Icon(Icons.send, size: 25,
@@ -675,10 +696,6 @@ class Postshomescreen extends StatelessWidget {
                                  child: Icon(Icons.share, color: fieldBorderColor,)),
                            ],
                          ),),
-                          // Icon(Icons.bookmark, color: whiteColor,),
-                          // GestureDetector(
-                          //
-                          //     child: Icon(Icons.bookmark_outline, color: fieldBorderColor, size: 25,))
                         ],
                       ),
                     ),
@@ -707,7 +724,7 @@ class Postshomescreen extends StatelessWidget {
                           alignment: Alignment.centerLeft,
                           child: MyTextWidget(
                             size: 12, color: whiteColor, weight: FontWeight.w400,
-                            data: "${DateHelper().convertToTimeAgo(controller.postsList[index].created!)} ago",)),
+                            data: "${DateHelper().convertToTimeAgo(controller.postsList[index].modified!)} ago",)),
                     )
                   ],
                 );

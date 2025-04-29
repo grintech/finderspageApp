@@ -66,9 +66,9 @@ class HomeApiProvider{
   }
 
   //Post Home Apis
-  Future<PageResponse> getAllPostList(Map<String, dynamic>? queries) async {
+  Future<PageResponse> getAllPostList() async {
     try {
-      Response response = await _dio.get(ApiConstants.showAllPosts, queryParameters: queries,
+      Response response = await _dio.get(ApiConstants.showAllPosts,
           options: Injector.getHeaderToken());
       var dataResponse = PageResponse<PostsListModel>.fromJson(response.data, (data) => PostsListModel.fromJson(data as Map<String, dynamic>));
       return dataResponse;

@@ -106,13 +106,13 @@ class DateHelper {
   }
 
   String convertToTimeAgo(String timestamp) {
-    DateTime dateTime = DateTime.parse(timestamp);
+    DateTime dateTime = DateTime.parse(timestamp).toLocal();
     Duration timeDifference = DateTime.now().difference(dateTime);
 
     if (timeDifference.inSeconds < 60) {
-      if(timeDifference.inSeconds == 0){
+      if (timeDifference.inSeconds == 0) {
         return 'now';
-      }else{
+      } else {
         return '${timeDifference.inSeconds} sec';
       }
     } else if (timeDifference.inMinutes < 60) {
@@ -121,13 +121,13 @@ class DateHelper {
       return '${timeDifference.inHours} hr';
     } else if (timeDifference.inDays < 30) {
       return '${timeDifference.inDays} days';
-    }else if (timeDifference.inDays < 365) {
+    } else if (timeDifference.inDays < 365) {
       return '${(timeDifference.inDays / 30).floor()}m';
-    }
-    else {
+    } else {
       return '${(timeDifference.inDays / 365).floor()}y';
     }
   }
+
 
   static String preferenceDateView(String? input) {
     return _dfViewPreferenceDate.format(getUtcTime(input));
