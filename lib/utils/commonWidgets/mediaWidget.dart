@@ -24,31 +24,86 @@ import 'package:get/get.dart';
 //           controller.play();
 //         }
 //       },
-//       child: Stack(
-//         alignment: Alignment.center,
-//         children: [
-//           isPortrait
-//               ? SizedBox(
-//             width: Get.width,
-//             height: Get.width * controller.value.aspectRatio,
-//             child: VideoPlayer(controller),
-//           )
-//               : Center(
-//             child: FittedBox(
-//               fit: BoxFit.contain,
-//               child: SizedBox(
-//                 width: controller.value.size.width,
-//                 height: controller.value.size.height,
-//                 child: VideoPlayer(controller),
-//               ),
-//             ),
-//           ),
-//           if (!controller.value.isPlaying)
-//             const Icon(Icons.play_arrow, size: 64, color: Colors.white70),
-//         ],
-//       ),
+//       child: buildMediaWidget(controller),
 //     );
 //   }
+//
+//   Widget buildMediaWidget(VideoPlayerController controller, String mediaUrl, bool isPortrait) {
+//     final lowerUrl = mediaUrl.toLowerCase();
+//     final isVideo = lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".mov") || lowerUrl.endsWith(".avi");
+//
+//     return Stack(
+//       alignment: Alignment.center,
+//       children: [
+//         isVideo
+//             ? (isPortrait
+//             ? SizedBox(
+//           width: Get.width,
+//           height: Get.width * controller.value.aspectRatio,
+//           child: VideoPlayer(controller),
+//         )
+//             : Center(
+//           child: FittedBox(
+//             fit: BoxFit.contain,
+//             child: SizedBox(
+//               width: controller.value.size.width,
+//               height: controller.value.size.height,
+//               child: VideoPlayer(controller),
+//             ),
+//           ),
+//         ))
+//             : Image.network(
+//           mediaUrl,
+//           width: Get.width,
+//           fit: BoxFit.cover,
+//           errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+//         ),
+//       ],
+//     );
+//   }
+//
+//
+// // void _handleVideoTap() {
+//   //   if (controller != null && controller.value.isInitialized) {
+//   //       controller.value.isPlaying ? controller.pause() : controller.play();
+//   //   }
+//   // }
+//
+//   // Widget _buildVideoPlayer() {
+//   //   final videoSize = controller.value.size;
+//   //   final isPortrait = videoSize.height > videoSize.width;
+//   //
+//   //   return GestureDetector(
+//   //     onTap: _handleVideoTap,
+//   //     child: Stack(
+//   //       alignment: Alignment.center,
+//   //       children: [
+//   //         isPortrait
+//   //             ? SizedBox(
+//   //           width: Get.width,
+//   //           height: Get.width * (videoSize.height / videoSize.width),
+//   //           child: VideoPlayer(controller),
+//   //         )
+//   //             : Center(
+//   //           child: FittedBox(
+//   //             fit: BoxFit.contain,
+//   //             child: SizedBox(
+//   //               width: videoSize.width,
+//   //               height: videoSize.height,
+//   //               child: VideoPlayer(controller),
+//   //             ),
+//   //           ),
+//   //         ),
+//   //         if (!controller.value.isPlaying)
+//   //           const Icon(
+//   //             Icons.play_arrow,
+//   //             size: 64,
+//   //             color: Colors.white70,
+//   //           ),
+//   //       ],
+//   //     ),
+//   //   );
+//   // }
 // }
 
 

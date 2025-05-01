@@ -9,6 +9,7 @@ import 'package:projects/data/models/PostsListModel.dart';
 import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/commonWidgets/mediaWidget.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../data/models/comReplyModel.dart';
 import '../../data/models/commentListModel.dart';
@@ -39,39 +40,47 @@ class PostVideoScreen extends StatelessWidget {
     return
       // Scaffold(
       // backgroundColor: blackColor,
-      // body:  GetBuilder<PostsHomeController>(
-      //   builder: (_) {
+      // body:GetBuilder<PostsHomeController>(
+      //   builder: (controller) {
+      //     controller.getVideoLists();
       //     if (controller.videoList.isEmpty) {
       //       return const Center(child: CircularProgressIndicator());
       //     }
       //
-      //     return PageView.builder(
-      //       itemCount: controller.videoList.length,
-      //       scrollDirection: Axis.vertical,
-      //       onPageChanged: (index) {
-      //         controller.preloadController(index);
-      //       },
-      //       itemBuilder: (context, index) {
-      //         final post = controller.videoList[index];
-      //         final videoController = controller.getController(index);
-      //
-      //         if (videoController == null || !videoController.value.isInitialized) {
-      //           controller.preloadController(index);
-      //           return const Center(child: CircularProgressIndicator());
-      //         }
-      //
-      //         return Stack(
-      //           children: [
-      //             Padding(
-      //               padding: const EdgeInsets.only(top: 70),
-      //               child: MediaWidget(controller: videoController),
-      //             ),
-      //           ],
-      //         );
-      //       },
+      //     return Stack(
+      //       children: [
+      //         PageView.builder(
+      //           itemCount: controller.videoList.length,
+      //           scrollDirection: Axis.vertical,
+      //           onPageChanged: (index) {
+      //             controller.preloadNext(index);
+      //           },
+      //           itemBuilder: (context, index) {
+      //             final post = controller.videoList[index];
+      //             final mediaUrl = controller.videoUrls[index]; // or build from post.postVideo
+      //             final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+      //             return FutureBuilder<VideoPlayerController>(
+      //               future: controller.getController(index),
+      //               builder: (context, snapshot) {
+      //                 if (!snapshot.hasData || !snapshot.data!.value.isInitialized) {
+      //                   return const Center(child: CircularProgressIndicator());
+      //                 }
+      //                 return buildMediaWidget(snapshot.data!, mediaUrl, isPortrait);
+      //               },
+      //             );
+      //           },
+      //         ),
+      //       ],
       //     );
       //   },
       // ),
+      //
+      //
+      // );
+
+
+
+
       PageView.builder(
         controller: _pageController,
         scrollDirection: Axis.vertical,
@@ -420,7 +429,8 @@ class PostVideoScreen extends StatelessWidget {
                                                                         : SizedBox(),
                                                                   ],
                                                                 ),
-                                                              )
+                                                              ),
+                                                              SizedBox(height: 20,)
                                                             ],
                                                           ),
                                                         ),
@@ -632,4 +642,54 @@ class PostVideoScreen extends StatelessWidget {
         },
       );
   }
+  // Widget buildMediaWidget(VideoPlayerController controller, String mediaUrl, bool isPortrait) {
+  //   final lowerUrl = mediaUrl.toLowerCase();
+  //   final videoSize = controller.value.size;
+  //   final isVideo = lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".mov") || lowerUrl.endsWith(".avi");
+  //   final isPortrait = videoSize.height > videoSize.width;
+  //   return GestureDetector(
+  //     onTap: () {
+  //       if (controller.value.isPlaying) {
+  //         controller.pause();
+  //       } else {
+  //         controller.play();
+  //       }
+  //     },
+  //     child: Stack(
+  //       alignment: Alignment.center,
+  //       children: [
+  //         isVideo
+  //             ? (isPortrait
+  //             ? SizedBox(
+  //           width: Get.width,
+  //           height: Get.width * (videoSize.height / videoSize.width),
+  //           child: VideoPlayer(controller),
+  //         )
+  //             : Center(
+  //           child: FittedBox(
+  //             fit: BoxFit.contain,
+  //             child: SizedBox(
+  //               width: videoSize.width,
+  //               height: videoSize.height,
+  //               child: VideoPlayer(controller),
+  //             ),
+  //           ),
+  //         ))
+  //             : Image.network(
+  //           mediaUrl,
+  //           width: Get.width,
+  //           fit: BoxFit.cover,
+  //           errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+  //         ),
+  //         if (!controller.value.isPlaying)
+  //           const Icon(
+  //             Icons.play_arrow,
+  //             size: 64,
+  //             color: Colors.white70,
+  //           ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
 }

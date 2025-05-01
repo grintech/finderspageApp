@@ -78,38 +78,125 @@ class Utils{
   }
 
   static mediaOptions() {
-    showModalBottomSheet(
-      isDismissible: true,
+    showDialog(
       context: Get.context!,
       builder: (context) {
-        return Container(
-          height: 100,
-          color: Colors.black,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              GestureDetector(
-                onTap: () async {
-                  await imagePickerController.pickImage(ImageSource.camera);
-                  Get.back();
-                },
-                child: Icon(Icons.camera, color: Colors.white),
-              ),
-              GestureDetector(
-                onTap: () async {
-                  await imagePickerController.pickImage(ImageSource.gallery);
-                  Get.back();
-                },
-                child: Icon(Icons.perm_media_outlined, color: Colors.white),
-              ),
-              GestureDetector(
-                onTap: () async {
-                  await imagePickerController.pickVideo(ImageSource.gallery);
-                  Get.back();
-                },
-                child: Icon(Icons.video_camera_back_outlined, color: Colors.white),
-              ),
-            ],
+        return AlertDialog(
+          content: Container(
+            height: 200,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () async {
+                          await imagePickerController.pickImage(ImageSource.camera);
+                          Get.back();
+                        },
+                        child: Column(
+                          children: [
+                            Container(
+                                height: 50,
+                                width: 50,
+                                decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    stops: [0.3, 1.0], // 30% and 100%
+                                  ),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Color(0x194A841C),
+                                      offset: Offset(0.0, 1.0), //(x,y)
+                                      blurRadius: 19,
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(Icons.camera_alt, color: whiteColor,)),
+                            SizedBox(height: 10,),
+                            MyTextWidget(data: "Camera")
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () async {
+                          await imagePickerController.pickImage(ImageSource.gallery);
+                          Get.back();
+                        },
+                        child: Column(
+                          children: [
+                            Container(
+                                height: 50,
+                                width: 50,
+                                decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    stops: [0.3, 1.0], // 30% and 100%
+                                  ),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Color(0x194A841C),
+                                      offset: Offset(0.0, 1.0), //(x,y)
+                                      blurRadius: 19,
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(Icons.perm_media_outlined, color: whiteColor,)),
+                            SizedBox(height: 10,),
+                            MyTextWidget(data: "Gallery")
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10,),
+                Center(
+                  child: GestureDetector(
+                    onTap: () async {
+                      await imagePickerController.pickVideo(ImageSource.gallery);
+                      Get.back();
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                            height: 50,
+                            width: 50,
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [Color(0xFFDC7228), Color(0xFFA54DB7)],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                stops: [0.3, 1.0], // 30% and 100%
+                              ),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0x194A841C),
+                                  offset: Offset(0.0, 1.0), //(x,y)
+                                  blurRadius: 19,
+                                ),
+                              ],
+                            ),
+                            child: Icon(Icons.video_camera_back_outlined, color: whiteColor,)),
+                        SizedBox(height: 10,),
+                        MyTextWidget(data: "Videos")
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

@@ -9,6 +9,7 @@ import 'package:projects/data/models/comReplyModel.dart';
 import 'package:projects/data/models/commentListModel.dart';
 import 'package:projects/data/models/commentModel.dart';
 import 'package:projects/data/models/likeModel.dart';
+import 'package:projects/data/models/notificationModel.dart';
 import 'package:projects/utils/shared/dataResponse.dart';
 import 'package:video_player/video_player.dart';
 import '../data/apiConstants.dart';
@@ -23,17 +24,23 @@ class PostsHomeController extends GetxController{
   HomeApiProvider apiProvider = HomeApiProvider();
   RxList<PostsListModel> postsList=RxList();
   RxList<PostsListModel> videoList=RxList();
+  RxList<NotificationModel> notificationList = <NotificationModel>[].obs;
   RxList<CommentListModel> commentList=RxList();
   RxList<ComReplyModel> replyList=RxList();
   RxSet<int> expandedReplies = <int>{}.obs;
   RxList<String> videoUrls = <String>[].obs;
 
 
+  final List<String> videoLoadingUrls = []; // or your video model
+  final Map<int, VideoPlayerController> _videoControllers = {};
+  final Map<int, Future<VideoPlayerController>> _initializingControllers = {};
+  bool hasLoaded = false;
+  // List<VideoPlayerController?> get videoLoadingList => _videoControllers;
 
-  int _currentPage = 1;
-  var _isLoadingMore = false.obs;
+
+
   var hasMoreData = true.obs;
-  final int _perPage = 10;
+
 
   final ScrollController scrollController = ScrollController();
 
@@ -59,85 +66,54 @@ class PostsHomeController extends GetxController{
   }
 
   @override
-  void onInit() {
+  void onInit()async{
     super.onInit();
     // Future.delayed(Duration(seconds: 2), (){
-    //   getVideoLists();
+     await getVideoLists();
     // });
     getPostLists();
     // setupScrollListener();
   }
 
-  // void toggleLike(int? commentId, String currentUserId, String likedByJson) {
-  //   List<String> likedByList = [];
-  //   try {
-  //     likedByList = List<String>.from(json.decode(likedByJson));
-  //   } catch (e) {
-  //     likedByList = [];
-  //   }
-  //
-  //   // Check if the current user has already liked the comment
-  //   bool isLiked = likedByList.contains(currentUserId);
-  //
-  //   // Toggle like/unlike action
-  //   if (isLiked) {
-  //     likedByList.remove(currentUserId); // Remove from liked
-  //     final current = commentLikesCount[commentId]?.value ?? 1;
-  //     commentLikesCount[commentId]?.value = (current - 1).clamp(0, double.infinity).toInt();
-  //   } else {
-  //     likedByList.add(currentUserId); // Add to liked
-  //     commentLikesCount[commentId]?.value = (commentLikesCount[commentId]?.value ?? 0) + 1;
-  //   }
-  //
-  //   // Update like state and save it
-  //   commentLikeStates[commentId]?.value = !isLiked;
-  //
-  //   // Here you can call the API to update the backend if necessary
-  //   // For example:
-  //   likeComment(CommentListModel(
-  //     comment_id: commentId,
-  //       userId: currentUserId,
-  //       action: isLiked ? 'unlike' : 'like'
-  //   ));
-  // }
-  //
-  // RxInt getLikesCount(int? commentId, int initialCount) {
-  //   commentLikesCount.putIfAbsent(commentId!, () => RxInt(initialCount));
-  //   return commentLikesCount[commentId]!;
-  // }
-  //
-  // RxBool getLikeState(int? commentId) {
-  //   if (!commentLikeStates.containsKey(commentId)) {
-  //     commentLikeStates[commentId!] = RxBool(false); // Initialize it if not found
-  //   }
-  //   return commentLikeStates[commentId]!;
-  // }
+  Future<void> loadVideosOnce() async {
+    if (hasLoaded) return;
+    await getVideoLists();
+    hasLoaded = true;
+    update();
+  }
 
-  // void setupScrollListener() {
-  //   scrollController.addListener(() {
-  //     if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200) {
-  //       if (hasMoreData.value && !_isLoadingMore.value) {
-  //         getPostLists();
-  //       }
-  //     }
-  //   });
-  // }
+  Future<VideoPlayerController> getController(int index) {
+    final url = videoUrls[index];
 
-  Future<void> preloadController(int index) async {
-    if (videoControllers.containsKey(index)) return;
+    // Already initialized
+    if (_videoControllers.containsKey(index)) {
+      return Future.value(_videoControllers[index]!);
+    }
 
-    final post = videoList[index];
-    final videoUrl = _getFirstVideoUrl(post);
-    if (videoUrl.isEmpty) return;
+    // Already initializing
+    if (_initializingControllers.containsKey(index)) {
+      return _initializingControllers[index]!;
+    }
 
-    final controller = VideoPlayerController.network(videoUrl);
-    try {
-      await controller.initialize();
+    final controller = VideoPlayerController.network(url);
+    final initializing = controller.initialize().then((_) {
       controller.setLooping(true);
-      videoControllers[index] = controller;
-      update(); // to trigger UI update
-    } catch (e) {
-      print("Video load failed at $index: $e");
+      _videoControllers[index] = controller;
+      return controller;
+    }).catchError((error) {
+      print('Video init failed at $url: $error');
+      throw error;
+    });
+
+    _initializingControllers[index] = initializing;
+    return initializing;
+  }
+
+
+  void preloadNext(int index) {
+    final next = index + 1;
+    if (next < videoList.length && !_videoControllers.containsKey(next)) {
+      getController(next); // triggers preload
     }
   }
 
@@ -150,7 +126,7 @@ class PostsHomeController extends GetxController{
     }
   }
 
-  VideoPlayerController? getController(int index) => videoControllers[index];
+  // VideoPlayerController? getController(int index) => videoControllers[index];
 
   Future<void> postLikeApi(PostsListModel postModel) async {
     if (await Utils.hasNetwork()) {
@@ -238,6 +214,24 @@ class PostsHomeController extends GetxController{
       Utils.showErrorAlert("Please Check Your Internet Connection");
     }
   }
+
+  // Future<void> getVideoLists() async {
+  //   if (await Utils.hasNetwork()) {
+  //     var response = await apiProvider.getAllVideoList();
+  //     if (response.success == true) {
+  //       videoList.clear();
+  //       videoList.addAll(response.data! as Iterable<PostsListModel>);
+  //       extractFirstVideoUrls();
+  //       update(); // <- necessary to rebuild the UI
+  //     } else {
+  //       handleError(response);
+  //     }
+  //   } else {
+  //     Utils.showErrorAlert("Please Check Your Internet Connection");
+  //   }
+  // }
+
+
 
   Future<void>  getCommentsLists(int id) async {
     if (await Utils.hasNetwork()) {
@@ -362,7 +356,7 @@ class PostsHomeController extends GetxController{
     if(await Utils.hasNetwork()){
       var response = await apiProvider.replyComApi(replyModel);
       if(response.success = true){
-
+        Get.back();
         // getPostLists();
       }else{
         handleError(response);
@@ -370,7 +364,38 @@ class PostsHomeController extends GetxController{
     }
   }
 
+  Future<void> notificationApi(int id)async{
+    Map<String, dynamic> queries = HashMap();
+    // //queries['filter'] = 'inReview';
+    queries['page'] = 1;
+    queries['per_page'] = 50;
+    if (await Utils.hasNetwork()) {
+      var response = await apiProvider.notificationList(id, queries);
+      if (response.success == true && response.data != null) {
+        notificationList.clear();
+        notificationList.addAll(response.data! as Iterable<NotificationModel>);
+        Get.toNamed(Routes.notificationRoute);
+      } else {
+        Utils.error(response.message);
+      }
+    } else {
+      Utils.showErrorAlert("Please Check Your Internet Connection");
+    }
+  }
 
+  Future<void> clearNotificationApi(int id)async{
+    if (await Utils.hasNetwork()) {
+      var response = await apiProvider.clearNotificationList(id);
+      if (response.success == true && response.data != null) {
+        notificationList.refresh();
+        notificationApi(id);
+      } else {
+        Utils.error(response.message);
+      }
+    } else {
+      Utils.showErrorAlert("Please Check Your Internet Connection");
+    }
+  }
 
   void extractFirstVideoUrls() {
     videoUrls.clear();
@@ -379,7 +404,7 @@ class PostsHomeController extends GetxController{
         try {
           List<dynamic> parsed = json.decode(post.postVideo!);
           if (parsed.isNotEmpty) {
-            videoUrls.add(parsed.first);
+            videoUrls.add("https://www.finderspage.com/public/images_blog_img/${parsed.first}");
           }
         } catch (e) {
           print('Error decoding post_video: $e');
@@ -387,6 +412,25 @@ class PostsHomeController extends GetxController{
       }
     }
   }
+
+
+
+
+  // void extractFirstVideoUrls() {
+  //   videoUrls.clear();
+  //   for (var post in videoList) {
+  //     if (post.postVideo != null && post.postVideo!.isNotEmpty) {
+  //       try {
+  //         List<dynamic> parsed = json.decode(post.postVideo!);
+  //         if (parsed.isNotEmpty) {
+  //           videoUrls.add(parsed.first);
+  //         }
+  //       } catch (e) {
+  //         print('Error decoding post_video: $e');
+  //       }
+  //     }
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -402,5 +446,13 @@ class PostsHomeController extends GetxController{
     } else {
       Utils.showErrorAlert("Server Error. Please Try Again");
     }
+  }
+
+  @override
+  void onClose() {
+    for (var c in _videoControllers.values) {
+      c.dispose();
+    }
+    super.onClose();
   }
 }

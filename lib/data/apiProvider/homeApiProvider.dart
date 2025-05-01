@@ -4,6 +4,7 @@ import 'package:projects/data/models/comReplyModel.dart';
 import 'package:projects/data/models/commentListModel.dart';
 import 'package:projects/data/models/commentModel.dart';
 import 'package:projects/data/models/likeModel.dart';
+import 'package:projects/data/models/notificationModel.dart';
 import 'package:projects/data/models/shopDetailModel.dart';
 import 'package:projects/data/models/shopModel.dart';
 
@@ -208,6 +209,36 @@ class HomeApiProvider{
       final res = (error as dynamic).response;
       if (res != null) return DataResponse.fromJson(res?.data, (data) => null);
       return DataResponse(message: error.toString());
+    }
+  }
+
+  //Notification Apis
+  Future<PageResponse> notificationList(int id, Map<String, dynamic>? queries) async {
+    try {
+      Response response = await _dio.get("${ApiConstants.notificationListApi}/$id", options: Injector.getHeaderToken(),
+          queryParameters: queries);
+      var dataResponse = PageResponse<NotificationModel>.fromJson(
+          response.data,
+              (data) => NotificationModel.fromJson(data as Map<String, dynamic>)
+      );      return dataResponse;
+    } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return PageResponse.fromJson(res?.data, (data) => null);
+      return PageResponse(message: error.toString());
+    }
+  }
+
+  Future<PageResponse> clearNotificationList(int id) async {
+    try {
+      Response response = await _dio.get("${ApiConstants.clearNotificationApi}/$id", options: Injector.getHeaderToken(),);
+      var dataResponse = PageResponse<NotificationModel>.fromJson(
+          response.data,
+              (data) => NotificationModel.fromJson(data as Map<String, dynamic>)
+      );      return dataResponse;
+    } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return PageResponse.fromJson(res?.data, (data) => null);
+      return PageResponse(message: error.toString());
     }
   }
 

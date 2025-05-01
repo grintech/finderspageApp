@@ -30,12 +30,13 @@ class AuthController extends GetxController{
         var userModel = UserModel();
         if(response.data != null){
           userModel = response.data as UserModel;
+          storageHelper.saveUserModel(userModel);
+          storageHelper.saveUserToken(userModel.token);
+          storageHelper.saveUserId(userModel.user?.id);
           if(userModel.user?.verified_at != null) {
-            storageHelper.saveUserModel(userModel);
-            storageHelper.saveUserToken(userModel.token);
-            storageHelper.saveUserId(userModel.user?.id);
             Get.offAllNamed(Routes.postsHome);
-          }else{
+          }
+          else{
             Get.dialog(
               Center(
                 child: Container(
@@ -55,7 +56,12 @@ class AuthController extends GetxController{
                       MyTextWidget(data: "We’ve emailed you a verification link to complete your sign-up.", txtAlign: TextAlign.center, size: 14, weight: FontWeight.w400,),
                       SizedBox(height: 20,),
                       GestureDetector(
-                        onTap: (){},
+                        onTap: (){
+                          resend(UserModel(
+                            id: storageHelper.getUserId()
+                          ));
+                          Get.back();
+                        },
                         child: RichText(
                             textAlign: TextAlign.center,
                             text: TextSpan(
@@ -126,6 +132,23 @@ class AuthController extends GetxController{
         // _preferenceHelper.saveUserId(userModel.id);
         // openVerificationScreen(model, "forgot");
         Get.offAllNamed(Routes.loginRoute);
+      } else {
+        handleError(dataResponse);
+      }
+    } else {
+      Utils.showErrorAlert("Please check your internet connection");
+    }
+  }
+
+  Future<void> resend(UserModel model) async {
+    if (await Utils.hasNetwork()) {
+      Utils.showLoader();
+      var response = await _authApiProvider.resend(model);
+      Utils.hideLoader();
+
+      var dataResponse = response as DataResponse;
+      if (dataResponse.success == true) {
+        Utils.showSuccessAlert(dataResponse.message!);
       } else {
         handleError(dataResponse);
       }

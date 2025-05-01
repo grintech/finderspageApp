@@ -16,6 +16,7 @@ import '../data/apiConstants.dart';
 import '../data/apiProvider/createPostApiProvider.dart';
 import '../data/models/PostsListModel.dart';
 import '../postsVideoScreens/postsHomeScreens/postsNavBarScreen.dart';
+import '../utils/cropperScreen.dart';
 import '../utils/helper/storageHelper.dart';
 import '../utils/util.dart';
 
@@ -42,6 +43,9 @@ class CreatePostController extends GetxController {
   RxBool isFrontCamera = false.obs;
   RxBool isFlash = false.obs;
   RxBool isCameraOn = false.obs;
+  bool isCropping = true;
+  double aspectRatio = 1 / 1;
+  final ImagePicker picker = ImagePicker();
 
   RxInt recordingSeconds = 0.obs; // Timer counter
   FlashMode _flashMode = FlashMode.off;
@@ -88,18 +92,32 @@ class CreatePostController extends GetxController {
   }
 
   Future<void> pickImage(ImageSource source) async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: source);
 
+    final XFile? image = await picker.pickImage(source: source);
+    if(isCropping == false) {
+      if (image != null) {
+        // selectedImagePath.value = image.path;
+        selectedFiles.add(File(image.path));
+        selectedFiles.refresh();
+        print("this is image ===== >$selectedFiles");
+      }
+      else {
+        Get.snackbar("Error", "No image selected",
+            snackPosition: SnackPosition.BOTTOM);
+      }
+      return;
+    }
+    File? croppedFile;
     if (image != null) {
-      // selectedImagePath.value = image.path;
-      selectedFiles.add(File(image.path));
+      croppedFile = await Get.to(() => CropperScreen(file: image.path, aspectRatio: aspectRatio,));
+    }
+    if (croppedFile != null) {
+      debugPrint("Selected image => ${croppedFile.path}");
+      selectedFiles.add(File(croppedFile.path));
       selectedFiles.refresh();
       print("this is image ===== >$selectedFiles");
-    }
-    else {
-      Get.snackbar("Error", "No image selected",
-          snackPosition: SnackPosition.BOTTOM);
+    } else {
+      debugPrint('No image selected.');
     }
   }
 
@@ -242,23 +260,6 @@ class CreatePostController extends GetxController {
 
   }
 
-  /// Capture Photo
-  Future<String?> capturePhoto() async {
-    if (cameraController == null || !cameraController!.value.isInitialized) return null;
-
-    final directory = await getTemporaryDirectory();
-    final imagePath = '${directory.path}/photo_${DateTime.now().millisecondsSinceEpoch}.jpg';
-
-    try {
-      final XFile file = await cameraController!.takePicture();
-      File(file.path).copy(imagePath);
-      return imagePath;
-    } catch (e) {
-      print("Error capturing photo: $e");
-      return null;
-    }
-  }
-
   /// Stop Recording
   Future<void> stopRecording() async {
     if (cameraController == null || !cameraController!.value.isRecordingVideo) return;
@@ -286,9 +287,11 @@ class CreatePostController extends GetxController {
       if (response.success == true) {
         if (response.data != null) {
           final postsController = Get.find<PostsHomeController>();
-          postsController.videoList.clear();
-          postsController.changeTabIndex(1);
-          postsController.getVideoLists();
+          postsController.postsList.clear();
+          // postsController.videoList.refresh();
+          postsController.changeTabIndex(0);
+          postsController.getPostLists();
+
         } else {
           handleError(response);
         }
@@ -368,9 +371,9 @@ class CreatePostController extends GetxController {
         if (response.data != null) {
           Get.offAllNamed(Routes.postsHome);
           final postsController = Get.find<PostsHomeController>();
-          postsController.videoList.clear();
-          postsController.changeTabIndex(1);
-            postsController.getVideoLists();
+          postsController.postsList.clear();
+          postsController.changeTabIndex(0);
+            postsController.getPostLists();
         } else {
           handleError(response);
         }

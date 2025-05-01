@@ -52,5 +52,17 @@ class AuthApiProvider {
     }
   }
 
+  Future<dynamic> resend(UserModel userModel) async {
+    try {
+      Response response = await _dio.get(ApiConstants.resendApi, data: userModel);
+      var dataResponse = DataResponse<UserModel>.fromJson(response.data, (data) => UserModel.fromJson(data as Map<String, dynamic>));
+      return dataResponse;
+    } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return DataResponse.fromJson(res?.data, (data) => null);
+      return DataResponse(message: error.toString());
+    }
+  }
+
 
 }

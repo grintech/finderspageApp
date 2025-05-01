@@ -16,6 +16,7 @@ static const String subCategories = "$_baseUrl/category-sub/";
 static const String shopList = "$_baseUrl/Shop/list";
 static const String shopDetail = "$_baseUrl/Shop/single";
 static const String logOutApi = "$_baseUrl/logout-app";
+static const String resendApi = "$_baseUrl/resend-email-verification";
 
 // profile apis
 static const String getUser = "$_baseUrl/showProfileApp";
@@ -41,4 +42,6 @@ static const String changePassword = "$_baseUrl/change-Password-app";
   static const String commentLikeApi = "$_baseUrl/comment-like";
   static const String replyPostApi = "$_baseUrl/comment-reply";
   static const String savePostApi = "$_baseUrl/saved-data";
+  static const String notificationListApi = "$_baseUrl/get-list-of-notification";
+  static const String clearNotificationApi = "$_baseUrl/clear-notification";
 }

@@ -57,11 +57,14 @@ class _PostCreateScreenState extends State<PostCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         toolbarHeight: 0,
       ),
       body: Stack(
+
         alignment: Alignment.bottomCenter,
         children: [
           Obx(() => selected.value == 0
@@ -71,8 +74,10 @@ class _PostCreateScreenState extends State<PostCreateScreen> {
               : selected.value == 2
               ? LiveCameraScreen()
               : UploadPostScreen(from: "create",)),
+
+          if (isKeyboardVisible)
           Container(
-            width: 170,
+            width: 260,
             height: 40,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
@@ -85,6 +90,7 @@ class _PostCreateScreenState extends State<PostCreateScreen> {
               controller: _scrollController,
               scrollDirection: Axis.horizontal,
               itemCount: tabs.length,
+              physics: ClampingScrollPhysics(),
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {

@@ -67,58 +67,84 @@ class PostProfileController extends GetxController {
   }
 
   void selectCoverImage(){
-    showModalBottomSheet(
-        isDismissible: true,
+    showDialog(
         context: Get.context!,
         builder: (context){
-          return Container(
-            height: 100,
-            color: Colors.black,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                GestureDetector(
-                    onTap:() {
-                      pickImage(ImageSource.camera);
-                      Get.back();
-                    },
-                    child: Icon(Icons.camera, color: Colors.white,)),
-                GestureDetector(
-                    onTap:() {
-                      pickImage(ImageSource.gallery);
-                      Get.back();
-                    },
-                    child: Icon(Icons.perm_media_outlined, color: Colors.white,))
-              ],
+          return AlertDialog(
+            content: Container(
+              height: 100,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                      onTap:() {
+                        pickImage(ImageSource.camera);
+                        Get.back();
+                      },
+                      child: Row(
+                        children: [
+                          Icon(Icons.camera),
+                          SizedBox(width: 8,),
+                          MyTextWidget(data: "Choose from Camera",)
+                        ],
+                      )),
+                  GestureDetector(
+                      onTap:() {
+                        pickImage(ImageSource.gallery);
+                        Get.back();
+                      },
+                      child: Row(
+                        children: [
+                          Icon(Icons.perm_media_outlined),
+                          SizedBox(width: 8,),
+                          MyTextWidget(data: "Choose from Gallery",)
+                        ],
+                      ))
+                ],
+              ),
             ),
           );
         });
   }
 
   void selectProfileImage(){
-    showModalBottomSheet(
-        isDismissible: true,
+    showDialog(
+        // isDismissible: true,
         context: Get.context!,
         builder: (context){
-          return Container(
-            height: 100,
-            color: Colors.black,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                GestureDetector(
-                    onTap:() {
-                      pickProfileImage(ImageSource.camera);
-                      Get.back();
-                    },
-                    child: Icon(Icons.camera, color: Colors.white,)),
-                GestureDetector(
-                    onTap:() {
-                      pickProfileImage(ImageSource.gallery);
-                      Get.back();
-                    },
-                    child: Icon(Icons.perm_media_outlined, color: Colors.white,))
-              ],
+          return AlertDialog(
+            content: Container(
+              height: 100,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                      onTap:() {
+                        pickImage(ImageSource.camera);
+                        Get.back();
+                      },
+                      child: Row(
+                        children: [
+                          Icon(Icons.camera),
+                          SizedBox(width: 8,),
+                          MyTextWidget(data: "Choose from Camera",)
+                        ],
+                      ),
+                  ),
+                  GestureDetector(
+                      onTap:() {
+                        pickImage(ImageSource.gallery);
+                        Get.back();
+                      },
+                      child: Row(
+                        children: [
+                          Icon(Icons.perm_media_outlined),
+                          SizedBox(width: 8,),
+                          MyTextWidget(data: "Choose from Gallery",)
+                        ],
+                      ))
+                ],
+              ),
             ),
           );
         });

@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:projects/controllers/postProfileController.dart';
 import 'package:projects/data/models/userModel.dart';
@@ -10,6 +12,7 @@ import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/commonWidgets/CommonAppBar.dart';
 import 'package:projects/utils/commonWidgets/commonButton.dart';
 import 'package:projects/utils/commonWidgets/commonTextField.dart';
+import 'package:projects/utils/helper/cameraHelper.dart';
 import 'package:projects/utils/helper/dateHelper.dart';
 import 'package:projects/utils/imageViewer.dart';
 import 'package:projects/utils/routes.dart';
@@ -17,24 +20,23 @@ import 'package:projects/utils/routes.dart';
 import '../../data/apiConstants.dart';
 import '../../utils/util.dart';
 
-class EditProfile extends StatelessWidget {
+class EditProfile extends StatelessWidget implements CameraOnCompleteListener{
   EditProfile({super.key});
 
   PostProfileController controller = Get.put(PostProfileController());
 
-
-
-
-
-
   var selectedDOB = DateTime.now().obs;
+  late CameraHelper cameraHelper;
 
   var addLinks = true.obs;
   var saveLinks = true.obs;
   var editLinks = true.obs;
 
+  ImageType? _currentImageType;
+
   @override
   Widget build(BuildContext context) {
+    cameraHelper = CameraHelper(this);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CommonAppBar(
@@ -66,8 +68,8 @@ class EditProfile extends StatelessWidget {
                           imageWidget = Image.file(
                             File(coverImagePath),
                             width: Get.width,
-                            height: 200,
-                            fit: BoxFit.cover,
+                            height: 250,
+                            fit: BoxFit.fill,
                             errorBuilder: (_, __, ___) => Image.asset("assets/images/no_image.png", fit: BoxFit.contain),
                           );
                         } else if (coverImg != null && coverImg.isNotEmpty) {
@@ -75,8 +77,8 @@ class EditProfile extends StatelessWidget {
                           imageWidget = Image.network(
                             "${ApiConstants.profileUrl}/$coverImg",
                             width: Get.width,
-                            height: 200,
-                            fit: BoxFit.cover,
+                            height: 250,
+                            fit: BoxFit.fill,
                             errorBuilder: (_, __, ___) => Image.asset("assets/images/no_image.png", fit: BoxFit.contain),
                           );
                         } else {
@@ -84,14 +86,14 @@ class EditProfile extends StatelessWidget {
                           imageWidget = Image.asset(
                             "assets/images/no_image.png",
                             width: Get.width,
-                            height: 200,
-                            fit: BoxFit.contain,
+                            height: 250,
+                            fit: BoxFit.fill,
                           );
                         }
 
                         return Container(
                           margin: const EdgeInsets.only(bottom: 40),
-                          height: 200,
+                          height: 250,
                           width: Get.width,
                           child: imageWidget,
                         );
@@ -101,7 +103,8 @@ class EditProfile extends StatelessWidget {
                         right: 12, bottom: 50,
                         child: GestureDetector(
                           onTap: () {
-                            controller.selectCoverImage();
+                            _currentImageType = ImageType.cover;
+                            cameraHelper.openImageVideoPicker();
                           },
                           child: Container(
                             width: 25,
@@ -128,7 +131,9 @@ class EditProfile extends StatelessWidget {
                     left: 20,
                     child: GestureDetector(
                       onTap: () {
-                        controller.selectProfileImage();
+                        _currentImageType = ImageType.profile;
+                        cameraHelper.openImageVideoPicker();
+                        // controller.selectProfileImage();
                         // Get.toNamed(Routes.editProfileRoute);
                       },
                       child: Stack(
@@ -147,7 +152,7 @@ class EditProfile extends StatelessWidget {
                                   File(profileImagePath),
                                   width: 80,
                                   height: 80,
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.fill,
                                   errorBuilder: (_, __, ___) =>ImageView(height: 80, width: 80,),
                                 ),
                               );
@@ -159,7 +164,7 @@ class EditProfile extends StatelessWidget {
                                   "${ApiConstants.profileUrl}/$userImage",
                                   width: 80,
                                   height: 80,
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.fill,
                                   errorBuilder: (_, __, ___) => ImageView(height: 80, width: 80,),
                                 ),
                               );
@@ -483,5 +488,20 @@ class EditProfile extends StatelessWidget {
     }
     // model.dob = selectedDOB.value;
     await controller.updateUserApi(model);
+  }
+
+  @override
+  void onSuccessFile(String selectedUrl, String fileType) {
+    if (_currentImageType == ImageType.profile) {
+      controller.profileImagePath.value = selectedUrl;
+    } else if (_currentImageType == ImageType.cover) {
+      controller.coverImagePath.value = selectedUrl;
+    }
+    _currentImageType = null;
+  }
+
+  @override
+  void onSuccessVideo(String selectedUrl, Uint8List? thumbnail) {
+    // TODO: implement onSuccessVideo
   }
 }
