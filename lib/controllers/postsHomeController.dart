@@ -13,6 +13,8 @@ import 'package:projects/data/models/notificationModel.dart';
 import 'package:projects/utils/shared/dataResponse.dart';
 import 'package:video_player/video_player.dart';
 import '../data/apiConstants.dart';
+import '../data/models/userModel.dart';
+import '../utils/helper/storageHelper.dart';
 import '../utils/routes.dart';
 import '../utils/util.dart';
 
@@ -20,6 +22,7 @@ class PostsHomeController extends GetxController{
   var tabIndex = 0.obs;
 
   late TabController tabController;
+  var userModel = Rxn<UserModel>();
 
   HomeApiProvider apiProvider = HomeApiProvider();
   RxList<PostsListModel> postsList=RxList();
@@ -70,6 +73,7 @@ class PostsHomeController extends GetxController{
     super.onInit();
     // Future.delayed(Duration(seconds: 2), (){
      await getVideoLists();
+    userModel.value = StorageHelper().getUserModel();
     // });
     getPostLists();
     // setupScrollListener();
@@ -387,8 +391,8 @@ class PostsHomeController extends GetxController{
     if (await Utils.hasNetwork()) {
       var response = await apiProvider.clearNotificationList(id);
       if (response.success == true && response.data != null) {
+        notificationList.clear();
         notificationList.refresh();
-        notificationApi(id);
       } else {
         Utils.error(response.message);
       }
@@ -413,7 +417,50 @@ class PostsHomeController extends GetxController{
     }
   }
 
+  void updateVideoLike(PostsListModel post, String currentUserId) async {
+    Map<String, dynamic> likedByMap = {};
+    try {
+      if (post.liked_by is String) {
+        final likedByString = post.liked_by as String;
+        if (likedByString.trim().startsWith('{')) {
+          final decoded = json.decode(likedByString);
+          if (decoded is Map<String, dynamic>) {
+            likedByMap = decoded;
+          }
+        }
+      } else if (post.liked_by is Map) {
+        likedByMap = Map<String, dynamic>.from(post.liked_by as Map);
+      }
+    } catch (_) {}
 
+    final alreadyLiked = likedByMap.containsKey(currentUserId);
+
+    if (alreadyLiked) {
+      // Remove like
+      likedByMap.remove(currentUserId);
+      int currentLikes = (int.tryParse(post.likes ?? '0') ?? 0) - 1;
+      post.likes = currentLikes.clamp(0, double.infinity).toInt().toString();
+      post.liked_by = likedByMap.map((k, v) => MapEntry(k, v.toString()));
+
+      // Update local list in videoList
+      final index = videoList.indexWhere((p) => p.id == post.id);
+      if (index != -1) {
+        videoList[index] = post;
+        videoList.refresh();  // This will notify GetX to update the UI
+      }
+
+      // Call unlike API
+      await videoLikeApi(PostsListModel(
+        user_id: int.parse(currentUserId),
+        blog_id: post.id,
+        cate_id: 727,
+        action: "unlike",
+        type: "video",
+        url: "https://www.finderspage.com/single-new/${post.slug}",
+        reaction: "0",
+      ));
+    }
+  }
 
 
   // void extractFirstVideoUrls() {

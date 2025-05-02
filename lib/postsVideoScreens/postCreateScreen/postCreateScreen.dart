@@ -31,7 +31,7 @@ class _PostCreateScreenState extends State<PostCreateScreen> {
   final selected = 0.obs;
   late CreatePostController imagePickerController;
 
-  List<String> tabs = ["Video", "Short", "Live", "Post"];
+  List<String> tabs = ["Video", "Mini", "Live", "Post"];
 
   final captionController = TextEditingController();
   final descController = TextEditingController();
@@ -56,70 +56,63 @@ class _PostCreateScreenState extends State<PostCreateScreen> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom == 0;
+    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
+
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         toolbarHeight: 0,
       ),
-      body: Stack(
+      body: Obx(() => selected.value == 0
+          ? VideoPickerScreen(from: "upload")
+          : selected.value == 1
+          ? CustomCameraScreen()
+          : selected.value == 2
+          ? LiveCameraScreen()
+          : UploadPostScreen(from: "create")),
 
-        alignment: Alignment.bottomCenter,
-        children: [
-          Obx(() => selected.value == 0
-              ? VideoPickerScreen(from: "upload",)
-              : selected.value == 1
-              ? CustomCameraScreen()
-              : selected.value == 2
-              ? LiveCameraScreen()
-              : UploadPostScreen(from: "create",)),
+      bottomNavigationBar: Container(
+        margin: EdgeInsets.only(left: 50, right: 50, bottom: 10),
+          height: 40,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: fieldBorderColor, width: 2),
+            color: Colors.grey[200],
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          child: ListView.builder(
+            controller: _scrollController,
+            scrollDirection: Axis.horizontal,
+            itemCount: tabs.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  selected.value = index;
+                  _scrollToSelected(index);
 
-          if (isKeyboardVisible)
-          Container(
-            width: 260,
-            height: 40,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: fieldBorderColor, width: 2),
-              color: Colors.grey[200]
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            margin: EdgeInsets.only(bottom: 10),
-            child: ListView.builder(
-              controller: _scrollController,
-              scrollDirection: Axis.horizontal,
-              itemCount: tabs.length,
-              physics: ClampingScrollPhysics(),
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    selected.value = index;
-                    _scrollToSelected(index);
-
-                    if (index == 3) {
-                      imagePickerController = Get.put(CreatePostController());
-                      imagePickerController.resetData();
-                    }
-                  },
-                  child: Obx(()=>Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    alignment: Alignment.center,
-                    child: MyTextWidget(
-                      data: tabs[index],
-                      size: 15,
-                      weight: FontWeight.w600,
-                      color: selected.value == index
-                          ? fieldBorderColor
-                          : blackColor,
-                    ),
-                  ),)
-                );
-              },
-            )),
-        ],
+                  if (index == 3) {
+                    imagePickerController.resetData();
+                  }
+                },
+                child: Obx(()=>Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  alignment: Alignment.center,
+                  child: MyTextWidget(
+                    data: tabs[index],
+                    size: 15,
+                    weight: FontWeight.w600,
+                    color: selected.value == index
+                        ? fieldBorderColor
+                        : blackColor,
+                  ),
+                ),)
+              );
+            },
+          )
       ),
     );
   }
+
 }
 

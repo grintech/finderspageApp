@@ -174,153 +174,160 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
             toolbarHeight: 0,
             backgroundColor: whiteColor,
             elevation: 0),
-        body:SingleChildScrollView(
-          padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: widget.from == "edit"?10:70, bottom: 10, top: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body:Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: widget.from == "edit"?20:70, top: 10, bottom: 10, right: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  widget.from == "edit"?
+                  GestureDetector(
+                      onTap: () => Get.back(),
+                      child: Icon(Icons.arrow_back_ios, color: fieldBorderColor,)):
+                  const SizedBox(),
+                  MyTextWidget(data: widget.from == "edit"?"        Edit Video"
+                      :"Upload Video  ", size: 18, weight: FontWeight.w600,),
+                  CommonButton(
+                    onPressed: ()async{
+                      validate();
+                    },
+                    radius: 6,
+                    padding: EdgeInsets.only(left: 10, right: 10, top: 3, bottom: 3),
+                    btnTxt:widget.from == "edit"?"Update":"Share",
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    widget.from == "edit"?
+
                     GestureDetector(
-                        onTap: () => Get.back(),
-                        child: Icon(Icons.arrow_back_ios, color: fieldBorderColor,)):
-                    const SizedBox(),
-                    MyTextWidget(data: widget.from == "edit"?"        Edit Video"
-                        :"Upload Video  ", size: 18, weight: FontWeight.w600,),
-                    CommonButton(
-                      onPressed: ()async{
-                        validate();
-                      },
-                      radius: 12,
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      btnTxt:widget.from == "edit"?"Update":"Share",
+                      onTap: _pickVideo,
+                        child: _isLoading && widget.from == "edit"
+                            ? const Center(child: CircularProgressIndicator())
+                            : _controller == null
+                            ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.asset("assets/images/ic_upload_video.png", height: 140, width: 140),
+                            SizedBox(height: 10),],)
+                            : _controller!.value.isInitialized
+                            ? Container(
+                          margin: EdgeInsets.only(top: widget.from == "edit"?60:10, bottom: widget.from == "edit"?70:10),
+                          width: Get.width,
+                          child: SizedBox(
+                            height: isPortrait ? 450 : 200,
+                            child: VideoPlayer(_controller!),
+                          ),
+                        )
+                            : const Center(child: Text("Video is not initialized, failed to load video"))),
+                    if (_controller != null && _controller!.value.isInitialized)
+                      GestureDetector(
+                        onTap: _togglePlayPause,
+                        child: Icon(
+                          _controller!.value.isPlaying ? Icons.pause_circle : Icons.play_circle,
+                          size: 45,
+                        ),
+                      ),
+                    CommonTextField(
+                      margin: EdgeInsets.only(top: 10, bottom: 10),
+                      hint: "Add Caption Here...",
+                      textController: captionController,
                     ),
+                    CommonTextField(
+                      margin: EdgeInsets.only(top: 10, bottom: 10),
+                      hint: "Add Location",
+                      textController: locController,
+                    ),
+                    CommonTextField(
+                      margin: EdgeInsets.only(top: 10, bottom: 10),
+                      hint: "Add Description",
+                      lines: 3,
+                      textController: descController,
+                    ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            MyTextWidget(data: "Share",),
+                            Obx(()=>FlutterSwitch(
+                                height: 20, width: 40,
+                                toggleSize: 12,
+                                activeColor: fieldBorderColor,
+                                value: shareOn.value,
+                                onToggle:(val){
+                                  shareOn.value = val;
+                                }
+                            ))
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            MyTextWidget(data: "Comment",),
+                            Obx(()=>FlutterSwitch(
+                                height: 20, width: 40,
+                                toggleSize: 12,
+                                activeColor: fieldBorderColor,
+                                value: commentOn.value,
+                                onToggle:(val){
+                                  commentOn.value = val;
+                                }
+                            ))
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric( vertical: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            MyTextWidget(data: "Likes",),
+                            Obx(()=>FlutterSwitch(
+                                height: 20, width: 40,
+                                toggleSize: 12,
+                                activeColor: fieldBorderColor,
+                                value: likesOn.value,
+                                onToggle:(val){
+                                  likesOn.value = val;
+                                }
+                            ))
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8, bottom: 50),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            MyTextWidget(data: "Tips & Donation (Optional)",),
+                            Obx(()=>FlutterSwitch(
+                                height: 20, width: 40,
+                                toggleSize: 12,
+                                activeColor: fieldBorderColor,
+                                value: donationOn.value,
+                                onToggle:(val){
+                                  donationOn.value = val;
+                                }
+                            )),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
               ),
-              GestureDetector(
-                onTap: _pickVideo,
-                  child: _isLoading && widget.from == "edit"
-                      ? const Center(child: CircularProgressIndicator())
-                      : _controller == null
-                      ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset("assets/images/ic_upload_video.png", height: 140, width: 140),
-                      SizedBox(height: 10),],)
-                      : _controller!.value.isInitialized
-                      ? Container(
-                    margin: EdgeInsets.only(top: widget.from == "edit"?60:10, bottom: widget.from == "edit"?70:10),
-                    width: Get.width,
-                    child: SizedBox(
-                      height: isPortrait ? 450 : 200,
-                      child: VideoPlayer(_controller!),
-                    ),
-                  )
-                      : const Center(child: Text("Video is not initialized, failed to load video"))),
-              if (_controller != null && _controller!.value.isInitialized)
-                GestureDetector(
-                  onTap: _togglePlayPause,
-                  child: Icon(
-                    _controller!.value.isPlaying ? Icons.pause_circle : Icons.play_circle,
-                    size: 45,
-                  ),
-                ),
-              CommonTextField(
-                margin: EdgeInsets.only(top: 10, bottom: 10),
-                hint: "Add Caption Here...",
-                textController: captionController,
-              ),
-              CommonTextField(
-                margin: EdgeInsets.only(top: 10, bottom: 10),
-                hint: "Add Location",
-                textController: locController,
-              ),
-              CommonTextField(
-                margin: EdgeInsets.only(top: 10, bottom: 10),
-                hint: "Add Description",
-                lines: 3,
-                textController: descController,
-              ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      MyTextWidget(data: "Share",),
-                      Obx(()=>FlutterSwitch(
-                          height: 20, width: 40,
-                          toggleSize: 12,
-                          activeColor: fieldBorderColor,
-                          value: shareOn.value,
-                          onToggle:(val){
-                            shareOn.value = val;
-                          }
-                      ))
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      MyTextWidget(data: "Comment",),
-                      Obx(()=>FlutterSwitch(
-                          height: 20, width: 40,
-                          toggleSize: 12,
-                          activeColor: fieldBorderColor,
-                          value: commentOn.value,
-                          onToggle:(val){
-                            commentOn.value = val;
-                          }
-                      ))
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric( vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      MyTextWidget(data: "Likes",),
-                      Obx(()=>FlutterSwitch(
-                          height: 20, width: 40,
-                          toggleSize: 12,
-                          activeColor: fieldBorderColor,
-                          value: likesOn.value,
-                          onToggle:(val){
-                            likesOn.value = val;
-                          }
-                      ))
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8, bottom: 50),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      MyTextWidget(data: "Tips & Donation (Optional)",),
-                      Obx(()=>FlutterSwitch(
-                          height: 20, width: 40,
-                          toggleSize: 12,
-                          activeColor: fieldBorderColor,
-                          value: donationOn.value,
-                          onToggle:(val){
-                            donationOn.value = val;
-                          }
-                      )),
-                    ],
-                  ),
-                ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

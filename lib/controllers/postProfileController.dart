@@ -200,6 +200,7 @@ class PostProfileController extends GetxController {
 
         var userModel = dataResponse.data as UserModel;
         this.userModel.value = userModel;
+        storageHelper.saveUserModel(userModel);
         getProfileApi();
         Get.back();
       } else {

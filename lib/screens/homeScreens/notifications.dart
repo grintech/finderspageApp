@@ -17,6 +17,7 @@ class Notifications extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    controller.notificationApi(StorageHelper().getUserId()!);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -51,6 +52,8 @@ class Notifications extends StatelessWidget {
                   PopupMenuItem(
                     onTap: (){
                       controller.clearNotificationApi(StorageHelper().getUserId()!);
+                      controller.notificationApi(StorageHelper().getUserId()!);
+                      // Get.back();
                     },
                     padding: EdgeInsets.only(left: 10),
                     value: 0,
@@ -65,8 +68,18 @@ class Notifications extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Obx(() {
-                return ListView.builder(
+              child: Obx(()=>
+        controller.notificationList.isEmpty?
+            Padding(
+              padding: const EdgeInsets.only(top: 50),
+              child: Center(child: Column(
+                children: [
+                  Image.asset("assets/images/no_notification.png", scale: 1.5,),
+                  MyTextWidget(data: "No New Notifications found", size: 16, weight: FontWeight.w600,),
+                ],
+              )),
+            ):
+                  ListView.builder(
                   itemCount: controller.notificationList.length,
                   physics: const ClampingScrollPhysics(),
                   itemBuilder: (context, index) {
@@ -130,8 +143,8 @@ class Notifications extends StatelessWidget {
                       ),
                     );
                   },
-                );
-              }),
+                ),
+              ),
             ),
 
           ],

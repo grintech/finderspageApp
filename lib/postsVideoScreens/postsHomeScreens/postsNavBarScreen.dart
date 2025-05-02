@@ -31,11 +31,13 @@ class _PostsNavBarScreenState extends State<PostsNavBarScreen> with TickerProvid
     super.initState();
     controller = Get.find<PostsHomeController>();
     controller.tabController = TabController(length: 5, vsync: this);
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: blackColor,
       body:Obx(() {
         switch (controller.tabIndex.value) {
@@ -99,15 +101,16 @@ class _PostsNavBarScreenState extends State<PostsNavBarScreen> with TickerProvid
                   controller.changeTabIndex(4);
                 },
                 child:
-                // Icon(Icons.person, color: fieldBorderColor, size: 30,)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: StorageHelper().getUserModel()?.user?.image != null
-                      ?Image.network(
-                    height: 25, width: 25, fit: BoxFit.fill,
-                    "${ApiConstants.profileUrl}/${StorageHelper().getUserModel()?.user?.image}",
-                  ):ImageView(height: 25,width: 25,),
-                )
+                Icon(Icons.person, color: whiteColor, size: 25,)
+                // ClipRRect(
+                //   borderRadius: BorderRadius.circular(12),
+                //   child: StorageHelper().getUserModel()?.user?.image != null
+                //       ?Image.network(
+                //     height: 25, width: 25, fit: BoxFit.fill,
+                //     "${ApiConstants.profileUrl}/${StorageHelper().getUserModel()?.user?.image}",
+                //   ):
+                //   ImageView(height: 25,width: 25,),
+                // )
               ),
             ],
           ),

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:projects/utils/helper/trimmerView.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
+// import 'package:video_thumbnail/video_thumbnail.dart';
 
 import '../cropperScreen.dart';
 
@@ -240,14 +240,14 @@ class CameraHelper {
       // }
       debugPrint("pickVideoGallery $result");
       if (result != null) {
-        final uint8list = await VideoThumbnail.thumbnailData(
-          video: result,
-          imageFormat: ImageFormat.PNG,
-          maxWidth: 256, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-          quality: 60,
-        );
-        debugPrint("thumbnail $uint8list");
-        callback.onSuccessVideo(result, uint8list);
+        // final uint8list = await VideoThumbnail.thumbnailData(
+        //   video: result,
+        //   imageFormat: ImageFormat.PNG,
+        //   maxWidth: 256, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+        //   quality: 60,
+        // );
+        // debugPrint("thumbnail $uint8list");
+        // callback.onSuccessVideo(result, uint8list);
       }
     } else {
       debugPrint('No video selected.');

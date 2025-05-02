@@ -7,6 +7,7 @@ plugins {
 
 android {
     namespace = "com.app.projects"
+
     compileSdk = 35
     ndkVersion = "27.0.12077973"
 
