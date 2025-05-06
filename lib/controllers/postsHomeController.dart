@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:projects/data/apiProvider/homeApiProvider.dart';
+import 'package:projects/data/apiProvider/profileApiProvider.dart';
 import 'package:projects/data/models/PostsListModel.dart';
 import 'package:projects/data/models/comReplyModel.dart';
 import 'package:projects/data/models/commentListModel.dart';
@@ -25,9 +26,11 @@ class PostsHomeController extends GetxController{
   var userModel = Rxn<UserModel>();
 
   HomeApiProvider apiProvider = HomeApiProvider();
+  ProfileApiProvider profileApiProvider = ProfileApiProvider();
   RxList<PostsListModel> postsList=RxList();
   RxList<PostsListModel> videoList=RxList();
   RxList<NotificationModel> notificationList = <NotificationModel>[].obs;
+  RxList<NotificationModel> hideNotificationList = <NotificationModel>[].obs;
   RxList<CommentListModel> commentList=RxList();
   RxList<ComReplyModel> replyList=RxList();
   RxSet<int> expandedReplies = <int>{}.obs;
@@ -235,7 +238,44 @@ class PostsHomeController extends GetxController{
   //   }
   // }
 
-
+  Future<void> getProfileApi(int id)async{
+    if(await Utils.hasNetwork()){
+      var res = await profileApiProvider.getUserApi(id);
+      var dataResponse = res as DataResponse;
+      if(dataResponse.success == true){
+        var userModel = dataResponse.data as UserModel;
+        // storageHelper.saveUserId(userModel.user?.id);
+        // storageHelper.saveUserModel(userModel);
+        this.userModel.value = userModel;
+        this.userModel.refresh();
+        // if (userModel.user?.first_name != null) {
+        //   nameController.text = userModel.user!.first_name!;
+        // }
+        // if (userModel.user?.email != null) {
+        //   emailController.text = userModel.user!.email!;
+        // }
+        // if (userModel.user?.username != null) {
+        //   usernameController.text = userModel.user!.username!;
+        // }
+        // if (userModel.user?.phonenumber != null) {
+        //   phoneController.text = userModel.user!.phonenumber!;
+        // }
+        // if (userModel.user?.zipcode != null) {
+        //   zipController.text = userModel.user!.zipcode!;
+        // }
+        // // if(userModel.user?.dob != null){
+        // //   selectedDOB = userModel.user?.dob;
+        // // }
+        // if (userModel.user?.bio != null) {
+        //   String bioHtml = userModel.user!.bio!;
+        //   String plainTxt = Utils().removeHtmlTags(bioHtml);
+        //   bioController.text = plainTxt;
+        // }
+      }else{
+        handleError(dataResponse);
+      }
+    }
+  }
 
   Future<void>  getCommentsLists(int id) async {
     if (await Utils.hasNetwork()) {
@@ -378,7 +418,7 @@ class PostsHomeController extends GetxController{
       if (response.success == true && response.data != null) {
         notificationList.clear();
         notificationList.addAll(response.data! as Iterable<NotificationModel>);
-        Get.toNamed(Routes.notificationRoute);
+        // Get.toNamed(Routes.notificationRoute);
       } else {
         Utils.error(response.message);
       }
@@ -386,6 +426,25 @@ class PostsHomeController extends GetxController{
       Utils.showErrorAlert("Please Check Your Internet Connection");
     }
   }
+
+  Future<void> hiddenNotificationApi(int id) async {
+    Map<String, dynamic> queries = {};
+    queries['page'] = 1;
+    queries['per_page'] = 50;
+
+    if (await Utils.hasNetwork()) {
+      var response = await apiProvider.hideNotificationList(id, queries);
+      if (response.success == true && response.data != null) {
+        hideNotificationList.clear();
+        hideNotificationList.addAll(response.data! as Iterable<NotificationModel>);
+      } else {
+        Utils.error(response.message);
+      }
+    } else {
+      Utils.showErrorAlert("Please Check Your Internet Connection");
+    }
+  }
+
 
   Future<void> clearNotificationApi(int id)async{
     if (await Utils.hasNetwork()) {
@@ -400,6 +459,67 @@ class PostsHomeController extends GetxController{
       Utils.showErrorAlert("Please Check Your Internet Connection");
     }
   }
+
+
+  Future<void> markAsRead(int id)async{
+    if (await Utils.hasNetwork()) {
+      var response = await apiProvider.readNotification(id);
+      if (response.success == true && response.data != null) {
+        notificationList.refresh();
+        notificationApi(StorageHelper().getUserId()!);
+      } else {
+        Utils.error(response.message);
+      }
+    } else {
+      Utils.showErrorAlert("Please Check Your Internet Connection");
+    }
+  }
+
+
+  Future<void> hideNotifications(int id)async{
+    if (await Utils.hasNetwork()) {
+      var response = await apiProvider.hideNotification(id);
+      if (response.success == true && response.data != null) {
+        notificationList.refresh();
+        // notificationApi(StorageHelper().getUserId()!);
+      } else {
+        Utils.error(response.message);
+      }
+    } else {
+      Utils.showErrorAlert("Please Check Your Internet Connection");
+    }
+  }
+
+
+  Future<void> blockNotifications(int toId, int fromId)async{
+    if (await Utils.hasNetwork()) {
+      var response = await apiProvider.blockNotification(toId, fromId);
+      if (response.success == true && response.data != null) {
+        notificationList.refresh();
+        // notificationApi(StorageHelper().getUserId()!);
+      } else {
+        Utils.error(response.message);
+      }
+    } else {
+      Utils.showErrorAlert("Please Check Your Internet Connection");
+    }
+  }
+
+  Future<void> unBlockNotifications(int toId, int fromId)async{
+    if (await Utils.hasNetwork()) {
+      var response = await apiProvider.unBlockNotification(toId, fromId);
+      if (response.success == true && response.data != null) {
+        notificationList.refresh();
+        // notificationApi(StorageHelper().getUserId()!);
+      } else {
+        Utils.error(response.message);
+      }
+    } else {
+      Utils.showErrorAlert("Please Check Your Internet Connection");
+    }
+  }
+
+
 
   void extractFirstVideoUrls() {
     videoUrls.clear();

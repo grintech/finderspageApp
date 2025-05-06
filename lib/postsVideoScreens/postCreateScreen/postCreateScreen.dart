@@ -56,10 +56,8 @@ class _PostCreateScreenState extends State<PostCreateScreen> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
-    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
-
+    final keyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 0,

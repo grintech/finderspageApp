@@ -1,11 +1,16 @@
 class ApiConstants{
-static const String _baseUrl = "https://www.finderspage.com/api";
 
-static const String profileUrl = "https://www.finderspage.com/public/assets/images/profile";
-static const String postImgUrl = "https://www.finderspage.com/public/images_blog_img";
-static const String videoUrl = "https://www.finderspage.com/public/images_blog_video";
-static const String businessImgUrl = "https://www.finderspage.com/public/business_img";
-static const String entertainImgUrl = "https://www.finderspage.com/public/images_entrtainment";
+  //live url
+  // static const String _baseUrl = "https://www.finderspage.com/api";
+
+//local Url
+static const String _baseUrl = "https://staging.finderspage.com/api";
+
+static const String profileUrl = "https://staging.finderspage.com/public/assets/images/profile";
+static const String postImgUrl = "https://staging.finderspage.com/public/images_blog_img";
+static const String videoUrl = "https://staging.finderspage.com/public/images_blog_video";
+static const String businessImgUrl = "https://staging.finderspage.com/public/business_img";
+static const String entertainImgUrl = "https://staging.finderspage.com/public/images_entrtainment";
 
 // without login apis
 static const String loginApi = "$_baseUrl/login-app";
@@ -43,5 +48,10 @@ static const String changePassword = "$_baseUrl/change-Password-app";
   static const String replyPostApi = "$_baseUrl/comment-reply";
   static const String savePostApi = "$_baseUrl/saved-data";
   static const String notificationListApi = "$_baseUrl/get-list-of-notification";
+  static const String hiddenNotificationListApi = "$_baseUrl/list-of-hidden-notification";
   static const String clearNotificationApi = "$_baseUrl/clear-notification";
+  static const String readNotificationApi = "$_baseUrl/notification-read";
+  static const String hideNotificationApi = "$_baseUrl/notification-hidden";
+  static const String blockNotificationApi = "$_baseUrl/notification-block-all";
+  static const String unBlockNotificationApi = "$_baseUrl/notification-unblock-all";
 }

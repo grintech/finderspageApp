@@ -29,7 +29,7 @@ class CreatePostController extends GetxController {
   late CreatePostApiProvider createApiProvider = CreatePostApiProvider();
   late StorageHelper storageHelper = StorageHelper();
   VideoPlayerController? playerController;
-
+  final keyboardVisible = MediaQuery.of(Get.context!).viewInsets.bottom == 0.obs;
   final captionController = TextEditingController();
 
   var isLimitReached = false.obs;

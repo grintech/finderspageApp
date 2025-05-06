@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -250,6 +251,13 @@ class _VideoPickerScreenState extends State<VideoPickerScreen> {
                       hint: "Add Description",
                       lines: 3,
                       textController: descController,
+                    ),
+                    Row(
+                      children: [
+                        Icon(CupertinoIcons.music_note_2, size: 20,),
+                        SizedBox(width: 10,),
+                        MyTextWidget(data: "Add Music", size: 15, weight: FontWeight.w500,),
+                      ],
                     ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),

@@ -228,6 +228,21 @@ class HomeApiProvider{
     }
   }
 
+  Future<PageResponse> hideNotificationList(int id, Map<String, dynamic>? queries) async {
+    try {
+      Response response = await _dio.get("${ApiConstants.hiddenNotificationListApi}/$id", options: Injector.getHeaderToken(),
+          queryParameters: queries);
+      var dataResponse = PageResponse<NotificationModel>.fromJson(
+          response.data,
+              (data) => NotificationModel.fromJson(data as Map<String, dynamic>)
+      );      return dataResponse;
+    } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return PageResponse.fromJson(res?.data, (data) => null);
+      return PageResponse(message: error.toString());
+    }
+  }
+
   Future<PageResponse> clearNotificationList(int id) async {
     try {
       Response response = await _dio.get("${ApiConstants.clearNotificationApi}/$id", options: Injector.getHeaderToken(),);
@@ -239,6 +254,65 @@ class HomeApiProvider{
       final res = (error as dynamic).response;
       if (res != null) return PageResponse.fromJson(res?.data, (data) => null);
       return PageResponse(message: error.toString());
+    }
+  }
+
+  Future<DataResponse> readNotification(int id) async {
+    try {
+      Response response = await _dio.post("${ApiConstants.readNotificationApi}/$id", options: Injector.getHeaderToken(),);
+      var dataResponse = DataResponse<NotificationModel>.fromJson(
+          response.data,
+              (data) => NotificationModel.fromJson(data as Map<String, dynamic>)
+      );      return dataResponse;
+    } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return DataResponse.fromJson(res?.data, (data) => null);
+      return DataResponse(message: error.toString());
+    }
+  }
+
+
+  Future<DataResponse> hideNotification(int id) async {
+    try {
+      Response response = await _dio.post("${ApiConstants.hideNotificationApi}/$id", options: Injector.getHeaderToken(),);
+      var dataResponse = DataResponse<NotificationModel>.fromJson(
+          response.data,
+              (data) => NotificationModel.fromJson(data as Map<String, dynamic>)
+      );      return dataResponse;
+    } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return DataResponse.fromJson(res?.data, (data) => null);
+      return DataResponse(message: error.toString());
+    }
+  }
+
+
+  Future<DataResponse> blockNotification(int toId, int fromId) async {
+    try {
+      Response response = await _dio.get("${ApiConstants.blockNotificationApi}/$toId/$fromId", options: Injector.getHeaderToken(),);
+      var dataResponse = DataResponse<NotificationModel>.fromJson(
+          response.data,
+              (data) => NotificationModel.fromJson(data as Map<String, dynamic>)
+      );      return dataResponse;
+    } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return DataResponse.fromJson(res?.data, (data) => null);
+      return DataResponse(message: error.toString());
+    }
+  }
+
+
+  Future<DataResponse> unBlockNotification(int toId, int fromId) async {
+    try {
+      Response response = await _dio.get("${ApiConstants.unBlockNotificationApi}/$toId/$fromId", options: Injector.getHeaderToken(),);
+      var dataResponse = DataResponse<NotificationModel>.fromJson(
+          response.data,
+              (data) => NotificationModel.fromJson(data as Map<String, dynamic>)
+      );      return dataResponse;
+    } catch (error) {
+      final res = (error as dynamic).response;
+      if (res != null) return DataResponse.fromJson(res?.data, (data) => null);
+      return DataResponse(message: error.toString());
     }
   }
 

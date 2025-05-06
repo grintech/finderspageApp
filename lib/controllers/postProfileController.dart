@@ -152,7 +152,7 @@ class PostProfileController extends GetxController {
 
   Future<void> getProfileApi()async{
     if(await Utils.hasNetwork()){
-      var res = await _profileApiProvider.getUserApi();
+      var res = await _profileApiProvider.getUserApi(storageHelper.getUserId()!);
       var dataResponse = res as DataResponse;
       if(dataResponse.success == true){
         var userModel = dataResponse.data as UserModel;

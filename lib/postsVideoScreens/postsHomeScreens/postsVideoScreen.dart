@@ -105,6 +105,7 @@ class PostVideoScreen extends StatelessWidget {
           }
 
           // final mediaUrl = "${ApiConstants.postImgUrl}/${videos.first}";
+          print("video url ====> ${ApiConstants.postImgUrl}/${videos.first}");
           return Stack(
             children: [
               Padding(

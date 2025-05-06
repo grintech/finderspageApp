@@ -36,8 +36,8 @@ class _PostsNavBarScreenState extends State<PostsNavBarScreen> with TickerProvid
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor: blackColor,
       body:Obx(() {
         switch (controller.tabIndex.value) {

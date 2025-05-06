@@ -16,9 +16,9 @@ class ProfileApiProvider{
     _dio = Injector().getDio();
   }
 
-  Future<dynamic> getUserApi() async {
+  Future<dynamic> getUserApi(int id) async {
     try {
-      Response response = await _dio.get("${ApiConstants.getUser}/${StorageHelper().getUserModel()?.user?.id}",
+      Response response = await _dio.get("${ApiConstants.getUser}/$id",
           options: Injector.getHeaderToken());
       var dataResponse = DataResponse<UserModel>.
       fromJson(response.data, (data) => UserModel.fromJson(data as Map<String, dynamic>));

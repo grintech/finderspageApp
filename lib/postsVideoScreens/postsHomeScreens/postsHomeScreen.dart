@@ -12,6 +12,7 @@ import 'package:projects/data/models/commentModel.dart';
 import 'package:projects/data/models/likeModel.dart';
 import 'package:projects/postsVideoScreens/postCreateScreen/uploadPostScreen.dart';
 import 'package:projects/postsVideoScreens/postCreateScreen/videoPreviewScreen.dart';
+import 'package:projects/postsVideoScreens/postsProfileScreens/postProfileScreen.dart';
 import 'package:projects/utils/colorConstants.dart';
 import 'package:projects/utils/commonWidgets/commonTextField.dart';
 import 'package:projects/utils/helper/dateHelper.dart';
@@ -74,6 +75,8 @@ class Postshomescreen extends StatelessWidget {
                       GestureDetector(
                           onTap: () {
                             controller.notificationApi(StorageHelper().getUserId()!);
+                            Get.toNamed(Routes.notificationRoute);
+
                           },
                           child: Icon(Icons.notifications_none_outlined,
                             color: whiteColor,size: 30,)),
@@ -115,22 +118,28 @@ class Postshomescreen extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
-                                  children: [
-                                    Obx(()=>controller.postsList[index].userImage == null?
-                                    ImageView(
-                                      height: 40, width: 40,
-                                      margin: EdgeInsets.only(right: 15),
-                                      image: controller.postsList[index].userImage,
-                                    ):Padding(
-                                      padding: const EdgeInsets.only(right: 15),
-                                      child: ClipRRect(borderRadius: BorderRadius.circular(50),
-                                          child: Image.network("${ApiConstants.profileUrl}/${controller.postsList[index].userImage}",
-                                            width: 40, height: 40,fit: BoxFit.fill,)),
-                                    ),),
-                                    Obx(()=>MyTextWidget(data: "${controller.postsList[index].userName}", size: 15, color: whiteColor,)
-                                    )
-                                  ],
+                                GestureDetector(
+                                  onTap: () {
+
+                                    Get.to(PostProfileScreen());
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Obx(()=>controller.postsList[index].userImage == null?
+                                      ImageView(
+                                        height: 40, width: 40,
+                                        margin: EdgeInsets.only(right: 15),
+                                        image: controller.postsList[index].userImage,
+                                      ):Padding(
+                                        padding: const EdgeInsets.only(right: 15),
+                                        child: ClipRRect(borderRadius: BorderRadius.circular(50),
+                                            child: Image.network("${ApiConstants.profileUrl}/${controller.postsList[index].userImage}",
+                                              width: 40, height: 40,fit: BoxFit.fill,)),
+                                      ),),
+                                      Obx(()=>MyTextWidget(data: "${controller.postsList[index].userName}", size: 15, color: whiteColor,)
+                                      )
+                                    ],
+                                  ),
                                 ),
                                 StorageHelper().getUserModel()?.user?.id != controller.postsList[index].user_id?
                                 PopupMenuButton<int>(
