@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:projects/controllers/postsHomeController.dart';
+import 'package:projects/data/models/userModel.dart';
+import 'package:projects/postsVideoScreens/postsHomeScreens/otherUserProfile.dart';
 import 'package:projects/postsVideoScreens/postsHomeScreens/postsNavBarScreen.dart';
 import 'package:projects/screens/Events/event_calendar.dart';
 import 'package:projects/screens/Profile/edit_profile.dart';
@@ -10,6 +12,8 @@ import 'package:projects/screens/authScreens/forgot_password.dart';
 import 'package:projects/screens/authScreens/login.dart';
 import 'package:projects/screens/authScreens/reset_password.dart';
 import 'package:projects/screens/authScreens/signup.dart';
+import 'package:projects/screens/chatScreens/chatScreen.dart';
+import 'package:projects/screens/chatScreens/inboxScreen.dart';
 import 'package:projects/screens/homeScreens/bottomNavScreen.dart';
 import 'package:projects/screens/homeScreens/communityScreens/communityDetailScreen.dart';
 import 'package:projects/screens/homeScreens/communityScreens/communityListScreen.dart';
@@ -105,6 +109,17 @@ class RouteGenerator{
         );
       case Routes.postsSetting:
         widgetScreen = PostsSettingScreen();
+        break;
+      case Routes.otherUser:
+        widgetScreen = OtherUserProfile(userModel: args as UserModel,);
+        break;
+
+        //Chat Screens
+      case Routes.inbox:
+        widgetScreen = InboxScreen();
+        break;
+      case Routes.chat:
+        widgetScreen = ChatScreen();
         break;
       default:
         widgetScreen = _errorRoute();

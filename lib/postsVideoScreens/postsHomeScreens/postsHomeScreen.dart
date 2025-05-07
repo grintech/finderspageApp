@@ -80,9 +80,14 @@ class Postshomescreen extends StatelessWidget {
                           },
                           child: Icon(Icons.notifications_none_outlined,
                             color: whiteColor,size: 30,)),
-                      Padding(
-                          padding: const EdgeInsets.only(left: 15, right: 20),
-                          child: Image.asset("assets/images/ic_chat.png", height: 25, width: 25, color: fieldBorderColor,)
+                      GestureDetector(
+                        onTap: () {
+                          Get.toNamed(Routes.inbox);
+                        },
+                        child: Padding(
+                            padding: const EdgeInsets.only(left: 15, right: 20),
+                            child: Image.asset("assets/images/ic_chat.png", height: 25, width: 25, color: fieldBorderColor,)
+                        ),
                       )
                     ],
                   )
@@ -120,8 +125,11 @@ class Postshomescreen extends StatelessWidget {
                               children: [
                                 GestureDetector(
                                   onTap: () {
-
-                                    Get.to(PostProfileScreen());
+                                    if(controller.postsList[index].user_id == StorageHelper().getUserId()) {
+                                      controller.changeTabIndex(4);
+                                    }else{
+                                      controller.getProfileApi(controller.postsList[index].user_id!);
+                                    }
                                   },
                                   child: Row(
                                     children: [

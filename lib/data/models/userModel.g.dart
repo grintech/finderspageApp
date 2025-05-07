@@ -43,6 +43,9 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       (json['ads'] as List<dynamic>?)
           ?.map((e) => UserModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+  type: json['type'] as String?,
+  title: json['title'] as String?,
+  image_data: json['image_data'] as String?,
   post:
       (json['post'] as List<dynamic>?)
           ?.map((e) => UserModel.fromJson(e as Map<String, dynamic>))
@@ -86,6 +89,13 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       json['user'] == null
           ? null
           : UserModel.fromJson(json['user'] as Map<String, dynamic>),
+  facebook: json['facebook'] as String?,
+  twitter: json['twitter'] as String?,
+  Tiktok: json['Tiktok'] as String?,
+  instagram: json['instagram'] as String?,
+  linkedin: json['linkedin'] as String?,
+  whatsapp: json['whatsapp'] as String?,
+  youtube: json['youtube'] as String?,
   token: json['token'] as String?,
 );
 
@@ -119,6 +129,16 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
   if (instance.current_password case final value?) 'current_password': value,
   if (instance.new_password case final value?) 'new_password': value,
   if (instance.confirm_password case final value?) 'confirm_password': value,
+  if (instance.facebook case final value?) 'facebook': value,
+  if (instance.twitter case final value?) 'twitter': value,
+  if (instance.instagram case final value?) 'instagram': value,
+  if (instance.linkedin case final value?) 'linkedin': value,
+  if (instance.whatsapp case final value?) 'whatsapp': value,
+  if (instance.youtube case final value?) 'youtube': value,
+  if (instance.Tiktok case final value?) 'Tiktok': value,
+  if (instance.type case final value?) 'type': value,
+  if (instance.title case final value?) 'title': value,
+  if (instance.image_data case final value?) 'image_data': value,
   if (instance.user?.toJson() case final value?) 'user': value,
   if (instance.token case final value?) 'token': value,
   if (instance.followerDetails?.map((e) => e.toJson()).toList()

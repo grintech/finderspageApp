@@ -15,6 +15,7 @@ import 'package:projects/utils/shared/dataResponse.dart';
 import 'package:video_player/video_player.dart';
 import '../data/apiConstants.dart';
 import '../data/models/userModel.dart';
+import '../postsVideoScreens/postsHomeScreens/otherUserProfile.dart';
 import '../utils/helper/storageHelper.dart';
 import '../utils/routes.dart';
 import '../utils/util.dart';
@@ -248,6 +249,11 @@ class PostsHomeController extends GetxController{
         // storageHelper.saveUserModel(userModel);
         this.userModel.value = userModel;
         this.userModel.refresh();
+        print("show post data ====> ${jsonEncode(userModel)}");
+        print("followerData ===> ${jsonEncode(userModel.post)}");
+        print("email: ${userModel.email}");
+        print("user: ${userModel.user?.toJson()}");
+        Get.toNamed(Routes.otherUser, arguments: userModel);
         // if (userModel.user?.first_name != null) {
         //   nameController.text = userModel.user!.first_name!;
         // }

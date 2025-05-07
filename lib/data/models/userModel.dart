@@ -32,6 +32,16 @@ class UserModel {
   String? current_password;
   String? new_password;
   String? confirm_password;
+  String? facebook;
+  String? twitter;
+  String? instagram;
+  String? linkedin;
+  String? whatsapp;
+  String? youtube;
+  String? Tiktok;
+  String? type;
+  String? title;
+  String? image_data;
   UserModel? user;
   String? token;
   List<UserModel>? followerDetails;
@@ -74,6 +84,9 @@ class UserModel {
     this.userFrom,
     this.followerDetails,
     this.ads,
+    this.type,
+    this.title,
+    this.image_data,
     this.post,
     this.business,
     this.job,
@@ -87,6 +100,13 @@ class UserModel {
     this.service,
     this.entertainment,
     this.user,
+    this.facebook,
+    this.twitter,
+    this.Tiktok,
+    this.instagram,
+    this.linkedin,
+    this.whatsapp,
+    this.youtube,
     this.token
   });
 
@@ -99,6 +119,9 @@ class UserModel {
     phonenumber: json["phonenumber"],
     zipcode: json["zipcode"],
     bio: json["bio"],
+    type: json["type"],
+    title: json["title"],
+    image_data: json["image_data"],
     profession: json["profession"],
     dob: json["dob"],
     current_password: json["current_password"],
@@ -119,6 +142,13 @@ class UserModel {
     modified: json["modified"],
     completed: json["completed"],
     userFrom: json["user_from"],
+    facebook: json["facebook"],
+    twitter: json["twitter"],
+    linkedin: json["linkedin"],
+    Tiktok: json["Tiktok"],
+    whatsapp: json["whatsapp"],
+    youtube: json["youtube"],
+    instagram: json["instagram"],
     user: UserModel.fromMap(json["user"]),
     followerDetails: json["followerDetails"] != null ?
     List<UserModel>.from(json["followerDetails"].map((x) => UserModel.fromMap(x))) : [],
@@ -170,6 +200,16 @@ class UserModel {
     "modified": modified,
     "completed": completed,
     "user_from": userFrom,
+    "type": type,
+    "title": title,
+    "image_data": image_data,
+    "facebook": facebook,
+    "twitter": twitter,
+    "linkedin": linkedin,
+    "Tiktok": Tiktok,
+    "whatsapp": whatsapp,
+    "youtube": youtube,
+    "instagram": instagram,
     "followerDetails": followerDetails?.map((e) => e.toMap()).toList(),
     "ads": ads?.map((e) => e.toMap()).toList(),
     "post": post?.map((e) => e.toMap()).toList(),
