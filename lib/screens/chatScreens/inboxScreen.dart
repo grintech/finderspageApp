@@ -33,7 +33,7 @@ class InboxScreen extends StatelessWidget {
                       },
                       child: Icon(Icons.arrow_back_ios, color: fieldBorderColor,)),
                   SizedBox(width: 30,),
-                  MyTextWidget(data: "Messages", size: 18, weight: FontWeight.w600,)
+                  MyTextWidget(data: "Messges", size: 18, weight: FontWeight.w600,)
                 ],
               ),
               Icon(Icons.more_vert, color: blackColor,)
